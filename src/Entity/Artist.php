@@ -38,6 +38,9 @@ class Artist
     #[ORM\Column(type: Types::TEXT)]
     private ?string $lien = null;
 
+    #[ORM\ManyToOne(inversedBy: 'artistFK')]
+    private ?Scene $sceneFK = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -135,6 +138,18 @@ class Artist
     public function setLien(string $lien): static
     {
         $this->lien = $lien;
+
+        return $this;
+    }
+
+    public function getSceneFK(): ?Scene
+    {
+        return $this->sceneFK;
+    }
+
+    public function setSceneFK(?Scene $sceneFK): static
+    {
+        $this->sceneFK = $sceneFK;
 
         return $this;
     }
