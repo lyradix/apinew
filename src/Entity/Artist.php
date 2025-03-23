@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\ArtistRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,34 +14,44 @@ class Artist
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
+    #[Groups(['artist:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 30)]
-    private ?string $nom = null;
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['artist:read'])]
+    private ?string $name = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups('artist:read')]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups('artist:read')]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column(length: 45)]
+    #[Groups('artist:read')]
     private ?string $famousSong = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups('artist:read')]
     private ?string $genre = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('artist:read')]
     private ?string $description = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups('artist:read')]
     private ?string $source = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('artist:read')]
     private ?string $lien = null;
 
-    #[ORM\ManyToOne(inversedBy: 'artistFK')]
+    #[ORM\ManyToOne(targetEntity: Scene::class, inversedBy: 'artistFK')]
+    #[Groups(['artist:read'])]
     private ?Scene $sceneFK = null;
 
     public function getId(): ?int
@@ -46,14 +59,14 @@ class Artist
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getName(): ?string
     {
-        return $this->nom;
+        return $this->name;
     }
 
-    public function setNom(string $nom): static
+    public function setName(string $name): self
     {
-        $this->nom = $nom;
+        $this->name = $name;
 
         return $this;
     }
@@ -147,7 +160,7 @@ class Artist
         return $this->sceneFK;
     }
 
-    public function setSceneFK(?Scene $sceneFK): static
+    public function setSceneFK(?Scene $sceneFK): self
     {
         $this->sceneFK = $sceneFK;
 

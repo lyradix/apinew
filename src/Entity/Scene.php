@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SceneRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,6 +17,7 @@ class Scene
     private ?int $id = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups('scene:read')]
     private ?string $nom = null;
 
     /**
@@ -23,6 +25,7 @@ class Scene
      */
     #[ORM\OneToMany(targetEntity: artist::class, mappedBy: 'sceneFK')]
     private Collection $artistFK;
+    
 
     public function __construct()
     {

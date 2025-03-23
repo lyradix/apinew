@@ -15,7 +15,15 @@ class ArtistRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Artist::class);
     }
-
+    
+    public function findAllWithScenes(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.sceneFK', 's') // Use the correct association name: sceneFK
+            ->addSelect('s') // Include scene data in the result
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Artist[] Returns an array of Artist objects
     //     */
