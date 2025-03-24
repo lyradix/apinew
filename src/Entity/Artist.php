@@ -18,9 +18,9 @@ class Artist
     #[Groups(['artist:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(length: 30)]
     #[Groups(['artist:read'])]
-    private ?string $name = null;
+    private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups('artist:read')]
@@ -59,14 +59,14 @@ class Artist
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getNom(): ?string
     {
-        return $this->name;
+        return $this->nom;
     }
 
-    public function setName(string $name): self
+    public function setNom(string $nom): static
     {
-        $this->name = $name;
+        $this->nom = $nom;
 
         return $this;
     }
@@ -166,4 +166,6 @@ class Artist
 
         return $this;
     }
+
+   
 }
