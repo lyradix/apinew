@@ -3,12 +3,16 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -30,6 +34,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, Days>
+     */
+    #[ORM\OneToMany(targetEntity: Days::class, mappedBy: 'userFK')]
+    private Collection $jourFK;
+
+    public function __construct()
+    {
+        $this->jourFK = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -104,5 +119,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Days>
+     */
+    public function getJourFK(): Collection
+    {
+        return $this->jourFK;
+    }
+
+    public function addJourFK(Days $jourFK): static
+    {
+        if (!$this->jourFK->contains($jourFK)) {
+            $this->jourFK->add($jourFK);
+            $jourFK->setUserFK($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJourFK(Days $jourFK): static
+    {
+        if ($this->jourFK->removeElement($jourFK)) {
+            // set the owning side to null (unless already changed)
+            if ($jourFK->getUserFK() === $this) {
+                $jourFK->setUserFK(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -54,6 +54,9 @@ class Artist
     #[Groups(['artist:read'])]
     private ?Scene $sceneFK = null;
 
+    #[ORM\ManyToOne(inversedBy: 'artistFK')]
+    private ?Days $jourFK = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -163,6 +166,18 @@ class Artist
     public function setSceneFK(?Scene $sceneFK): self
     {
         $this->sceneFK = $sceneFK;
+
+        return $this;
+    }
+
+    public function getJourFK(): ?Days
+    {
+        return $this->jourFK;
+    }
+
+    public function setJourFK(?Days $jourFK): static
+    {
+        $this->jourFK = $jourFK;
 
         return $this;
     }
