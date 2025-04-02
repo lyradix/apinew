@@ -38,7 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Days>
      */
-    #[ORM\OneToMany(targetEntity: Days::class, mappedBy: 'userFK')]
+    #[ORM\ManyToMany(targetEntity: Days::class, mappedBy: 'userFK')]
     private Collection $jourFK;
 
     public function __construct()

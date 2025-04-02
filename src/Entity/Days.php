@@ -24,7 +24,7 @@ class Days
     /**
      * @var Collection<int, Artist>
      */
-    #[ORM\OneToMany(targetEntity: Artist::class, mappedBy: 'jourFK')]
+    #[ORM\ManyToMany(targetEntity: Artist::class, mappedBy: 'jourFK')]
     private Collection $artistFK;
 
     public function __construct()
