@@ -3,15 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\RegistrationFormType;
-use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Attribute\Route;
-
+use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
 {
@@ -38,49 +35,12 @@ class RegistrationController extends AbstractController
         $hashedPassword = $userPasswordHasher->hashPassword($user, $data['password']);
         $user->setPassword($hashedPassword);
         $user->setRoles(['ROLE_USER']); // Assign default role
-     
-        $regisform = $this -> createForm(RegistrationFormType::class);
-        
-        $regisform -> handleRequest($request);
 
-        if($regisform->isSubmitted() && $regisform->isValid()) {
-            $data = $regisform->getData();
-        }
-
-        return $this->render('registration/register.html.twig', [
-            'regisform' => $regisform -> createView()
-
-        ]);
         // Persist the user to the database
         $entityManager->persist($user);
         $entityManager->flush();
 
         // Return a success response
         return $this->json(['message' => 'User registered successfully.'], Response::HTTP_CREATED);
-
-       
-    }
-
-
-    #[Route('/formregis', name: 'formregis')]
-    public function registration(Request $request): Response
-    {
-        $data = json_decode($request->getContent(), true);
-        
-        $regisform = $this -> createForm(RegistrationFormType::class);
-        
-        $regisform -> handleRequest($request);
-
-        if($regisform->isSubmitted() && $regisform->isValid()) {
-            $data = $regisform->getData();
-        }
-
-        if (!isset($data['email']) || !isset($data['password'])) {
-            return $this->json(['error' => 'Invalid data. Email and password are required.'], Response::HTTP_BAD_REQUEST);
-        }
-
-        return $this->render('registration/register.html.twig', [
-            'regisform' => $regisform -> createView()
-        ]);
     }
 }
