@@ -6,7 +6,7 @@
     </head>
     <body>
         <header>
-            <h1>My Application</h1>
+            <h1>Days Form</h1>
         </header>
         <main>
             {% block body %}
@@ -16,15 +16,15 @@
             </style>
 
             <div class="example-wrapper">
-                {{ form_start(DayformType) }}
-                    {{ form_widget(DayformType) }}
+                {{ form_start(form) }} {# Use the 'form' variable passed from the controller #}
+                    {{ form_widget(form) }}
                     <button class="btn btn-primary">Save</button>
-                {{ form_end(DayformType) }}
+                {{ form_end(form) }}
             </div>
             {% endblock %}
         </main>
         <footer>
-            <p>&copy; 2025 My Application</p>
+    
         </footer>
     </body>
 </html>

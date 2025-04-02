@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 
-final class IndexController extends AbstractController
+final class IndexController extends ApiController
 {
     #[Route('/', name: 'app_home')]
     public function index(): Response

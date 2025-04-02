@@ -4,6 +4,7 @@
 
 install nelmio CORE bundle
 install maker Bundle
+composer require symfony/security-core
 
 composer require symfony/security-bundle
 composer require form validator

@@ -42,7 +42,7 @@ class Days
         return $this->jour;
     }
 
-    public function setJour(string $jour): static
+    public function setJour(string $jour): self
     {
         $this->jour = $jour;
 

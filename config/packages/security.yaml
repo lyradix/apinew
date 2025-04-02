@@ -16,14 +16,14 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            stateless: false # Use sessions to persist the user's authentication state
             form_login:
-                login_path: app_login
-                check_path: app_login
+                login_path: /login
+                check_path: /login
+                default_target_path: /days # Redirect to /days after successful login
                 enable_csrf: true
             logout:
                 path: app_logout
-                # where to redirect after logout
-                # target: app_any_route
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
