@@ -26,7 +26,7 @@ class SecurityController extends AbstractController
         $email = $data['email'] ?? null;
         $password = $data['password'] ?? null;
 
-        if (!$email || !$password) {
+        if (!isset($data['email']) || !isset($data['password'])) {
             return new JsonResponse(['error' => 'Email and password are required'], Response::HTTP_BAD_REQUEST);
         }
 

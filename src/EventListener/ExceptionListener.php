@@ -12,20 +12,16 @@ class ExceptionListener
     {
         $exception = $event->getThrowable();
 
-        // Default response data
-        $response = [
+        $response = new JsonResponse([
             'error' => $exception->getMessage(),
-        ];
+        ]);
 
-        // Default status code
-        $statusCode = JsonResponse::HTTP_INTERNAL_SERVER_ERROR;
-
-        // If it's an HTTP exception, use its status code
         if ($exception instanceof HttpExceptionInterface) {
-            $statusCode = $exception->getStatusCode();
+            $response->setStatusCode($exception->getStatusCode());
+        } else {
+            $response->setStatusCode(JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        // Create a JSON response
-        $event->setResponse(new JsonResponse($response, $statusCode));
+        $event->setResponse($response);
     }
 }

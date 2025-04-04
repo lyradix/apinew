@@ -14,6 +14,7 @@ class Scene
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+      #[Groups('scene:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 30)]
@@ -23,7 +24,7 @@ class Scene
     /**
      * @var Collection<int, artist>
      */
-    #[ORM\OneToMany(targetEntity: artist::class, mappedBy: 'sceneFK')]
+    #[ORM\OneToMany(targetEntity: Artist::class, mappedBy: 'sceneFK')]
     private Collection $artistFK;
     
 
@@ -57,7 +58,7 @@ class Scene
         return $this->artistFK;
     }
 
-    public function addArtistFK(artist $artistFK): static
+    public function addArtistFK(Artist $artistFK): static
     {
         if (!$this->artistFK->contains($artistFK)) {
             $this->artistFK->add($artistFK);
@@ -67,7 +68,7 @@ class Scene
         return $this;
     }
 
-    public function removeArtistFK(artist $artistFK): static
+    public function removeArtistFK(Artist $artistFK): static
     {
         if ($this->artistFK->removeElement($artistFK)) {
             // set the owning side to null (unless already changed)
