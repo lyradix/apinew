@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Scene;
 use App\Entity\User;
 use App\Repository\ArtistRepository;
 use App\Repository\InfoRepository;
@@ -61,7 +62,7 @@ final class IndexController extends ApiController
         return new JsonResponse($jsonData, 200, [], true);
     }
 
-    #[Route('/updateconcert/{id}', name: 'app_updateconcert', methods: ['PUT'])]
+    #[Route('/updateconcert', name: 'app_updateconcert', methods: ['PUT'])]
     public function putConcert(HttpFoundationRequest $request,
         ArtistRepository $ArtistRepository, 
         SerializerInterface $serializer,
@@ -75,52 +76,38 @@ final class IndexController extends ApiController
         $concert = $ArtistRepository->find($data['id']);
 
         if (!$concert) {
-            return new JsonResponse(['error' => 'Scene not found'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => 'Concert not found'], Response::HTTP_NOT_FOUND);
         }
 
         if (isset($data['startTime'])) {
-            $concert->setNom($data['startTime']);
+            try {
+                $concert->setStartTime(new \DateTime($data['startTime']));
+            } catch (\Exception $e) {
+                return new JsonResponse(['error' => 'Invalid startTime format'], Response::HTTP_BAD_REQUEST);
+            }
         }
+
         if (isset($data['endTime'])) {
-            $concert->setNom($data['endTime']);
+            try {
+                $concert->setEndTime(new \DateTime($data['endTime']));
+            } catch (\Exception $e) {
+                return new JsonResponse(['error' => 'Invalid endTime format'], Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        if (isset($data['sceneFK'])) {
+            $scene = $entityManager->getRepository(Scene::class)->find($data['sceneFK']);
+            if (!$scene) {
+                return new JsonResponse(['error' => 'Scene not found'], Response::HTTP_NOT_FOUND);
+            }
+            $concert->setSceneFK($scene); // Assuming `setSceneFK` is the setter for the Scene relationship
         }
     
-
         $entityManager->persist($concert);
         $entityManager->flush();
 
         $jsonData = $serializer->serialize($concert, 'json', ['groups' => ['artist:read', 'scene:read']]);
 
-        return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
-    }
-
-    #[Route('/updatescenes/{id}', name: 'app_updatescenes', methods: ['PUT'])]
-    public function putScenes(HttpFoundationRequest $request,
-     SceneRepository $sceneRepository, 
-     SerializerInterface $serializer,
-     EntityManagerInterface $entityManager,): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        if (!isset($data['id'])) {
-            return new JsonResponse(['error' => 'Scene ID is required'], Response::HTTP_BAD_REQUEST);
-        }
-        $scene = $sceneRepository->find($data['id']);
-
-        if (!$scene) {
-            return new JsonResponse(['error' => 'Scene not found'], Response::HTTP_NOT_FOUND);
-        }
-    
-        if (isset($data['nom'])) {
-            $scene->setNom($data['nom']);
-        }
-
-        $entityManager->persist($scene);
-        $entityManager->flush();
-
-        $jsonData = $serializer->serialize($scene, 'json', ['groups' => ['scene:read']]);
-    
-        // Return the serialized data as a JSON response
         return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
     }
 
