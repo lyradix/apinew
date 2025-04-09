@@ -45,6 +45,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Days::class, mappedBy: 'userFK')]
     private Collection $jourFK;
 
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $apiToken = null;
+
     public function __construct()
     {
         $this->jourFK = new ArrayCollection();
@@ -151,6 +154,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $jourFK->setUserFK(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(?string $apiToken): static
+    {
+        $this->apiToken = $apiToken;
 
         return $this;
     }

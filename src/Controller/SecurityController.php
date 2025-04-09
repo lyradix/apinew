@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,6 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Doctrine\ORM\EntityManagerInterface;
 
 class SecurityController extends AbstractController
 {
@@ -17,7 +19,8 @@ class SecurityController extends AbstractController
     public function login(
         Request $request,
         UserProviderInterface $userProvider,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
@@ -33,18 +36,23 @@ class SecurityController extends AbstractController
             // Load the user by email
             $user = $userProvider->loadUserByIdentifier($email);
 
+            if (!$user) {
+                return new JsonResponse(['error' => 'User not found'], JsonResponse::HTTP_NOT_FOUND);
+            }
+
             // Check the password
             if (!$passwordHasher->isPasswordValid($user, $password)) {
                 throw new BadCredentialsException('Invalid credentials');
             }
 
-            // Return a success response
+            // Generate a random token
+            $token = bin2hex(random_bytes(32));
+            $user->setApiToken($token); // Assuming your User entity has an `apiToken` field
+            $entityManager->persist($user);
+            $entityManager->flush();
 
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'Login successful'
-            ], JsonResponse::HTTP_OK);
-            
+            // Return the token in the response
+            return new JsonResponse(['token' => $token], JsonResponse::HTTP_OK);
         } catch (BadCredentialsException | AuthenticationException $e) {
             return new JsonResponse(['error' => 'Invalid credentials'], JsonResponse::HTTP_UNAUTHORIZED);
         }
@@ -57,3 +65,4 @@ class SecurityController extends AbstractController
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 }
+
