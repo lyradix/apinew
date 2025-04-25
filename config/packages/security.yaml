@@ -28,7 +28,7 @@ security:
 
     # Access control rules
     access_control:
-        - { path: ^/login, roles: ROLE_USER}
+        - { path: ^/login, roles: ROLE_ADMIN}
         - { path: ^/getdays, roles: ROLE_USER }
         - { path: ^/postdays, roles: ROLE_USER }
         - { path: ^/admin, roles: ROLE_ADMIN }
