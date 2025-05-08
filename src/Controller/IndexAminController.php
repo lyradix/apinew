@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class IndexAminController extends AbstractController
 {
-    #[Route('/amin', name: 'app_index_amin', methods: ['POST'])]
+    #[Route('/admin', name: 'app_index_amin', methods: ['GET', 'POST'])]
     public function admin(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);

@@ -45,13 +45,13 @@ class SecurityController extends AbstractController
                 throw new BadCredentialsException('Invalid credentials');
             }
 
-            // Generate a random token
+            // Génère un token
             $token = bin2hex(random_bytes(32));
             $user->setApiToken($token); // Assuming your User entity has an `apiToken` field
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Return the token in the response
+            // Retour du Token dans le response
             return new JsonResponse(['token' => $token], JsonResponse::HTTP_OK);
         } catch (BadCredentialsException | AuthenticationException $e) {
             return new JsonResponse(['error' => 'Invalid credentials'], JsonResponse::HTTP_UNAUTHORIZED);
@@ -61,8 +61,7 @@ class SecurityController extends AbstractController
     #[Route(path: '/logout', name: 'app_logout', methods: ['POST'])]
     public function logout(): void
     {
-        // This method can be blank - it will be intercepted by the logout key on your firewall
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        throw new \LogicException('');
     }
 }
 

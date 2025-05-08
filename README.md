@@ -1,6 +1,4 @@
-# apinew
-# apinew
-
+Pre-requirement:
 
 install nelmio CORE bundle
 install maker Bundle
@@ -12,3 +10,7 @@ Now go to the RegistrationControllerand change the redirect after registration f
 
 <!-- to generate a session token
 composer require lexik/jwt-authentication-bundle --> not installed
+
+For the coordinates of the map:
+composer require creof/doctrine2-spatial
+

@@ -18,7 +18,7 @@ class Scene
     private ?int $id = null;
 
     #[ORM\Column(length: 30)]
-    #[Groups('scene:read')]
+    #[Groups(['scene:read'])]
     private ?string $nom = null;
 
     /**
@@ -26,6 +26,10 @@ class Scene
      */
     #[ORM\OneToMany(targetEntity: Artist::class, mappedBy: 'sceneFK')]
     private Collection $artistFK;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['scene:read'])]
+    private ?Poi $poiFK = null;
     
 
     public function __construct()
@@ -36,6 +40,13 @@ class Scene
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getNom(): ?string
@@ -76,6 +87,18 @@ class Scene
                 $artistFK->setSceneFK(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPoiFK(): ?Poi
+    {
+        return $this->poiFK;
+    }
+
+    public function setPoiFK(?Poi $poiFK): static
+    {
+        $this->poiFK = $poiFK;
 
         return $this;
     }

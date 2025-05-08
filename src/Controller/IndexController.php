@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Scene;
 use App\Entity\User;
+use App\Entity\Poi;
 use App\Repository\ArtistRepository;
 use App\Repository\InfoRepository;
 use App\Repository\PartnersRepository;
+use App\Repository\PoiRepository;
 use App\Repository\SceneRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,7 +19,9 @@ use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 
 
 final class IndexController extends ApiController
@@ -98,9 +102,9 @@ final class IndexController extends ApiController
         if (isset($data['sceneFK'])) {
             $scene = $entityManager->getRepository(Scene::class)->find($data['sceneFK']);
             if (!$scene) {
-                return new JsonResponse(['error' => 'Scene not found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'Scene introuvable'], Response::HTTP_NOT_FOUND);
             }
-            $concert->setSceneFK($scene); // Assuming `setSceneFK` is the setter for the Scene relationship
+            $concert->setSceneFK($scene); 
         }
     
         $entityManager->persist($concert);
@@ -111,6 +115,41 @@ final class IndexController extends ApiController
         return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
     }
 
+    #[Route('/updateScene', name: 'app_updateScene', methods: ['PUT'])]  
+    public function putScene(HttpFoundationRequest $request,
+    SceneRepository $sceneRepository,
+    SerializerInterface $serializer,
+    EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!isset($data['id'])) {
+            return new JsonResponse(['error' => 'Scene ID is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $scene = $sceneRepository->find($data['id']);
+        if (!$scene) {
+            return new JsonResponse(['error' => 'Scenes introuvables'], Response::HTTP_NOT_FOUND);
+        }
+        if (isset($data['nom'])) {
+            $scene->setNom($data['nom']);
+        }
+
+        if (isset($data['longitude'])) {
+            $scene->setLongitude($data['longitude']);
+        }
+        if (isset($data['latitude'])) {
+            $scene->setLatitude($data['latitude']);
+        }
+
+        $entityManager->persist($scene);
+        $entityManager->flush();
+
+        $jsonData = $serializer->serialize($scene, 'json', ['groups' => ['poi:read', 'scene:read']]);
+
+        return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
+    }
+
+ 
 
     #[Route('/partners', name: 'app_partners')]
     public function getPartners(PartnersRepository $PartnersRepository, SerializerInterface $serializer): JsonResponse
@@ -149,4 +188,225 @@ final class IndexController extends ApiController
         $jsonData = $serializer->serialize($users, 'json', ['groups' => ['user:read']]);
         return new JsonResponse($jsonData, 200, [], true);
     }
+
+    #[Route('/postcoordinates', name: 'app_postCoordinates', methods: ['POST'])]
+    public function postCoordinates(
+        HttpFoundationRequest $request,
+        SerializerInterface $serializer,
+        sceneRepository $sceneRepository,
+        PoiRepository $poiRepository,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        // Log the incoming request data
+        error_log('Incoming request data: ' . json_encode($data));
+
+        if (!isset($data['nom'])) {
+            return new JsonResponse(['error' => 'Invalid data. "nom" is required.'], Response::HTTP_BAD_REQUEST);
+        }
+    
+    
+
+        // Validate required fields
+        if (!isset($data['longitude']) || !isset($data['latitude']) ) {
+            error_log('Validation failed: Missing required fields.');
+            return new JsonResponse(['error' => 'Invalid data. "longitude", "latitude", " are required.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Validate longitude and latitude
+        if ($data['longitude'] < -180 || $data['longitude'] > 180 || $data['latitude'] < -90 || $data['latitude'] > 90) {
+            error_log('Validation failed: Invalid longitude or latitude values.');
+            return new JsonResponse(['error' => 'Invalid longitude or latitude values.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $lastSceneId = $sceneRepository->findOneBy([], ['id' => 'DESC'])?->getId() ?? 0;
+        // $lastPoiId = $poiRepository->findOneBy([], ['id' => 'DESC'])?->getId() ?? 0;
+        // Log the validated data
+        error_log('Validated data: ' . json_encode($data));
+
+        
+     
+    
+
+        try {
+            $popup = $data['nom'];
+            
+            // Preset values for properties
+            $presetProperties = [
+                'popup' => $popup,
+                'type' => 'scène',
+                'marker-color' => '#d21e96',
+                'marker-symbol' => 'theatre',
+                'image' => 'star'
+            ];
+
+            // Merge preset properties with incoming data
+            $properties = $presetProperties;
+
+            // Construct GeoJSON format
+            $geoJson = json_encode([
+                'type' => 'Point',
+                'coordinates' => [(float)$data['longitude'], (float)$data['latitude']]
+            ]);
+
+            // Log the GeoJSON being set
+            error_log('Setting geometry as GeoJSON: ' . $geoJson);
+
+            // Insert a new Poi record using raw SQL
+            $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
+            $stmt = $entityManager->getConnection()->prepare($sql);
+  
+            // Log the SQL query and parameters
+            error_log('Executing SQL: ' . $sql);
+            error_log('SQL Parameters: ' . json_encode([
+                'type' => 'Feature',
+                'properties' => json_encode($properties),
+                'geometry' => $geoJson
+            ]));
+
+            $stmt->executeStatement([
+                'type' => 'Feature',
+                'properties' => json_encode($properties),
+                'geometry' => $geoJson
+            ]);
+            // Retrieve the last inserted ID for the Poi
+            $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
+            error_log('Last inserted Poi ID: ' . $lastInsertedPoiId);
+            // Log successful execution
+            error_log('SQL executed successfully.');
+            $scene = new Scene();
+            $scene->setId($lastSceneId + 1);
+            $scene->setNom($data['nom']);
+            // $scene->setPoiFK($poi);
+            $entityManager->persist($scene);
+            $entityManager->flush();
+            // Return success response
+            return new JsonResponse(['message' => 'Poi inserted successfully.'], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            // Log the exception details
+            error_log('Exception occurred: ' . $e->getMessage());
+            error_log('Exception trace: ' . $e->getTraceAsString());
+
+            return new JsonResponse([
+                'error' => 'An error occurred while inserting the coordinates.',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/postnewscene', name: 'app_postNewScene', methods: ['POST'])]
+    public function postNewScene(
+        HttpFoundationRequest $request,
+        SerializerInterface $serializer,
+        SceneRepository $sceneRepository,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+    
+        // Validate required fields
+        if (!isset($data['nom'])) {
+            return new JsonResponse(['error' => 'Invalid data. "nom" is required.'], Response::HTTP_BAD_REQUEST);
+        }
+    
+        $lastSceneId = $sceneRepository->findOneBy([], ['id' => 'DESC'])?->getId() ?? 0;
+    
+        try {
+            $scene = new Scene();
+            $scene->setId($lastSceneId + 1);
+            $scene->setNom($data['nom']);
+            $scene = setPoiFK($lastPoiId);
+            $entityManager->persist($scene);
+            $entityManager->flush();
+    
+            $jsonData = $serializer->serialize($scene, 'json', ['groups' => ['scene:read']]);
+            return new JsonResponse($jsonData, Response::HTTP_CREATED, [], true);
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            error_log('Error while creating Scene or Poi: ' . $e->getMessage());
+    
+            return new JsonResponse([
+                'error' => 'An error occurred while creating the scene.',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/postnewscenePoi', name: 'app_postNewScenePoi', methods: ['POST'])]
+    public function postNewScenePoi(
+        HttpFoundationRequest $request,
+        SerializerInterface $serializer,
+        SceneRepository $sceneRepository,
+        PoiRepository $poiRepository,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+        error_log('Incoming request data: ' . json_encode($data));
+
+        // Validate required fields
+        if (!isset($data['nom']) || !isset($data['longitude']) || !isset($data['latitude'])) {
+            return new JsonResponse(['error' => 'Merci d\'ajouter les valeurs attendus'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Validate longitude and latitude
+        if ($data['longitude'] < -180 || $data['longitude'] > 180 || $data['latitude'] < -90 || $data['latitude'] > 90) {
+            error_log('Validation failed: Invalid longitude or latitude values.');
+            return new JsonResponse(['error' => 'Invalid longitude or latitude values.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            // Store the value of "nom" in the variable $popup
+            $popup = $data['nom'];
+
+            // Preset properties for the Poi
+            $presetProperties = [
+                'type' => 'scène',
+                'marker-color' => "#d21e96",
+                'marker-symbol' => 'theatre',
+                'image' => 'star'
+            ];
+
+            // Merge preset properties with the popup value
+            $properties = array_merge($presetProperties, ['popup' => $popup]);
+
+            // Create a new Poi entity
+            $poi = new Poi();
+            $poi->setType('Feature');
+            $poi->setProperties($properties);
+
+            // Encode longitude and latitude as GeoJSON
+            $geometry = new Point((float)$data['longitude'], (float)$data['latitude']);
+            $poi->setGeometry($geometry);
+
+            // Persist the Poi entity
+            $entityManager->persist($poi);
+            $entityManager->flush();
+
+            // Log successful execution
+            error_log('Poi entity persisted successfully.');
+
+            // Create a new Scene entity
+            $lastSceneId = $sceneRepository->findOneBy([], ['id' => 'DESC'])?->getId() ?? 0;
+            $scene = new Scene();
+            $scene->setId($lastSceneId + 1);
+            $scene->setNom($data['nom']);
+            // Associate the Scene with the newly created Poi
+            $scene->setPoiFK($poi);
+
+            // Persist and flush the Scene entity
+            $entityManager->persist($scene);
+            $entityManager->flush();
+
+            // Serialize the Scene entity
+            $jsonData = $serializer->serialize($scene, 'json', ['groups' => ['scene:read']]);
+            return new JsonResponse($jsonData, Response::HTTP_CREATED, [], true);
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            return new JsonResponse([
+                'error' => 'Une erreur serveur est survenue lors de la création de la scène.',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

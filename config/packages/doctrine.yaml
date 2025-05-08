@@ -8,6 +8,14 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
+
+        # Register spatial types
+        types:
+            geometry: CrEOF\Spatial\DBAL\Types\GeometryType
+            point: CrEOF\Spatial\DBAL\Types\Geometry\PointType
+        mapping_types:
+            geometry: geometry
+
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
