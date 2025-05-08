@@ -226,8 +226,6 @@ final class IndexController extends ApiController
         error_log('Validated data: ' . json_encode($data));
 
         
-     
-    
 
         try {
             $popup = $data['nom'];
@@ -281,6 +279,19 @@ final class IndexController extends ApiController
             // $scene->setPoiFK($poi);
             $entityManager->persist($scene);
             $entityManager->flush();
+
+            // Update the poi_fk_id field in the scene table using raw SQL
+            $updateSql = 'UPDATE scene SET poi_fk_id = :poiId WHERE id = :sceneId';
+            $updateStmt = $entityManager->getConnection()->prepare($updateSql);
+
+            $updateStmt->executeStatement([
+                'poiId' => $lastInsertedPoiId, // Use the ID of the newly inserted Poi
+                'sceneId' => $scene->getId()   // Use the ID of the newly created Scene
+            ]);
+
+            // Log the update
+            error_log('Updated Scene ID ' . $scene->getId() . ' with Poi ID ' . $lastInsertedPoiId);
+
             // Return success response
             return new JsonResponse(['message' => 'Poi inserted successfully.'], Response::HTTP_CREATED);
         } catch (\Exception $e) {
@@ -315,7 +326,7 @@ final class IndexController extends ApiController
             $scene = new Scene();
             $scene->setId($lastSceneId + 1);
             $scene->setNom($data['nom']);
-            $scene = setPoiFK($lastPoiId);
+     
             $entityManager->persist($scene);
             $entityManager->flush();
     
@@ -396,6 +407,18 @@ final class IndexController extends ApiController
             // Persist and flush the Scene entity
             $entityManager->persist($scene);
             $entityManager->flush();
+
+            // Update the poi_fk_id field in the scene table using raw SQL
+            $updateSql = 'UPDATE scene SET poi_fk_id = :poiId WHERE id = :sceneId';
+            $updateStmt = $entityManager->getConnection()->prepare($updateSql);
+
+            $updateStmt->executeStatement([
+                'poiId' => $poi->getId(), // Use the ID of the newly inserted Poi
+                'sceneId' => $scene->getId()   // Use the ID of the newly created Scene
+            ]);
+
+            // Log the update
+            error_log('Updated Scene ID ' . $scene->getId() . ' with Poi ID ' . $poi->getId());
 
             // Serialize the Scene entity
             $jsonData = $serializer->serialize($scene, 'json', ['groups' => ['scene:read']]);
