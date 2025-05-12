@@ -1,4 +1,26 @@
-Pre-requirement:
+# API Symfony App #
+
+### Description
+
+
+## Attention to folders and files to be modified
+
+-> config -> packages
+        -> nelmio_cors.yaml
+        -> security.yaml
+-> routes
+    -> services.yaml
+    -> web_profiler.yaml
+
+-> Controller
+-> Entity
+-> .env 
+ 
+
+## Controller and Entity
+Controler is used to 
+
+## Pre-requirement:
 
 install nelmio CORE bundle
 install maker Bundle
