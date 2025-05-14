@@ -259,44 +259,100 @@ final class PoiController extends AbstractController
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    #[Route('/deletePoi', name: 'delete_poi', methods: ['DELETE'])]
-    public function deletePoi(
+
+
+    #[Route('/updatePoi', name: 'update_poi', methods: ['PUT'])]
+    public function updatePoi(
         HttpFoundationRequest $request,
-        EntityManagerInterface $entityManager,
-        SceneRepository $sceneRepository
+        EntityManagerInterface $entityManager
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
         // Validate required fields
-        if (!isset($data['id']) || !isset($data['popup']) || !isset($data['type'])) {
-            return new JsonResponse(['error' => 'Invalid data. "id", "popup", and "type" are required.'], JsonResponse::HTTP_BAD_REQUEST);
+        if (!isset($data['id'], $data['popup'], $data['longitude'], $data['latitude'], $data['type'])) {
+            return new JsonResponse(['error' => 'Invalid data. "id", "popup", "longitude", "latitude", and "type" are required.'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        // Validate longitude and latitude
+        if ($data['longitude'] < -180 || $data['longitude'] > 180 || $data['latitude'] < -90 || $data['latitude'] > 90) {
+            return new JsonResponse(['error' => 'Invalid longitude or latitude values.'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
         try {
-            // Delete associated Scene records first
+            // Construct GeoJSON format
+            $geoJson = json_encode([
+                'type' => 'Point',
+                'coordinates' => [(float)$data['longitude'], (float)$data['latitude']]
+            ]);
+
+            // Preset properties
+            $presetProperties = [
+                'popup' => $data['popup'],
+                'type' => $data['type'],
+                'marker-color' => '#d21e96',
+                'marker-symbol' => 'camping',
+                'image' => 'tent'
+            ];
+
+            // Update the Poi record using raw SQL
+            $sql = 'UPDATE poi SET type = :type, properties = :properties, geometry = ST_GeomFromGeoJSON(:geometry) WHERE id = :id';
+            $stmt = $entityManager->getConnection()->prepare($sql);
+
+            $stmt->executeStatement([
+                'id' => $data['id'],
+                'type' => 'Feature',
+                'properties' => json_encode($presetProperties),
+                'geometry' => $geoJson
+            ]);
+
+            // Log the update
+            error_log('Updated Poi ID: ' . $data['id']);
+
+            // Return success response
+            return new JsonResponse(['message' => 'Poi updated successfully.'], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            // Log the exception details
+            error_log('Exception occurred: ' . $e->getMessage());
+            error_log('Exception trace: ' . $e->getTraceAsString());
+
+            return new JsonResponse([
+                'error' => 'An error occurred while updating the Poi.',
+                'message' => $e->getMessage()
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/deletePoi/{id}', name: 'delete_poi', methods: ['DELETE'])]
+    public function deletePoi(
+        HttpFoundationRequest $request,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        // Validate required fields
+        if (!isset($data['id'])) {
+            return new JsonResponse(['error' => 'Invalid data. "id" is required.'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            // First, delete all Scene records referencing this Poi
             $sceneSql = 'DELETE FROM scene WHERE poi_fk_id = :poiId';
             $sceneStmt = $entityManager->getConnection()->prepare($sceneSql);
             $sceneStmt->executeStatement([
                 'poiId' => $data['id']
             ]);
 
-            // Log the deletion of Scene records
-            error_log('Deleted Scene records associated with Poi ID: ' . $data['id']);
-
-            // Delete the Poi record
+            // Now, delete the Poi record
             $sql = 'DELETE FROM poi WHERE id = :id';
             $stmt = $entityManager->getConnection()->prepare($sql);
             $stmt->executeStatement([
                 'id' => $data['id']
             ]);
 
-            // Log the deletion of the Poi record
             error_log('Deleted Poi ID: ' . $data['id']);
 
-            // Return success response
             return new JsonResponse(['message' => 'Poi deleted successfully.'], JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
-            // Log the exception details
             error_log('Exception occurred: ' . $e->getMessage());
             error_log('Exception trace: ' . $e->getTraceAsString());
 
