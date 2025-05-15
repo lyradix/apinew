@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Scene;
 use App\Entity\User;
 use App\Entity\Poi;
+use App\Entity\Artist;
+use App\Entity\Info;
 use App\Repository\ArtistRepository;
 use App\Repository\InfoRepository;
 use App\Repository\PartnersRepository;
@@ -13,8 +15,8 @@ use App\Repository\SceneRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -304,6 +306,82 @@ final class IndexController extends ApiController
                 'message' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    #[Route('/addConcert', name:'app_addConcert', methods:['POST'])]
+    public function addConcert(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ArtistRepository $ArtistRepository,
+        SceneRepository $sceneRepository
+    ):JsonResponse {
+         $data = json_decode($request->getContent(), true);
+
+         if(!isset($data['nom'], 
+         $data['startTime'], 
+         $data['endTime'],
+         $data['famousSong'],
+         $data['genre'], 
+         $data['description'],
+         $data['source'],
+         $data['lien'],
+          $data['sceneFK']
+         )) { return new JsonResponse(['error' => 'Eléments manquant.'], Response::HTTP_BAD_REQUEST);}
+
+  
+      $scene = $entityManager->getRepository(Scene::class)->find($data['sceneFK']);
+    if (!$scene) {
+        return new JsonResponse(['error' => 'Scene introuvable'], Response::HTTP_NOT_FOUND);
+    }
+    
+         $lastArtistId = $ArtistRepository->findOneBy([], ['id' => 'DESC'])?->getId() ?? 0;
+
+        $artist = new Artist();
+        $artist -> setId($lastArtistId + 1);
+        $artist -> setNom($data['nom']);
+        $artist -> setStartTime(new \DateTime($data['startTime']));
+        $artist -> setEndTime(new \DateTime($data['endTime']));
+        $artist -> setFamousSong($data['famousSong']);
+        $artist -> setGenre($data['genre']);
+        $artist -> setDescription($data['description']);
+        $artist -> setSource($data['source']);
+        $artist -> setLien($data['lien']);
+       $artist->setSceneFK($scene);
+
+        $entityManager -> persist($artist);
+        $entityManager -> flush();
+
+         return new JsonResponse(['message' => 'Concert créé avec succès'], JsonResponse::HTTP_CREATED);
+         
+    }
+
+    #[Route('/addInfo', name:'app_addInfo', methods:['POST'])]
+    public function addInfo(
+        Request $request,
+        InfoRepository $InfoRepository,
+        EntityManagerInterface $entityManager
+    ): JsonResponse{
+     
+        $data = Json_decode($request->getContent(), true);
+
+        if(!isset($data['title'],
+            $data['descriptif'],
+            $data['type']
+            )){ return new JsonResponse(['error' => 'Eléments manquant.'], Response::HTTP_BAD_REQUEST);}
+
+   
+        $lastInsertedId = $InfoRepository->findOneBy([],['id' => 'DESC'])?->getId() ?? 0;
+
+        $info = new Info();
+        $info -> setId($lastInsertedId + 1);
+        $info -> setTitle($data['title']);
+        $info -> setDescriptif($data['descriptif']);
+        $info -> setType($data['type']);
+
+        $entityManager -> persist($info);
+        $entityManager -> flush();
+
+        return new JsonResponse(['message' => 'info générale ajoutée avec succès'], JsonResponse::HTTP_CREATED);
     }
 
 
