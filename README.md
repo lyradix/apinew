@@ -21,6 +21,7 @@
 Controler is used to 
 
 ## Pre-requirement:
+Install composer on https://getcomposer.org/download/
 
 install nelmio CORE bundle
 install maker Bundle

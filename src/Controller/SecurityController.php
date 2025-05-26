@@ -18,6 +18,7 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login', methods: ['POST'])]
     public function login(
         Request $request,
+        // User $user,
         UserProviderInterface $userProvider,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager
@@ -26,7 +27,7 @@ class SecurityController extends AbstractController
 
         // Validate input
         if (!isset($data['email']) || !isset($data['password'])) {
-            return new JsonResponse(['error' => 'Email and password are required'], JsonResponse::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Merci de renseigner l\'email et le mot de passe'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
         $email = $data['email'];
@@ -37,12 +38,12 @@ class SecurityController extends AbstractController
             $user = $userProvider->loadUserByIdentifier($email);
 
             if (!$user) {
-                return new JsonResponse(['error' => 'User not found'], JsonResponse::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'Utilisateur introuvable'], JsonResponse::HTTP_NOT_FOUND);
             }
 
             // Check the password
             if (!$passwordHasher->isPasswordValid($user, $password)) {
-                throw new BadCredentialsException('Invalid credentials');
+                throw new BadCredentialsException('Identifiants ou mot de passe invalides');
             }
 
             // Génère un token
@@ -54,7 +55,7 @@ class SecurityController extends AbstractController
             // Retour du Token dans le response
             return new JsonResponse(['token' => $token], JsonResponse::HTTP_OK);
         } catch (BadCredentialsException | AuthenticationException $e) {
-            return new JsonResponse(['error' => 'Invalid credentials'], JsonResponse::HTTP_UNAUTHORIZED);
+            return new JsonResponse(['error' => 'Identifiants ou mot de passe invalides'], JsonResponse::HTTP_UNAUTHORIZED);
         }
     }
 

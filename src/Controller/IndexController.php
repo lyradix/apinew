@@ -151,6 +151,40 @@ final class IndexController extends ApiController
         return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
     }
 
+
+    #[Route('/updateInfo', name: 'app-updateInfo', methods: ['PUT'])]
+    public function putInfo(HttpFoundationRequest $request,
+    infoRepository $infoRepository,
+    SerializerInterface $serializer,
+    EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!isset($data['id'])) {
+            return new JsonResponse(['error' => 'Info ID is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $info = $infoRepository->find($data['id']);
+        if (!$info) {
+            return new JsonResponse(['error' => 'Info introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        if (isset($data['title'])) {
+            $info->setTitle($data['title']);
+        }
+        if (isset($data['descriptif'])) {
+            $info->setDescriptif($data['descriptif']);
+        }
+        if (isset($data['type'])) {
+            $info->setType($data['type']);
+        }
+
+        $entityManager->persist($info);
+        $entityManager->flush();
+
+        $jsonData = $serializer->serialize($info, 'json', ['groups' => ['info:read']]);
+
+        return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
+    }
  
 
     #[Route('/partners', name: 'app_partners')]
@@ -199,6 +233,12 @@ final class IndexController extends ApiController
         PoiRepository $poiRepository,
         EntityManagerInterface $entityManager
     ): JsonResponse {
+
+         $user = $this->validateToken($request);
+
+        if (!$user instanceof User) {
+            return $user; // Return the error response from validateToken()
+        }
         $data = json_decode($request->getContent(), true);
 
         // Log the incoming request data
@@ -315,6 +355,8 @@ final class IndexController extends ApiController
         ArtistRepository $ArtistRepository,
         SceneRepository $sceneRepository
     ):JsonResponse {
+          
+
          $data = json_decode($request->getContent(), true);
 
          if(!isset($data['nom'], 
@@ -384,5 +426,70 @@ final class IndexController extends ApiController
         return new JsonResponse(['message' => 'info générale ajoutée avec succès'], JsonResponse::HTTP_CREATED);
     }
 
+     #[Route('/deleteConcert/{id}', name: 'delete_concert', methods: ['DELETE'])]
+    public function deletePoi(
+        HttpFoundationRequest $request,
+        ArtistRepository $artistRepository,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $user = $this->validateToken($request);
+
+        
+        $data = json_decode($request->getContent(), true);
+
+        // Validate required fields
+        if (!isset($data['id'])) {
+            return new JsonResponse(['error' => 'Invalid data. "id" is required.'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            
+            $sql = 'DELETE FROM artist WHERE id = :id';
+            $stmt = $entityManager->getConnection()->prepare($sql);
+            $stmt->executeStatement([
+                'id' => $data['id']
+            ]);
+
+            error_log('Deleted ID: ' . $data['id']);
+
+            return new JsonResponse(['message' => 'concert deleted successfully.'], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            error_log('Exception occurred: ' . $e->getMessage());
+            error_log('Exception trace: ' . $e->getTraceAsString());
+
+            return new JsonResponse([
+                'error' => 'An error occurred while deleting the Poi.',
+                'message' => $e->getMessage()
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+       /**
+     * Validate the token from the Authorization header and return the authenticated user.
+     */
+    private function validateToken(Request $request): JsonResponse|User
+    {
+        $authHeader = $request->headers->get('Authorization');
+
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return new JsonResponse(['error' => 'Authentication failed: invalid or missing token.'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $token = substr($authHeader, 7);
+
+        // Find the user by the token
+        $user = $this->userRepository->findOneBy(['apiToken' => $token]);
+
+        if (!$user) {
+           return new JsonResponse(['error' => 'Authentication failed: invalid user'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        // Check if the user has the ROLE_USER role
+        if (!in_array('ROLE_USER', $user->getRoles())) {
+            return new JsonResponse(['error' => 'Authentication failed: invalid roles.'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        return $user;
+    }
 
 }

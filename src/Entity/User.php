@@ -17,6 +17,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const DEFAULT_ADMIN_EMAIL = 'admin@example.com';
+    public const DEFAULT_ADMIN_PASSWORD = 'admin123';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

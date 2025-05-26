@@ -14,21 +14,21 @@ class DayformType extends AbstractType
     {
         $builder
             ->add('vendredi', CheckboxType::class, [
-                'label' => 'vendredi', // Label for the checkbox
-                'required' => false, // Checkbox is optional
-                'mapped' => false, // Not directly mapped to the Days entity
+                'label' => 'vendredi', 
+                'required' => false, 
+                'mapped' => false, 
             ]);
             $builder
             ->add('samedi', CheckboxType::class, [
-                'label' => 'Samedi', // Label for the checkbox
-                'required' => false, // Checkbox is optional
-                'mapped' => false, // Not directly mapped to the Days entity
+                'label' => 'Samedi', 
+                'required' => false, 
+                'mapped' => false, 
             ]);
             $builder
             ->add('dimanche', CheckboxType::class, [
-                'label' => 'dimanche', // Label for the checkbox
-                'required' => false, // Checkbox is optional
-                'mapped' => false, // Not directly mapped to the Days entity
+                'label' => 'dimanche', 
+                'required' => false, 
+                'mapped' => false, 
             ]);
     }
 

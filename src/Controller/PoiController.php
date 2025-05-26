@@ -5,6 +5,7 @@ namespace App\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Poi;
 use App\Entity\Scene;
+use App\Entity\User;
 use App\Repository\PoiRepository;
 use App\Repository\SceneRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,6 +20,12 @@ final class PoiController extends AbstractController
     #[Route('/create-poi', name: 'create_poi', methods: ['POST'])]
     public function createPoi(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
+        $user = $this->validateToken($request);
+
+        if (!$user instanceof User) {
+            return $user; // Return the error response from validateToken()
+        }
+
         $data = json_decode($request->getContent(), true);
 
         if (!isset($data['id'], $data['type'], $data['properties'], $data['geometry'])) {
@@ -71,6 +78,13 @@ final class PoiController extends AbstractController
         PoiRepository $poiRepository,
         EntityManagerInterface $entityManager
     ): JsonResponse {
+
+           $user = $this->validateToken($request);
+
+        if (!$user instanceof User) {
+            return $user; // Return the error response from validateToken()
+        }
+
         $data = json_decode($request->getContent(), true);
 
         // Log the incoming request data
@@ -203,6 +217,13 @@ final class PoiController extends AbstractController
         EntityManagerInterface $entityManager,
         SceneRepository $sceneRepository
     ): JsonResponse {
+
+          $user = $this->validateToken($request);
+
+        if (!$user instanceof User) {
+            return $user; // Return the error response from validateToken()
+        }
+
         $data = json_decode($request->getContent(), true);
 
         // Validate required fields
@@ -266,6 +287,11 @@ final class PoiController extends AbstractController
         HttpFoundationRequest $request,
         EntityManagerInterface $entityManager
     ): JsonResponse {
+        $user = $this->validateToken($request);
+
+        if (!$user instanceof User) {
+            return $user; // Return the error response from validateToken()
+        }
         $data = json_decode($request->getContent(), true);
 
         // Validate required fields
@@ -327,6 +353,11 @@ final class PoiController extends AbstractController
         HttpFoundationRequest $request,
         EntityManagerInterface $entityManager
     ): JsonResponse {
+        $user = $this->validateToken($request);
+
+        if (!$user instanceof User) {
+            return $user; // Return the error response from validateToken()
+        }
         $data = json_decode($request->getContent(), true);
 
         // Validate required fields
@@ -361,6 +392,34 @@ final class PoiController extends AbstractController
                 'message' => $e->getMessage()
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+      /**
+     * Validate the token from the Authorization header and return the authenticated user.
+     */
+    private function validateToken(Request $request): JsonResponse|User
+    {
+        $authHeader = $request->headers->get('Authorization');
+
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return new JsonResponse(['error' => 'Token is required'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $token = substr($authHeader, 7);
+
+        // Find the user by the token
+        $user = $this->userRepository->findOneBy(['apiToken' => $token]);
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'Invalid token'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        // Check if the user has the ROLE_USER role
+        if (!in_array('ROLE_USER', $user->getRoles())) {
+            return new JsonResponse(['error' => 'Access denied. User does not have the required role.'], JsonResponse::HTTP_FORBIDDEN);
+        }
+
+        return $user;
     }
 
 }
