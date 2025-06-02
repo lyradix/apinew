@@ -42,19 +42,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    /**
-     * @var Collection<int, Days>
-     */
-    #[ORM\ManyToMany(targetEntity: Days::class, mappedBy: 'userFK')]
-    private Collection $jourFK;
-
     #[ORM\Column(length: 64, nullable: true)]
     private ?string $apiToken = null;
-
-    public function __construct()
-    {
-        $this->jourFK = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -131,35 +120,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    /**
-     * @return Collection<int, Days>
-     */
-    public function getJourFK(): Collection
-    {
-        return $this->jourFK;
-    }
-
-    public function addJourFK(Days $jourFK): static
-    {
-        if (!$this->jourFK->contains($jourFK)) {
-            $this->jourFK->add($jourFK);
-            $jourFK->setUserFK($this);
-        }
-
-        return $this;
-    }
-
-    public function removeJourFK(Days $jourFK): static
-    {
-        if ($this->jourFK->removeElement($jourFK)) {
-            // set the owning side to null (unless already changed)
-            if ($jourFK->getUserFK() === $this) {
-                $jourFK->setUserFK(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getApiToken(): ?string
     {
