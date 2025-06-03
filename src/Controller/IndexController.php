@@ -451,41 +451,15 @@ final class IndexController extends ApiController
     }
 
      #[Route('/deleteConcert/{id}', name: 'delete_concert', methods: ['DELETE'])]
-    public function deletePoi(
-        HttpFoundationRequest $request,
-        ArtistRepository $artistRepository,
-        EntityManagerInterface $entityManager
-    ): JsonResponse {
-        $user = $this->validateToken($request);
-
-        
-        $data = json_decode($request->getContent(), true);
-
-        // Validate required fields
-        if (!isset($data['id'])) {
-            return new JsonResponse(['error' => 'Invalid data. "id" is required.'], JsonResponse::HTTP_BAD_REQUEST);
+    public function deleteConcert(int $id, EntityManagerInterface $entityManager, ArtistRepository $artistRepository): JsonResponse
+    {
+        $concert = $artistRepository->find($id);
+        if ($concert) {
+            $entityManager->remove($concert);
+            $entityManager->flush();
+            return new JsonResponse(['success' => true]);
         }
-
-        try {
-            
-            $sql = 'DELETE FROM artist WHERE id = :id';
-            $stmt = $entityManager->getConnection()->prepare($sql);
-            $stmt->executeStatement([
-                'id' => $data['id']
-            ]);
-
-            error_log('Deleted ID: ' . $data['id']);
-
-            return new JsonResponse(['message' => 'concert deleted successfully.'], JsonResponse::HTTP_OK);
-        } catch (\Exception $e) {
-            error_log('Exception occurred: ' . $e->getMessage());
-            error_log('Exception trace: ' . $e->getTraceAsString());
-
-            return new JsonResponse([
-                'error' => 'An error occurred while deleting the Poi.',
-                'message' => $e->getMessage()
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return new JsonResponse(['error' => 'Not found'], 404);
     }
 
        /**

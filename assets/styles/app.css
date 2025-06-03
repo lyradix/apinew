@@ -44,12 +44,37 @@ li{
       margin: 1rem;;
     width: 40px !important;
     height: 40px !important;
+    background-color: transparent !important;
     display: flex;
     justify-content: center;
     align-items: center; 
     box-shadow: none !important;
     border: none !important;
     opacity: 0.7;
+    cursor: pointer;
+}
+.delBtn:hover{
+    opacity: 1;
+}
+
+.addbtn{
+    height: 5rem;
+    margin: auto;
+    opacity: 0.8;
+}
+.addbtn:hover{
+    opacity: 1;
+}
+.delImg{
+     position:relative; 
+    display: flex;
+    align-items: center;
+    align-content:space-around;
+    align-items: center;
+    height: 15px;
+    width: 15px;
+    margin-left: 5%;
+    margin-right: 20%;
 }
 
 section{
@@ -82,11 +107,12 @@ section{
 }
 
 .btnConcert{
-    background-color:  #2d8a50;
+    background-color: #2d8a50 ;
     border-radius: 5px;
     text-align: center; 
     margin-left: 1rem;
 }
+
 .boxForm{
     display: flex;
     /* position: relative; */
@@ -100,7 +126,7 @@ section{
 .boxconcert{
     text-align: center; /* Center-align text */
     align-items: center;
-    background-color: #2d8a50;
+    background-color: transparent;
     border-radius: 5px;
     z-index: 0;
     cursor: pointer;

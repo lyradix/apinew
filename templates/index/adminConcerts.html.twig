@@ -17,7 +17,7 @@
     <ul class="wrapbox">
      <li class="boxconcert">
             <div class="btnConcert">
-                <p class="text">Ajouter un concert </p> 
+                <img class="addbtn" src="{{ asset('images/more.png') }}" alt="add button">
             </div>
             </li>
         {% for concert in concerts %}
@@ -26,8 +26,11 @@
                 <p class="text"> {{ concert.nom }} </p> 
                 <p class="text"> {{ concert.startTime|date('d/m/Y H:i') }} </p> 
             </div>
+              <button class="delBtn" data-id="{{ concert.id }}">
+    <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
+</button>
             </li>
-            <button class="delBtn">supprimer</button>
+          
         {% else %}
             <li>Aucun concert trouvé.</li>
         {% endfor %}
@@ -36,4 +39,31 @@
 
     <button class="box">Retour</button>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.delBtn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const concertId = this.getAttribute('data-id');
+            if (window.confirm('Supprimer ce concert ?')) {
+                fetch('/deleteConcert/' + concertId, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Optionally remove the concert from the DOM
+                        this.closest('li').remove();
+                    } else {
+                        alert('Erreur lors de la suppression.');
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
