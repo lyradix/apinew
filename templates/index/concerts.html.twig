@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello IndexController!{% endblock %}
+
+{% block body %}
+<h1>Liste des concerts</h1>
+<ul>
+    {% for concert in concerts %}
+        <li>{{ concert.nom }} - {{ concert.startTime|date('d/m/Y H:i') }}</li>
+    {% else %}
+        <li>Aucun concert trouvé.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

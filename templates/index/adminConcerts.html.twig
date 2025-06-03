@@ -10,9 +10,30 @@
 
 <div class="example-wrapper">
     <h1>{{ controller_name }}!</h1>
-   <button>Ajouter un nouvel utilisateur</button>
-   <button>Ajouter ou modifier un lieu</button>
+    <button class="box">Ajouter un nouvel utilisateur</button>
+    <button class="box">Ajouter ou modifier un lieu</button>
 
+    {# map through the Concerts #}
+    <ul class="wrapbox">
+     <li class="boxconcert">
+            <div class="btnConcert">
+                <p class="text">Ajouter un concert </p> 
+            </div>
+            </li>
+        {% for concert in concerts %}
+            <li class="boxconcert">
+            <div class="btnConcert">
+                <p class="text"> {{ concert.nom }} </p> 
+                <p class="text"> {{ concert.startTime|date('d/m/Y H:i') }} </p> 
+            </div>
+            </li>
+            <button class="delBtn">supprimer</button>
+        {% else %}
+            <li>Aucun concert trouvé.</li>
+        {% endfor %}
 
+    </ul>
+
+    <button class="box">Retour</button>
 </div>
 {% endblock %}

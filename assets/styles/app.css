@@ -21,3 +21,123 @@ label{
     color:#fff;
     font-family: bungee,Arial, sans-serif;
 }
+
+li{
+  margin: 0.5rem;
+  list-style: none;
+}
+
+.box{
+    color:#E5C8C8;
+    background-color:#096662;
+    padding: 3px;
+    border-radius: 8px;
+    border: 2px solid #E5C8C8;
+}
+
+.box:hover, .box:focus{
+    color: #096662;
+    background-color: #E5C8C8;
+}
+
+.delBtn{
+      margin: 1rem;;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    box-shadow: none !important;
+    border: none !important;
+    opacity: 0.7;
+}
+
+section{
+    /* display: flex; */
+    position: absolute;
+}
+
+.wrapbox {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center; 
+    background-color: transparent;
+    padding: 0;
+    width: 80%;
+  
+    z-index: 0;
+    /* overflow-y: scroll;
+    scrollbar-width: thin; */
+    /* scrollbar-color: #3eb885 #f1f1f1; For Firefox */
+}
+
+.boxconcert, .boxNewUser {
+    display: flex;
+    z-index: 0;
+    cursor: pointer;
+}
+
+.boxconcert:hover{
+ opacity: 0.8;
+}
+
+.btnConcert{
+    background-color:  #2d8a50;
+    border-radius: 5px;
+    text-align: center; 
+    margin-left: 1rem;
+}
+.boxForm{
+    display: flex;
+    /* position: relative; */
+    text-align: center; /* Center-align text */
+    align-items: center;
+    background-color: #2d8a50;
+    border-radius: 5px;
+    z-index: 0;
+    cursor: pointer;
+}
+.boxconcert{
+    text-align: center; /* Center-align text */
+    align-items: center;
+    background-color: #2d8a50;
+    border-radius: 5px;
+    z-index: 0;
+    cursor: pointer;
+    padding: 2px;
+    margin: 10px;
+    height: 9rem;
+    width: 180px;
+   }
+
+.boxNewUser{
+ position: absolute;
+right:10%;
+transform: translateY(-15rem);
+z-index: 2;
+padding: 10px;
+margin: 10px;
+height: 5rem;
+width: 200px;
+}
+
+ .text, .textMenu{
+     list-style: none;
+    position: relative;
+    text-align: center;
+    /* margin:5px 30px 5px 30px; */
+    font-family: bungee,Arial, sans-serif;
+    font-size: 13px;
+    color: #ffffff;
+    z-index: 0;
+    opacity: 1;
+    /* background-color: #096662; */
+    /* border-radius: 20%; */
+  }
+.title{
+      color: #ffffff;
+       font-family: bungee,Arial, sans-serif;
+       font-weight: 200;
+           font-size: 3rem;
+           opacity: 0.9;
+}

@@ -39,14 +39,26 @@ final class IndexController extends ApiController
     }
 
     #[Route('/admin-concerts', name: 'app_adminConcerts')]
-    public function adminConcerts(): Response
+    public function adminConcerts(
+        ArtistRepository $ArtistRepository
+    ): Response
     {
+        $concerts = $ArtistRepository->findAllWithScenes();
         return $this->render('index/adminConcerts.html.twig', [
-            'controller_name' => 'Administration concerts',
-        ]);
+        'controller_name' => 'Administration concerts',
+        'concerts' => $concerts,
+    ]);
+     
     }
 
-  
+    #[Route('/concerts', name: 'app_concerts')]
+    public function concerts(ArtistRepository $ArtistRepository): Response
+    {
+        $concerts = $ArtistRepository->findAllWithScenes();
+        return $this->render('index/concerts.html.twig', [
+            'concerts' => $concerts,
+        ]);
+    }
 
     #[Route('/concert', name: 'app_index')]
     public function getData(ArtistRepository $ArtistRepository, SerializerInterface $serializer): JsonResponse

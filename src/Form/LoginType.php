@@ -18,7 +18,7 @@ class LoginType extends AbstractType
             ->add('password', PasswordType::class)
             ->add('_csrf_token', HiddenType::class, [
                 'mapped' => false,
-                'data' => '', // Will be set by the template
+                'data' => '', 
             ])
         ;
     }
