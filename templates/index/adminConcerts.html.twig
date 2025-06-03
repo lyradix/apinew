@@ -12,11 +12,12 @@
     <h1>{{ controller_name }}!</h1>
     <button class="box">Ajouter un nouvel utilisateur</button>
     <button class="box">Ajouter ou modifier un lieu</button>
+    <img class="profile" src="{{ asset('images/profil.png') }}" alt="profil">
 
     {# map through the Concerts #}
     <ul class="wrapbox">
      <li class="boxconcert">
-            <div class="btnConcert">
+            <div>
                 <img class="addbtn" src="{{ asset('images/more.png') }}" alt="add button">
             </div>
             </li>

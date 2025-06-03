@@ -27,6 +27,17 @@ li{
   list-style: none;
 }
 
+.profile{
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.profile:hover{
+    opacity: 1;
+}
+
 .box{
     color:#E5C8C8;
     background-color:#096662;
@@ -35,7 +46,7 @@ li{
     border: 2px solid #E5C8C8;
 }
 
-.box:hover, .box:focus{
+.box:hover{
     color: #096662;
     background-color: #E5C8C8;
 }
@@ -110,6 +121,8 @@ section{
     background-color: #2d8a50 ;
     border-radius: 5px;
     text-align: center; 
+    height:8rem;
+    width: 8rem;
     margin-left: 1rem;
 }
 
