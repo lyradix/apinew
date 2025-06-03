@@ -14,8 +14,8 @@ final class IndexAminController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         
-        return $this->render('index_amin/index.html.twig', [
-            'controller_name' => 'IndexAminController',
+        return $this->render('index_admin/index.html.twig', [
+            'controller_name' => 'IndexAdminController',
         ]);
     }
 }

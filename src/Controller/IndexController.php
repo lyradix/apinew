@@ -24,17 +24,29 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
-
+use Symfony\Bundle\MakerBundle\Security\Model\Authenticator;
 
 final class IndexController extends ApiController
 {
     #[Route('/', name: 'app_home')]
-    public function index(): Response
+    public function index(
+   
+    ): Response
     {
         return $this->render('index/index.html.twig', [
-            'controller_name' => 'IndexController',
+            'controller_name' => 'Login',
         ]);
     }
+
+    #[Route('/admin-concerts', name: 'app_adminConcerts')]
+    public function adminConcerts(): Response
+    {
+        return $this->render('index/adminConcerts.html.twig', [
+            'controller_name' => 'Administration concerts',
+        ]);
+    }
+
+  
 
     #[Route('/concert', name: 'app_index')]
     public function getData(ArtistRepository $ArtistRepository, SerializerInterface $serializer): JsonResponse

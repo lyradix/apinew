@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\LoginType;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,7 +14,9 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator; 
 class SecurityController extends AbstractController
 {
     #[Route('/login', name: 'app_login', methods: ['POST'])]
@@ -36,11 +40,7 @@ class SecurityController extends AbstractController
         try {
             // Load the user by email
             $user = $userProvider->loadUserByIdentifier($email);
-
-            if (!$user) {
-                return new JsonResponse(['error' => 'Utilisateur introuvable'], JsonResponse::HTTP_NOT_FOUND);
-            }
-
+            dump($user);die;
             // Check the password
             if (!$passwordHasher->isPasswordValid($user, $password)) {
                 throw new BadCredentialsException('Identifiants ou mot de passe invalides');
@@ -59,10 +59,78 @@ class SecurityController extends AbstractController
         }
     }
 
+    
     #[Route(path: '/logout', name: 'app_logout', methods: ['POST'])]
     public function logout(): void
     {
         throw new \LogicException('');
     }
+
+  
+     #[Route('/loginpage', name: 'app_indexLogin')]
+    public function loginPage(
+        Request $request,
+        UserProviderInterface $userProvider,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager,
+        UserAuthenticatorInterface $userAuthenticator,
+        FormLoginAuthenticator $formLoginAuthenticator
+    ): Response {
+        $form = $this->createForm(LoginType::class);
+        $form->handleRequest($request);
+        $adminEmail = 'admin@mail.fr';
+
+        $error = null;
+        $success = false;
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $email = $data->getEmail();
+            $password = $data->getPassword();
+
+            try {
+                // Load the user by email
+                $user = $userProvider->loadUserByIdentifier($email);
+
+                if (!$user) {
+                    $error = 'Utilisateur introuvable';
+                } else if ($passwordHasher->isPasswordValid($user, $password) === false) {
+                    $error = 'Identifiants ou mot de passe invalides';
+                } else {
+                    if ($user->getEmail() === $adminEmail) {
+                        $user->setRoles(['ROLE_ADMIN']);
+                        $entityManager->persist($user);
+                        $entityManager->flush();
+                    }
+                    dump($user); // Add this line
+                    return $userAuthenticator->authenticateUser(
+                        $user,
+                        $formLoginAuthenticator,
+                        $request
+                    ) ?? $this->redirectToRoute('app_adminConcerts');
+                }
+            } catch (\Exception $e) {
+               $error = 'Erreur: ' . $e->getMessage();
+            }
+        }
+
+        return $this->render('index/index.html.twig', [
+            'controller_name' => 'Login',
+            'loginForm' => $form->createView(),
+            'error' => $error,
+            'success' => $success,
+        ]);
+    }
+
+
+    //   #[Route(path: '/loginpage', name:'app_loginpage')]
+    //  public function loginpage(): Response
+    // {
+    //     return $this->render('index/index.html.twig', [
+    //         'controller_name' => 'IndexController',
+    //     ]);
+    // }
+
+   
 }
 
