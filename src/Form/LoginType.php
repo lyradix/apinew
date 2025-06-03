@@ -6,6 +6,8 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class LoginType extends AbstractType
 {
@@ -13,9 +15,11 @@ class LoginType extends AbstractType
     {
         $builder
             ->add('email')
-            // ->add('roles')
-            ->add('password')
-            // ->add('apiToken')
+            ->add('password', PasswordType::class)
+            ->add('_csrf_token', HiddenType::class, [
+                'mapped' => false,
+                'data' => '', // Will be set by the template
+            ])
         ;
     }
 

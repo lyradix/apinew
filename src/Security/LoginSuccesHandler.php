@@ -19,7 +19,8 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): RedirectResponse
     {
-        // Redirect to /days after successful login
-        return new RedirectResponse($this->router->generate('days_form'));
+        // Redirect to /admin-concert after successful login
+        return new RedirectResponse($this->router->generate('app_adminConcerts'));
+   
     }
 }
