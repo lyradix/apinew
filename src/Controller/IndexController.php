@@ -192,16 +192,17 @@ public function postPoi(
         $latitude = $form->get('latitude')->getData();
 
         if ($type === 'scène') {
-            // Render a hidden form to POST to /postScene
-            return $this->render('poi/redirect_post_scene.html.twig', [
+            // Do nothing here! JS will handle the AJAX POST to /postScene
+            return $this->render('poi/newPlace.html.twig', [
+                'form' => $form->createView(),
+                'scene_ajax' => true, // Optional: flag for JS
                 'nom' => $nom,
                 'longitude' => $longitude,
                 'latitude' => $latitude,
-                
             ]);
         }
 
-        // Insert POI for other types
+        // Insert POI for other types (as before)
         $presetProperties = [
             'popup' => $nom,
             'type' => $type,
@@ -341,10 +342,53 @@ public function postPoi(
     #[Route('/postScene', name: 'app_postScene', methods: ['GET', 'POST'])]
 public function postScene(Request $request, EntityManagerInterface $entityManager, SceneRepository $sceneRepository): Response
 {
+    // Handle AJAX POST (from JS)
+    if ($request->isXmlHttpRequest() && $request->isMethod('POST')) {
+        $nom = $request->request->get('nom');
+        $longitude = $request->request->get('longitude');
+        $latitude = $request->request->get('latitude');
+
+        if ($nom && $longitude && $latitude) {
+            $presetProperties = [
+                'popup' => $nom,
+                'type' => 'scène',
+                'marker-color' => '#d21e96',
+                'marker-symbol' => 'theatre',
+                'image' => 'star'
+            ];
+
+            $geoJson = json_encode([
+                'type' => 'Point',
+                'coordinates' => [(float)$longitude, (float)$latitude]
+            ]);
+
+            // Insert POI
+            $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
+            $stmt = $entityManager->getConnection()->prepare($sql);
+            $stmt->executeStatement([
+                'type' => 'Feature',
+                'properties' => json_encode($presetProperties),
+                'geometry' => $geoJson
+            ]);
+            $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
+
+            // Insert Scene
+            $sqlScene = 'INSERT INTO scene (poi_FK_id, nom) VALUES (:poiId, :nom)';
+            $stmtScene = $entityManager->getConnection()->prepare($sqlScene);
+            $stmtScene->executeStatement([
+                'poiId' => $lastInsertedPoiId,
+                'nom' => $nom,
+            ]);
+
+            return new JsonResponse(['success' => true, 'message' => 'Scène ajoutée avec succès']);
+        }
+        return new JsonResponse(['success' => false, 'message' => 'Paramètres manquants'], 400);
+    }
+
+    // Handle Symfony form as before
     $form = $this->createForm(NewSceneType::class, null, [
         'data_class' => null // Use array data, not an entity
     ]);
-
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
