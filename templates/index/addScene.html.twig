@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un concert{% endblock %}
+
+{% block body %}
+    <a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
+        <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+     </a>
+    <h1>Ajouter une scène</h1>
+    <div class="addConcert">
+    <div class="form">
+       {{ form_start(form, {'action': path('app_postScene')}) }}
+        <div>
+            {{ form_row(form.nom, {'attr': {'placeholder': 'Nom de la scène'}}) }}
+            {{ form_row(form.longitude, {'attr': {'placeholder': 'exemple: 2.485'}} )}}
+            {{ form_row(form.latitude, {'attr': {'placeholder': 'exemple: 48.5798'}} ) }}
+        </div>
+        <button class="btn btn-primary">Ajouter</button>
+        <button type="button" onclick="window.history.back()">Retour</button>
+    {{ form_end(form) }}
+    </div>
+</div>
+
+{% endblock %}

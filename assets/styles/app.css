@@ -11,9 +11,21 @@ body {
     background-color: #012B29;
 }
 
+.logoXtra{
+    position: relative;
+    z-index: 1;
+    top:0rem;
+    right:0rem;
+    cursor: pointer;
+    
+  }
+.logoXtra:hover{
+    opacity: 0.8;
+}
+
 h1{
     font-family: bungee,Arial, sans-serif;
-    font-size: 3rem;
+    font-size: 2rem;
     color:aliceblue;
 }
 
@@ -180,3 +192,23 @@ width: 200px;
            font-size: 3rem;
            opacity: 0.9;
 }
+
+ .addConcert{
+            justify-content: center;
+            align-content: center;
+            display: flex;
+            flex-direction: column;
+            width:40%;
+              margin: 40px auto; 
+              padding: 10px;
+              background-color: #E5C8C8;
+              border-radius: 5%;
+ }
+
+    .addConcert input{
+                width: 100%;
+                height: 2rem;
+                border-radius: 5px;
+                border: none;
+    }
+

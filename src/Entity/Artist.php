@@ -78,6 +78,19 @@ class Artist
         return $this;
     }
 
+private ?\DateTimeInterface $date = null;
+
+public function getDate(): ?\DateTimeInterface
+{
+    return $this->date;
+}
+
+public function setDate(?\DateTimeInterface $date): self
+{
+    $this->date = $date;
+    return $this;
+}
+
     public function getStartTime(): ?\DateTimeInterface
     {
         return $this->startTime;

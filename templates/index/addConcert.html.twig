@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un concert{% endblock %}
+
+{% block body %}
+<a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
+    <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+</a>
+<h1>Ajouter un concert</h1>
+    <div class="addConcert">
+    <div class="form">
+    {{ form_start(form) }}
+         {{ form_row(form.nom) }}
+        {{ form_row(form.date) }}
+        {{ form_row(form.startTime) }}
+        {{ form_row(form.endTime) }}
+        {{ form_row(form.famousSong) }}
+        {{ form_row(form.genre) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.source) }}
+        {{ form_row(form.lien) }}
+        <div style="display: flex; align-items: center; gap: 8px;">
+        {{ form_widget(form.sceneFK) }}
+        <a href="#" class="delBtn"
+           onclick="return confirm('Voulez-vous vraiment supprimer cette scène et son POI ?');">
+            <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button" style="height: 24px;">
+        </a>
+         </div>
+        <button class="btn btn-primary">Ajouter</button>
+         <button type="button" onclick="window.history.back()">Retour</button>
+    {{ form_end(form) }}
+    </div>
+</div>
+
+<script>
+    var addSceneUrl = "{{ path('app_postScene') }}";
+</script>
+<script src="{{ asset('js/addConcert.js') }}"></script>
+
+{% endblock %}

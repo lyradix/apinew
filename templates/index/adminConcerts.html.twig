@@ -9,6 +9,9 @@
 </style>
 
 <div class="example-wrapper">
+      <a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
+        <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+     </a>
     <h1>{{ controller_name }}!</h1>
     <button class="box">Ajouter un nouvel utilisateur</button>
     <button class="box">Ajouter ou modifier un lieu</button>
@@ -18,7 +21,9 @@
     <ul class="wrapbox">
      <li class="boxconcert">
             <div>
-                <img class="addbtn" src="{{ asset('images/more.png') }}" alt="add button">
+                <a href="{{ path('app_addConcert') }}" class="btn btn-success"> 
+                <img class="addbtn" src="{{ asset('images/more.png') }}" alt="add button" >
+                </a>
             </div>
             </li>
         {% for concert in concerts %}

@@ -9,12 +9,12 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>{{ controller_name }}!</h1>
-     {{ form_start(loginForm) }}
-        {{ form_row(loginForm.email) }}
-        {{ form_row(loginForm.password) }}
-        <button type="submit">Login</button>
-     {{ form_end(loginForm) }}
+    <h1>Hello {{ controller_name }}! ✅</h1>
 
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code>C:/Users/daryl/apinewsymfony/src/Controller/IndexController.php</code></li>
+        <li>Your template at <code>C:/Users/daryl/apinewsymfony/templates/index/index.html.twig</code></li>
+    </ul>
 </div>
 {% endblock %}

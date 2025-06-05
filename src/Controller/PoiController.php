@@ -349,51 +349,7 @@ final class PoiController extends AbstractController
         }
     }
 
-    #[Route('/deletePoi/{id}', name: 'delete_poi', methods: ['DELETE'])]
-    public function deletePoi(
-        HttpFoundationRequest $request,
-        EntityManagerInterface $entityManager
-    ): JsonResponse {
-        $user = $this->validateToken($request);
-
-        if (!$user instanceof User) {
-            return $user; // Return the error response from validateToken()
-        }
-        $data = json_decode($request->getContent(), true);
-
-        // Validate required fields
-        if (!isset($data['id'])) {
-            return new JsonResponse(['error' => 'Invalid data. "id" is required.'], JsonResponse::HTTP_BAD_REQUEST);
-        }
-
-        try {
-            // First, delete all Scene records referencing this Poi
-            $sceneSql = 'DELETE FROM scene WHERE poi_fk_id = :poiId';
-            $sceneStmt = $entityManager->getConnection()->prepare($sceneSql);
-            $sceneStmt->executeStatement([
-                'poiId' => $data['id']
-            ]);
-
-            // Now, delete the Poi record
-            $sql = 'DELETE FROM poi WHERE id = :id';
-            $stmt = $entityManager->getConnection()->prepare($sql);
-            $stmt->executeStatement([
-                'id' => $data['id']
-            ]);
-
-            error_log('Deleted Poi ID: ' . $data['id']);
-
-            return new JsonResponse(['message' => 'Poi deleted successfully.'], JsonResponse::HTTP_OK);
-        } catch (\Exception $e) {
-            error_log('Exception occurred: ' . $e->getMessage());
-            error_log('Exception trace: ' . $e->getTraceAsString());
-
-            return new JsonResponse([
-                'error' => 'An error occurred while deleting the Poi.',
-                'message' => $e->getMessage()
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    
 
       /**
      * Validate the token from the Authorization header and return the authenticated user.

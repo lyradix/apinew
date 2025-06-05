@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Entity\Poi;
 use App\Entity\Artist;
 use App\Entity\Info;
+use App\Form\NewSceneType;
 use App\Repository\ArtistRepository;
 use App\Repository\InfoRepository;
 use App\Repository\PartnersRepository;
@@ -28,13 +29,11 @@ use Symfony\Bundle\MakerBundle\Security\Model\Authenticator;
 
 final class IndexController extends ApiController
 {
-    #[Route('/', name: 'app_home')]
-    public function index(
-   
-    ): Response
+     #[Route('/', name: 'app_home')]
+    public function index(): Response
     {
         return $this->render('index/index.html.twig', [
-            'controller_name' => 'Login',
+            'controller_name' => 'IndexController',
         ]);
     }
 
@@ -249,177 +248,86 @@ final class IndexController extends ApiController
         return new JsonResponse($jsonData, 200, [], true);
     }
 
-    #[Route('/postScene', name: 'app_postScene', methods: ['POST'])]
-    public function postCoordinates(
-        HttpFoundationRequest $request,
-        SerializerInterface $serializer,
-        sceneRepository $sceneRepository,
-        PoiRepository $poiRepository,
-        EntityManagerInterface $entityManager
-    ): JsonResponse {
+    #[Route('/postScene', name: 'app_postScene', methods: ['GET', 'POST'])]
+public function postScene(Request $request, EntityManagerInterface $entityManager, SceneRepository $sceneRepository): Response
+{
+    $form = $this->createForm(NewSceneType::class, null, [
+        'data_class' => null // Use array data, not an entity
+    ]);
 
-         $user = $this->validateToken($request);
+    $form->handleRequest($request);
 
-        if (!$user instanceof User) {
-            return $user; // Return the error response from validateToken()
+    if ($form->isSubmitted() && $form->isValid()) {
+        $data = $form->getData();
+        $nom = $data['nom'];
+        $longitude = $data['longitude'];
+        $latitude = $data['latitude'];
+
+        // Preset properties for Poi
+        $presetProperties = [
+            'popup' => $nom,
+            'type' => 'scène',
+            'marker-color' => '#d21e96',
+            'marker-symbol' => 'theatre',
+            'image' => 'star'
+        ];
+
+        // GeoJSON geometry
+        $geoJson = json_encode([
+            'type' => 'Point',
+            'coordinates' => [(float)$longitude, (float)$latitude]
+        ]);
+
+        // 1. Insert Poi using raw SQL
+        $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
+        $stmt = $entityManager->getConnection()->prepare($sql);
+        $stmt->executeStatement([
+            'type' => 'Feature',
+            'properties' => json_encode($presetProperties),
+            'geometry' => $geoJson
+        ]);
+        $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
+
+        // 2. Insert Scene using raw SQL
+        $sqlScene = 'INSERT INTO scene (poi_FK_id, nom) VALUES (:poiId, :nom)';
+        $stmtScene = $entityManager->getConnection()->prepare($sqlScene);
+        $stmtScene->executeStatement([
+            'poiId' => $lastInsertedPoiId,
+            'nom' => $nom
+        ]);
+
+        // Add success message and redirect
+        $this->addFlash('success', 'Scène ajoutée avec succès');
+        return $this->redirectToRoute('app_addConcert');
         }
-        $data = json_decode($request->getContent(), true);
 
-        // Log the incoming request data
-        error_log('Incoming request data: ' . json_encode($data));
+    return $this->render('index/addScene.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
 
-        if (!isset($data['nom'])) {
-            return new JsonResponse(['error' => 'Invalid data. "nom" is required.'], Response::HTTP_BAD_REQUEST);
-        }
-    
-    
+#[Route('/addConcert', name: 'app_addConcert', methods: ['GET', 'POST'])]
+public function addConcert(
+    Request $request,
+    EntityManagerInterface $entityManager
+): Response {
+    $artist = new Artist();
+    $form = $this->createForm(\App\Form\AddConcertType::class, $artist);
 
-        // Validate required fields
-        if (!isset($data['longitude']) || !isset($data['latitude']) ) {
-            error_log('Validation failed: Missing required fields.');
-            return new JsonResponse(['error' => 'Invalid data. "longitude", "latitude", " are required.'], Response::HTTP_BAD_REQUEST);
-        }
+    $form->handleRequest($request);
 
-        // Validate longitude and latitude
-        if ($data['longitude'] < -180 || $data['longitude'] > 180 || $data['latitude'] < -90 || $data['latitude'] > 90) {
-            error_log('Validation failed: Invalid longitude or latitude values.');
-            return new JsonResponse(['error' => 'Invalid longitude or latitude values.'], Response::HTTP_BAD_REQUEST);
-        }
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->persist($artist);
+        $entityManager->flush();
 
-        $lastSceneId = $sceneRepository->findOneBy([], ['id' => 'DESC'])?->getId() ?? 0;
-        // $lastPoiId = $poiRepository->findOneBy([], ['id' => 'DESC'])?->getId() ?? 0;
-        // Log the validated data
-        error_log('Validated data: ' . json_encode($data));
-
-        
-
-        try {
-            $popup = $data['nom'];
-            
-            // Preset values for properties
-            $presetProperties = [
-                'popup' => $popup,
-                'type' => 'scène',
-                'marker-color' => '#d21e96',
-                'marker-symbol' => 'theatre',
-                'image' => 'star'
-            ];
-
-            // Merge preset properties with incoming data
-            $properties = $presetProperties;
-
-            // Construct GeoJSON format
-            $geoJson = json_encode([
-                'type' => 'Point',
-                'coordinates' => [(float)$data['longitude'], (float)$data['latitude']]
-            ]);
-
-            // Log the GeoJSON being set
-            error_log('Setting geometry as GeoJSON: ' . $geoJson);
-
-            // Insert a new Poi record using raw SQL
-            $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
-            $stmt = $entityManager->getConnection()->prepare($sql);
-  
-            // Log the SQL query and parameters
-            error_log('Executing SQL: ' . $sql);
-            error_log('SQL Parameters: ' . json_encode([
-                'type' => 'Feature',
-                'properties' => json_encode($properties),
-                'geometry' => $geoJson
-            ]));
-
-            $stmt->executeStatement([
-                'type' => 'Feature',
-                'properties' => json_encode($properties),
-                'geometry' => $geoJson
-            ]);
-            // Retrieve the last inserted ID for the Poi
-            $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
-            error_log('Last inserted Poi ID: ' . $lastInsertedPoiId);
-            // Log successful execution
-            error_log('SQL executed successfully.');
-            $scene = new Scene();
-            $scene->setId($lastSceneId + 1);
-            $scene->setNom($data['nom']);
-            // $scene->setPoiFK($poi);
-            $entityManager->persist($scene);
-            $entityManager->flush();
-
-            // Update the poi_fk_id field in the scene table using raw SQL
-            $updateSql = 'UPDATE scene SET poi_fk_id = :poiId WHERE id = :sceneId';
-            $updateStmt = $entityManager->getConnection()->prepare($updateSql);
-
-            $updateStmt->executeStatement([
-                'poiId' => $lastInsertedPoiId, // Use the ID of the newly inserted Poi
-                'sceneId' => $scene->getId()   // Use the ID of the newly created Scene
-            ]);
-
-            // Log the update
-            error_log('Updated Scene ID ' . $scene->getId() . ' with Poi ID ' . $lastInsertedPoiId);
-
-            // Return success response
-            return new JsonResponse(['message' => 'Poi inserted successfully.'], Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            // Log the exception details
-            error_log('Exception occurred: ' . $e->getMessage());
-            error_log('Exception trace: ' . $e->getTraceAsString());
-
-            return new JsonResponse([
-                'error' => 'An error occurred while inserting the coordinates.',
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $this->addFlash('success', 'Concert créé avec succès');
+        return $this->redirectToRoute('app_adminConcerts');
     }
 
-    #[Route('/addConcert', name:'app_addConcert', methods:['POST'])]
-    public function addConcert(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        ArtistRepository $ArtistRepository,
-        SceneRepository $sceneRepository
-    ):JsonResponse {
-          
-
-         $data = json_decode($request->getContent(), true);
-
-         if(!isset($data['nom'], 
-         $data['startTime'], 
-         $data['endTime'],
-         $data['famousSong'],
-         $data['genre'], 
-         $data['description'],
-         $data['source'],
-         $data['lien'],
-          $data['sceneFK']
-         )) { return new JsonResponse(['error' => 'Eléments manquant.'], Response::HTTP_BAD_REQUEST);}
-
-  
-      $scene = $entityManager->getRepository(Scene::class)->find($data['sceneFK']);
-    if (!$scene) {
-        return new JsonResponse(['error' => 'Scene introuvable'], Response::HTTP_NOT_FOUND);
-    }
-    
-         $lastArtistId = $ArtistRepository->findOneBy([], ['id' => 'DESC'])?->getId() ?? 0;
-
-        $artist = new Artist();
-        $artist -> setId($lastArtistId + 1);
-        $artist -> setNom($data['nom']);
-        $artist -> setStartTime(new \DateTime($data['startTime']));
-        $artist -> setEndTime(new \DateTime($data['endTime']));
-        $artist -> setFamousSong($data['famousSong']);
-        $artist -> setGenre($data['genre']);
-        $artist -> setDescription($data['description']);
-        $artist -> setSource($data['source']);
-        $artist -> setLien($data['lien']);
-       $artist->setSceneFK($scene);
-
-        $entityManager -> persist($artist);
-        $entityManager -> flush();
-
-         return new JsonResponse(['message' => 'Concert créé avec succès'], JsonResponse::HTTP_CREATED);
-         
-    }
+    return $this->render('index/addConcert.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
 
     #[Route('/addInfo', name:'app_addInfo', methods:['POST'])]
     public function addInfo(
@@ -490,4 +398,37 @@ final class IndexController extends ApiController
         return $user;
     }
 
+    #[Route('/deletePoi/{id}', name: 'delete_poi', methods: ['GET', 'POST'])]
+    public function deletePoi(
+        int $id,
+        EntityManagerInterface $entityManager,
+        SceneRepository $sceneRepository
+    ): Response {
+        // 1. Find the Scene by its ID
+        $scene = $sceneRepository->find($id);
+        if (!$scene) {
+            $this->addFlash('danger', 'Scène introuvable.');
+            return $this->redirectToRoute('app_addConcert');
+        }
+
+        // 2. Get the related Poi ID
+        $poi = $scene->getPoiFK();
+        $poiId = $poi ? $poi->getId() : null;
+
+        // 3. Delete the Scene
+        $entityManager->remove($scene);
+
+        // 4. Delete the Poi if it exists
+        if ($poiId) {
+            $poiEntity = $entityManager->getRepository(Poi::class)->find($poiId);
+            if ($poiEntity) {
+                $entityManager->remove($poiEntity);
+            }
+        }
+
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Scène et son POI supprimés avec succès.');
+        return $this->redirectToRoute('app_addConcert');
+    }
 }
