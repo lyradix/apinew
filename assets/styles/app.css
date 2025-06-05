@@ -27,6 +27,9 @@ h1{
     font-family: bungee,Arial, sans-serif;
     font-size: 2rem;
     color:aliceblue;
+    text-align: center;
+    margin: 1rem;
+    
 }
 
 label{
@@ -211,4 +214,81 @@ width: 200px;
                 border-radius: 5px;
                 border: none;
     }
+
+.form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #2d8a50;
+    color: #fff;
+    border-radius: 3rem;
+    border:2px solid #054744;
+}
+
+.form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form input {
+    width: 97%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #E5C8C8 !important;
+    border-radius: 5rem;
+}
+
+.form select {
+    width: 50%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #E5C8C8 !important;
+    border-radius: 5rem;
+}
+
+.form textarea{
+    height: 5rem;
+    width: 97%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #E5C8C8 !important;
+    border-radius: 3rem;
+}
+
+.form button {
+    margin-top: 7px;
+    padding: 10px;
+    color: #096662 !important;
+    background-color: #E5C8C8 !important;
+    color: E5C8C8;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form button:hover {
+    color:#E5C8C8 !important;
+    background-color:#096662 !important;
+    opacity: 1;
+  
+}
+
+.form button:active {
+    color:#E5C8C8 !important;
+    background-color:#054744 !important;
+    opacity: 1;
+    transition: 500ms;
+}
+.form .error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
 

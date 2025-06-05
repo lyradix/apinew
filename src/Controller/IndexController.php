@@ -67,16 +67,36 @@ final class IndexController extends ApiController
         return new JsonResponse($jsonData, 200, [], true);
     }
 
-    #[Route('/concert/{id}', name: 'app_index_id')]
-    public function getDataById(ArtistRepository $ArtistRepository, SerializerInterface $serializer, int $id): JsonResponse
-    {
-        $data = $ArtistRepository->findOneBy(['id' => $id]);
-        if (!$data) {
-            return new JsonResponse(['error' => 'Concert not found'], Response::HTTP_NOT_FOUND);
-        }
-        $jsonData = $serializer->serialize($data, 'json', ['groups' => ['artist:read', 'scene:read']]);
-        return new JsonResponse($jsonData, 200, [], true);
+   #[Route('/concert/{id}', name: 'app_concert_show', methods: ['GET', 'POST'])]
+public function showConcert(
+    int $id,
+    Request $request,
+    ArtistRepository $artistRepository,
+    EntityManagerInterface $entityManager
+): Response {
+    $concert = $artistRepository->find($id);
+
+    if (!$concert) {
+        $this->addFlash('danger', 'Concert introuvable.');
+        return $this->redirectToRoute('app_concert_show', ['id' => $id]);
     }
+
+    $form = $this->createForm(\App\Form\ModifConcertType::class, $concert);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->flush();
+        $this->addFlash('success', 'Concert modifié avec succès.');
+        return $this->redirectToRoute('app_concert_show', ['id' => $id]);
+    }
+
+    dump($concert->getDate());
+
+    return $this->render('index/concert.html.twig', [
+        'concert' => $concert,
+        'form' => $form->createView(),
+    ]);
+}
 
     #[Route('/scenes', name: 'app_scenes', methods: ['GET'])]
     public function getScenes(SceneRepository $sceneRepository, SerializerInterface $serializer): JsonResponse
