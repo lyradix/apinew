@@ -1,0 +1,14 @@
+<html data-turbo="false">
+{% block body %}
+<form id="postSceneForm" action="{{ path('app_postScene') }}" method="post" data-turbo="false">
+    <input type="hidden" name="nom" value="{{ nom }}">
+    <input type="hidden" name="longitude" value="{{ longitude }}">
+    <input type="hidden" name="latitude" value="{{ latitude }}">
+</form>
+<script>
+    console.log('nom:', '{{ nom }}');
+    console.log('longitude:', '{{ longitude }}');
+    console.log('latitude:', '{{ latitude }}');
+    document.getElementById('postSceneForm').submit();
+</script>
+{% endblock %}

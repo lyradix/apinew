@@ -26,6 +26,15 @@ class Poi
     #[ORM\Column(type: 'geometry', nullable: true, options: ['geometry_type' => 'POINT', 'srid' => 4326])]
     private ?Point $geometry = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $nom = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $longitude = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $latitude = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -70,6 +79,38 @@ class Poi
     public function setGeometry(Point $geometry): self
     {
         $this->geometry = $geometry;
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): self
+    {
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getLongitude(): ?string
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?string $longitude): self
+    {
+        $this->longitude = $longitude;
+        return $this;
+    }
+
+    public function getLatitude(): ?string
+    {
+        return $this->latitude;
+    }
+    public function setLatitude(?string $latitude): self
+    {
+        $this->latitude = $latitude;
         return $this;
     }
 }

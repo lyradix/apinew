@@ -12,9 +12,11 @@
       <a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
         <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
      </a>
-    <h1>{{ controller_name }}!</h1>
+    <h1>{{ controller_name }}</h1>
     <button class="box">Ajouter un nouvel utilisateur</button>
-    <button class="box">Ajouter ou modifier un lieu</button>
+    <a href="{{ path('post_poi') }}" class="btn btn-success"> 
+        <button class="box">Ajouter ou modifier un lieu</button>
+    </a>
     <img class="profile" src="{{ asset('images/profil.png') }}" alt="profil">
 
     {# map through the Concerts #}

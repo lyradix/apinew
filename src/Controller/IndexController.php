@@ -160,6 +160,76 @@ public function showConcert(
         return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
     }
 
+    #[Route('/postPoi', name: 'post_poi', methods: ['GET', 'POST'])]
+public function postPoi(
+    Request $request,
+    EntityManagerInterface $entityManager
+): Response {
+    $poi = new Poi();
+
+    // Get unique types from feature.properties.type
+    $connection = $entityManager->getConnection();
+    $sql = "SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type FROM poi WHERE JSON_EXTRACT(properties, '$.type') IS NOT NULL";
+    $stmt = $connection->prepare($sql);
+    $result = $stmt->executeQuery()->fetchAllAssociative();
+
+    $typeChoices = [];
+    foreach ($result as $row) {
+        if ($row['type']) {
+            $typeChoices[$row['type']] = $row['type'];
+        }
+    }
+
+    $form = $this->createForm(\App\Form\AddPlaceType::class, $poi, [
+        'type_choices' => $typeChoices,
+    ]);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $type = $form->get('type')->getData();
+        $nom = $form->get('nom')->getData();
+        $longitude = $form->get('longitude')->getData();
+        $latitude = $form->get('latitude')->getData();
+
+        if ($type === 'scène') {
+            // Render a hidden form to POST to /postScene
+            return $this->render('poi/redirect_post_scene.html.twig', [
+                'nom' => $nom,
+                'longitude' => $longitude,
+                'latitude' => $latitude,
+                
+            ]);
+        }
+
+        // Insert POI for other types
+        $presetProperties = [
+            'popup' => $nom,
+            'type' => $type,
+            'marker-color' => '#d21e96',
+            'marker-symbol' => 'theatre',
+            'image' => 'random'
+        ];
+        $geoJson = json_encode([
+            'type' => 'Point',
+            'coordinates' => [(float)$longitude, (float)$latitude]
+        ]);
+        $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
+        $stmt = $entityManager->getConnection()->prepare($sql);
+        $stmt->executeStatement([
+            'type' => 'Feature',
+            'properties' => json_encode($presetProperties),
+            'geometry' => $geoJson
+        ]);
+
+        $this->addFlash('success', 'Lieu ajouté avec succès.');
+        return $this->redirectToRoute('post_poi');
+    }
+
+    return $this->render('poi/newPlace.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
+
     #[Route('/updateScene', name: 'app_updateScene', methods: ['PUT'])]  
     public function putScene(HttpFoundationRequest $request,
     SceneRepository $sceneRepository,
