@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello IndexController!{% endblock %}
+
+{% block body %}
+<a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
+    <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+</a>
+<h1>Ajouter ou modifier un lieu</h1>
+
+<div>
+    <form method="get" id="formModeSwitcher">
+        <label class="text">
+            <input
+                type="radio"
+                name="formMode"
+                value="add"
+                {% if formMode is not defined or formMode == 'add' %}checked{% endif %}
+                onchange="this.form.submit()"
+            />
+            Ajouter un lieu
+        </label>
+        <label class="text">
+            <input
+                type="radio"
+                name="formMode"
+                value="modify"
+                {% if formMode is defined and formMode == 'modify' %}checked{% endif %}
+                onchange="this.form.submit()"
+            />
+            Modifier un lieu
+        </label>
+    </form>
+</div>
+
+<div id="dynamicPlaceForm">
+    {% if formMode is not defined or formMode == 'add' %}
+        {{ formAddPoi|raw }}
+    {% else %}
+        {{ formModifPoi|raw }}
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const radios = document.querySelectorAll('input[name="formMode"]');
+    const container = document.getElementById('dynamicPlaceForm');
+
+    function loadAddForm() {
+        fetch('{{ path("app_render_newPlace") }}')
+            .then(response => response.text())
+            .then(html => {
+                container.innerHTML = html;
+            });
+    }
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'add') {
+                loadAddForm();
+            } else {
+                container.innerHTML = '';
+            }
+        });
+    });
+
+    // Optionally, load on page load if "add" is checked
+    if (document.querySelector('input[name="formMode"]:checked').value === 'add') {
+        loadAddForm();
+    }
+});
+</script>
+{% endblock %}
+

@@ -565,4 +565,21 @@ public function addConcert(
         $this->addFlash('success', 'Scène et son POI supprimés avec succès.');
         return $this->redirectToRoute('app_addConcert');
     }
+
+#[Route('/setpoi', name: 'app_setPoi')]
+public function poi(Request $request): Response
+{
+    // Pass any variables you need for the template, e.g. formMode, formAddPoi, formModifPoi
+    return $this->render('poi/poi.html.twig', [
+        // 'formMode' => $formMode,
+        // 'formAddPoi' => $formAddPoi,
+        // 'formModifPoi' => $formModifPoi,
+    ]);
+}
+
+    #[Route('/render-new-place', name: 'app_render_newPlace')]
+public function renderNewPlace(): Response
+{
+    return $this->render('poi/newPlace.html.twig');
+}
 }
