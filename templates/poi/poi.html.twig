@@ -25,13 +25,7 @@
         <button type="submit">Envoyer</button>
     </form>
 </div>
-
-<div id="modifyForm" class="form" style="display:none;">
-    <form id="modifPoiForm" action="{{ path('update_poi', {'id': poiToModify.id}) }}" method="post">
-        {{ form_widget(formModifPoi) }}
-        <button type="submit">Mettre à jour</button>
-    </form>
-</div>
+<div id="modifyForm" class="form" style="display:none;"></div>
 
 <script>
 document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
@@ -41,9 +35,44 @@ document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
             document.getElementById('modifyForm').style.display = 'none';
         } else if (this.value === 'modify') {
             document.getElementById('addForm').style.display = 'none';
-            document.getElementById('modifyForm').style.display = '';
+            // Only fetch the modify form when needed
+            fetch('{{ path("app_render_updatePoi") }}')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modifyForm').innerHTML = html;
+                    document.getElementById('modifyForm').style.display = '';
+                });
         }
     });
+});
+
+// Handle AJAX POST for add form when type is "scène"
+document.getElementById('poiForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const typeField = form.querySelector('[name$="[type]"]');
+    const type = typeField ? typeField.value : '';
+
+    if (type === 'scène') {
+        fetch('{{ path("app_postScene") }}', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Scène ajoutée avec succès !');
+                form.reset();
+            } else {
+                alert('Erreur : ' + (data.error || 'Une erreur est survenue.'));
+            }
+        })
+        .catch(() => alert('Erreur lors de l\'envoi du formulaire.'));
+    } else {
+        form.submit(); // fallback for other types
+    }
 });
 </script>
 {% endblock %}

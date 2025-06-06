@@ -342,11 +342,12 @@ public function postPoi(
     #[Route('/postScene', name: 'app_postScene', methods: ['GET', 'POST'])]
 public function postScene(Request $request, EntityManagerInterface $entityManager, SceneRepository $sceneRepository): Response
 {
-    // Handle AJAX POST (from JS)
     if ($request->isXmlHttpRequest() && $request->isMethod('POST')) {
-        $nom = $request->request->get('nom');
-        $longitude = $request->request->get('longitude');
-        $latitude = $request->request->get('latitude');
+        // Get data from the add_place array
+        $data = $request->request->all('add_place');
+        $nom = $data['nom'] ?? null;
+        $longitude = $data['longitude'] ?? null;
+        $latitude = $data['latitude'] ?? null;
 
         if ($nom && $longitude && $latitude) {
             $presetProperties = [
@@ -636,6 +637,36 @@ public function updatePoi(
         'poi' => $poi,
     ]);
 }
+#[Route('/pois', name: 'app_pois', methods: ['GET'])]
+public function pois(EntityManagerInterface $entityManager): Response
+{
+    $poi = new Poi();
 
+    // Get unique types from feature.properties.type
+    $connection = $entityManager->getConnection();
+    $sql = "SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type FROM poi WHERE JSON_EXTRACT(properties, '$.type') IS NOT NULL";
+    $stmt = $connection->prepare($sql);
+    $result = $stmt->executeQuery()->fetchAllAssociative();
 
+    $typeChoices = [];
+    foreach ($result as $row) {
+        if ($row['type']) {
+            $typeChoices[$row['type']] = $row['type'];
+        }
+    }
+
+    $form = $this->createForm(\App\Form\AddPlaceType::class, $poi, [
+        'type_choices' => $typeChoices,
+    ]);
+
+    return $this->render('poi/poi.html.twig', [
+        'formAddPoi' => $form->createView(),
+    ]);
+}
+
+#[Route('/render-update-poi', name: 'app_render_updatePoi')]
+public function renderUpdatePoi(): Response
+{
+     return $this->render('/poi/updatePoi.html.twig');
+}
 }
