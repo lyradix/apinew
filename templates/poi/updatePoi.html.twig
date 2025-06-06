@@ -1,0 +1,11 @@
+{% block title %}Hello IndexController!{% endblock %}
+
+{% block body %}
+<div class="form">
+<form id="poiForm" action="{{ path('post_poi') }}" method="post">
+    {{ form_widget(form) }}
+    <button type="submit">Envoyer</button>
+</form>
+</div>
+
+{% endblock %}

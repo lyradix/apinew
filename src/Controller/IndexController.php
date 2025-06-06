@@ -566,20 +566,76 @@ public function addConcert(
         return $this->redirectToRoute('app_addConcert');
     }
 
-#[Route('/setpoi', name: 'app_setPoi')]
-public function poi(Request $request): Response
-{
-    // Pass any variables you need for the template, e.g. formMode, formAddPoi, formModifPoi
-    return $this->render('poi/poi.html.twig', [
-        // 'formMode' => $formMode,
-        // 'formAddPoi' => $formAddPoi,
-        // 'formModifPoi' => $formModifPoi,
-    ]);
-}
-
     #[Route('/render-new-place', name: 'app_render_newPlace')]
 public function renderNewPlace(): Response
 {
     return $this->render('poi/newPlace.html.twig');
 }
+
+
+    #[Route('/updatePoi/{id}', name: 'update_poi', methods: ['GET', 'POST'])]
+public function updatePoi(
+    int $id,
+    Request $request,
+    EntityManagerInterface $entityManager
+): Response {
+    // Fetch the Poi entity by ID
+    $poi = $entityManager->getRepository(Poi::class)->find($id);
+
+    if (!$poi) {
+        throw $this->createNotFoundException('POI not found');
+    }
+
+    // Get unique types for the type field
+    $connection = $entityManager->getConnection();
+    $sql = "SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type FROM poi WHERE JSON_EXTRACT(properties, '$.type') IS NOT NULL";
+    $stmt = $connection->prepare($sql);
+    $result = $stmt->executeQuery()->fetchAllAssociative();
+
+    $typeChoices = [];
+    foreach ($result as $row) {
+        if ($row['type']) {
+            $typeChoices[$row['type']] = $row['type'];
+        }
+    }
+
+    // Create the form
+    $form = $this->createForm(\App\Form\ModifPlaceType::class, $poi, [
+        'type_choices' => $typeChoices,
+        'method' => 'POST',
+        'action' => $this->generateUrl('update_poi', ['id' => $id]),
+    ]);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Handle unmapped 'type' field if present
+        $type = $form->get('type')->getData();
+        if ($type) {
+            $properties = $poi->getProperties() ?? [];
+            $properties['type'] = $type;
+            $poi->setProperties($properties);
+        }
+
+        // Update geometry if needed
+        $longitude = $form->get('longitude')->getData();
+        $latitude = $form->get('latitude')->getData();
+        if ($longitude !== null && $latitude !== null) {
+            if (class_exists(\CrEOF\Spatial\PHP\Types\Geometry\Point::class)) {
+                $poi->setGeometry(new \CrEOF\Spatial\PHP\Types\Geometry\Point((float)$longitude, (float)$latitude));
+            }
+        }
+
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Lieu modifié avec succès.');
+        return $this->redirectToRoute('update_poi', ['id' => $id]);
+    }
+
+    return $this->render('poi/updatePoi.html.twig', [
+        'form' => $form->createView(),
+        'poi' => $poi,
+    ]);
+}
+
+
 }

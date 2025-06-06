@@ -9,66 +9,41 @@
 <h1>Ajouter ou modifier un lieu</h1>
 
 <div>
-    <form method="get" id="formModeSwitcher">
-        <label class="text">
-            <input
-                type="radio"
-                name="formMode"
-                value="add"
-                {% if formMode is not defined or formMode == 'add' %}checked{% endif %}
-                onchange="this.form.submit()"
-            />
-            Ajouter un lieu
-        </label>
-        <label class="text">
-            <input
-                type="radio"
-                name="formMode"
-                value="modify"
-                {% if formMode is defined and formMode == 'modify' %}checked{% endif %}
-                onchange="this.form.submit()"
-            />
-            Modifier un lieu
-        </label>
+    <label>
+        <input type="radio" name="formMode" value="add" checked>
+        Ajouter
+    </label>
+    <label>
+        <input type="radio" name="formMode" value="modify">
+        Modifier
+    </label>
+</div>
+
+<div id="addForm" class="form">
+    <form id="poiForm" action="{{ path('post_poi') }}" method="post">
+        {{ form_widget(formAddPoi) }}
+        <button type="submit">Envoyer</button>
     </form>
 </div>
 
-<div id="dynamicPlaceForm">
-    {% if formMode is not defined or formMode == 'add' %}
-        {{ formAddPoi|raw }}
-    {% else %}
-        {{ formModifPoi|raw }}
-    {% endif %}
+<div id="modifyForm" class="form" style="display:none;">
+    <form id="modifPoiForm" action="{{ path('update_poi', {'id': poiToModify.id}) }}" method="post">
+        {{ form_widget(formModifPoi) }}
+        <button type="submit">Mettre à jour</button>
+    </form>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const radios = document.querySelectorAll('input[name="formMode"]');
-    const container = document.getElementById('dynamicPlaceForm');
-
-    function loadAddForm() {
-        fetch('{{ path("app_render_newPlace") }}')
-            .then(response => response.text())
-            .then(html => {
-                container.innerHTML = html;
-            });
-    }
-
-    radios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'add') {
-                loadAddForm();
-            } else {
-                container.innerHTML = '';
-            }
-        });
+document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        if (this.value === 'add') {
+            document.getElementById('addForm').style.display = '';
+            document.getElementById('modifyForm').style.display = 'none';
+        } else if (this.value === 'modify') {
+            document.getElementById('addForm').style.display = 'none';
+            document.getElementById('modifyForm').style.display = '';
+        }
     });
-
-    // Optionally, load on page load if "add" is checked
-    if (document.querySelector('input[name="formMode"]:checked').value === 'add') {
-        loadAddForm();
-    }
 });
 </script>
 {% endblock %}
-
