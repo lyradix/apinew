@@ -4,29 +4,50 @@
 
 {% block body %}
 <a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
-<img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+    <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
 </a>
 <h1>Ajouter ou modifier un lieu</h1>
-
-<label>Ajouter</label>
-<input
-   type="radio"
-    value="add"
->
-
-<label>Modifier</label>
-<input
-   type="radio"
-      value="modify"
->
-
 <div class="form">
-<form id="poiForm" action="{{ path('post_poi') }}" method="post">
-    {{ form_widget(form) }}
-    <button type="submit">Envoyer</button>
-</form>
+    <form id="poiForm" action="{{ path('post_poi') }}" method="post">
+        {{ form_widget(form) }}
+        <button type="submit">Envoyer</button>
+    </form>
 </div>
+<script>
+document.getElementById('poiForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
+    const form = e.target;
+    const formData = new FormData(form);
+    const type = formData.get('add_place[type]'); 
 
+    if (type === 'scène') {
+        // Only send nom, longitude, latitude to /postScene
+        const nom = formData.get('add_place[nom]');
+        const longitude = formData.get('add_place[longitude]');
+        const latitude = formData.get('add_place[latitude]');
 
+        fetch('{{ path('app_postScene') }}', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                'add_place[nom]': nom,
+                'add_place[longitude]': longitude,
+                'add_place[latitude]': latitude
+            })
+        })
+        .then(response => response.redirected ? window.location.href = response.url : response.text())
+        .then(data => {
+            // Optionally handle response or show confirmation
+            window.location.href = '{{ path('app_addConcert') }}';
+        });
+    } else {
+        // Submit the form as usual for other types
+        form.submit();
+    }
+});
+</script>
 {% endblock %}
