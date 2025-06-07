@@ -16,15 +16,10 @@ class ModifPlaceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('poi.id', EntityType::class, [
-                'class' => Poi::class,
-                'choice_label' => 'nom',
-                'label' => 'Scène',
-                'placeholder' => 'Sélectionnez un lieu',
+            ->add('poi_id', ChoiceType::class, [
+                'choices' => $options['poi_choices'],
+                'label' => 'Lieu à modifier',
                 'required' => true,
-                'attr' => [
-                    'class' => 'form-select',
-                ],
             ])
             ->add('longitude', NumberType::class, [
                 'label' => 'Longitude',
@@ -50,8 +45,9 @@ class ModifPlaceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Poi::class,
-             'type_choices' => [],
+            'data_class' => null, 
+            'type_choices' => [],
+            'poi_choices' => [],
         ]);
     }
 }

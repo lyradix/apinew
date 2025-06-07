@@ -25,7 +25,20 @@
         <button type="submit">Envoyer</button>
     </form>
 </div>
-<div id="modifyForm" class="form" style="display:none;"></div>
+
+<div id="modifyForm" class="form" style="display:none;">
+    <form id="modifForm" method="get">
+        <label for="poiId">Sélectionnez le lieu à modifier :</label>
+        <select name="poiId" id="poiId" required>
+            <option value="">-- Choisir un lieu --</option>
+            <!-- Options will be filled by JS -->
+        </select>
+        <button type="submit">Modifier</button>
+    </form>
+</div>
+
+<div id="updateForm" class="form">
+</div>
 
 <script>
 document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
@@ -33,18 +46,18 @@ document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
         if (this.value === 'add') {
             document.getElementById('addForm').style.display = '';
             document.getElementById('modifyForm').style.display = 'none';
+            document.getElementById('updateForm').style.display = 'none';
         } else if (this.value === 'modify') {
             document.getElementById('addForm').style.display = 'none';
-            // Only fetch the modify form when needed
-            fetch('{{ path("app_render_updatePoi") }}')
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('modifyForm').innerHTML = html;
-                    document.getElementById('modifyForm').style.display = '';
-                });
+            document.getElementById('modifyForm').style.display = '';
+            document.getElementById('updateForm').style.display = 'none';
         }
     });
 });
+
+// Hide modifyForm and updateForm by default
+document.getElementById('modifyForm').style.display = 'none';
+document.getElementById('updateForm').style.display = 'none';
 
 // Handle AJAX POST for add form when type is "scène"
 document.getElementById('poiForm').addEventListener('submit', function(e) {
@@ -73,6 +86,28 @@ document.getElementById('poiForm').addEventListener('submit', function(e) {
     } else {
         form.submit(); // fallback for other types
     }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/poi') // Your JSON endpoint
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('poiId');
+            data.features.forEach(feature => {
+                const option = document.createElement('option');
+                option.value = feature.id;
+                option.textContent = feature.properties.popup || 'POI ' + feature.id;
+                select.appendChild(option);
+            });
+        });
+
+    document.getElementById('modifForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const poiId = document.getElementById('poiId').value;
+        if (poiId) {
+            window.location.href = '/updatePoi/' + poiId;
+        }
+    });
 });
 </script>
 {% endblock %}
