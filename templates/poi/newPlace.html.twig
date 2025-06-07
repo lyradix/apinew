@@ -10,7 +10,8 @@
 <div class="form">
     <form id="poiForm" action="{{ path('post_poi') }}" method="post">
         {{ form_widget(form) }}
-        <button type="submit">Envoyer</button>
+        <button type="submit">Ajouter</button>
+         <button class="box" type="button" onclick="window.history.back()">Retour</button>
     </form>
 </div>
 <script>

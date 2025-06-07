@@ -1,0 +1,16 @@
+{# filepath: templates/poi/updatePoiId.html.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le lieu{% endblock %}
+
+{% block body %}
+<a href="{{ path('app_render_updatePoi') }}" class="btn btn-secondary">Retour à la liste</a>
+<h1>Modifier le lieu</h1>
+
+<div class="form">
+    <form method="post" action="{{ path('update_poi', {'id': poi.id}) }}">
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
+</div>
+{% endblock %}
