@@ -574,68 +574,39 @@ public function renderNewPlace(): Response
 }
 
 
-    #[Route('/updatePoi/{id}', name: 'update_poi', methods: ['GET', 'POST'])]
+    #[Route('/updatePoi/{id}', name: 'update_poi', methods: ['POST'])]
 public function updatePoi(
     int $id,
     Request $request,
     EntityManagerInterface $entityManager
 ): Response {
-    // Fetch the Poi entity by ID
-    $poi = $entityManager->getRepository(Poi::class)->find($id);
+    $nom = $request->request->get('nom');
+    $longitude = $request->request->get('longitude');
+    $latitude = $request->request->get('latitude');
+    $type = $request->request->get('type');
 
-    if (!$poi) {
-        throw $this->createNotFoundException('POI not found');
-    }
-
-    // Get unique types for the type field
-    $connection = $entityManager->getConnection();
-    $sql = "SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type FROM poi WHERE JSON_EXTRACT(properties, '$.type') IS NOT NULL";
-    $stmt = $connection->prepare($sql);
-    $result = $stmt->executeQuery()->fetchAllAssociative();
-
-    $typeChoices = [];
-    foreach ($result as $row) {
-        if ($row['type']) {
-            $typeChoices[$row['type']] = $row['type'];
-        }
-    }
-
-    // Create the form
-    $form = $this->createForm(\App\Form\ModifPlaceType::class, $poi, [
-        'type_choices' => $typeChoices,
-        'method' => 'POST',
-        'action' => $this->generateUrl('update_poi', ['id' => $id]),
+    $presetProperties = [
+        'popup' => $nom,
+        'type' => $type,
+        'marker-color' => '#d21e96',
+        'marker-symbol' => 'theatre',
+        'image' => 'random'
+    ];
+    $geoJson = json_encode([
+        'type' => 'Point',
+        'coordinates' => [(float)$longitude, (float)$latitude]
     ]);
-    $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Handle unmapped 'type' field if present
-        $type = $form->get('type')->getData();
-        if ($type) {
-            $properties = $poi->getProperties() ?? [];
-            $properties['type'] = $type;
-            $poi->setProperties($properties);
-        }
-
-        // Update geometry if needed
-        $longitude = $form->get('longitude')->getData();
-        $latitude = $form->get('latitude')->getData();
-        if ($longitude !== null && $latitude !== null) {
-            if (class_exists(\CrEOF\Spatial\PHP\Types\Geometry\Point::class)) {
-                $poi->setGeometry(new \CrEOF\Spatial\PHP\Types\Geometry\Point((float)$longitude, (float)$latitude));
-            }
-        }
-
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Lieu modifié avec succès.');
-        return $this->redirectToRoute('update_poi', ['id' => $id]);
-    }
-
-    return $this->render('poi/updatePoi.html.twig', [
-        'form' => $form->createView(),
-        'poi' => $poi,
+    $sql = 'UPDATE poi SET properties = :properties, geometry = ST_GeomFromGeoJSON(:geometry) WHERE id = :id';
+    $stmt = $entityManager->getConnection()->prepare($sql);
+    $stmt->executeStatement([
+        'properties' => json_encode($presetProperties),
+        'geometry' => $geoJson,
+        'id' => $id
     ]);
+
+    $this->addFlash('success', 'Lieu modifié avec succès.');
+    return $this->redirectToRoute('update_poi', ['id' => $id]);
 }
 #[Route('/pois', name: 'app_pois', methods: ['GET'])]
 public function pois(EntityManagerInterface $entityManager): Response
@@ -665,8 +636,57 @@ public function pois(EntityManagerInterface $entityManager): Response
 }
 
 #[Route('/render-update-poi', name: 'app_render_updatePoi')]
-public function renderUpdatePoi(): Response
+public function renderUpdatePoi(EntityManagerInterface $entityManager): Response
 {
-     return $this->render('/poi/updatePoi.html.twig');
+    // Fetch POIs with only id and popup (name)
+    $connection = $entityManager->getConnection();
+    $poisResult = $connection->executeQuery(
+        "SELECT id, JSON_UNQUOTE(JSON_EXTRACT(properties, '$.popup')) AS popup, 
+                JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type,
+                JSON_EXTRACT(geometry, '$.coordinates') AS coordinates
+         FROM poi"
+    )->fetchAllAssociative();
+
+    // Build POI array for the select and for the default POI
+    $pois = [];
+    foreach ($poisResult as $row) {
+        $coords = json_decode($row['coordinates'], true) ?? [0, 0];
+        $pois[] = (object)[
+            'id' => $row['id'],
+            'properties' => (object)[
+                'popup' => $row['popup'],
+                'type' => $row['type'],
+            ],
+            'geometry' => (object)[
+                'coordinates' => $coords,
+            ],
+        ];
+    }
+
+    // Pick the first POI as default (or a dummy if none)
+    $poi = $pois[0] ?? (object)[
+        'id' => 0,
+        'geometry' => (object)['coordinates' => [0, 0]],
+        'properties' => (object)['type' => '', 'popup' => ''],
+    ];
+
+    // Get unique types for the type field
+    $typeResult = $connection->executeQuery(
+        "SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type 
+         FROM poi WHERE JSON_EXTRACT(properties, '$.type') IS NOT NULL"
+    )->fetchAllAssociative();
+
+    $typeChoices = [];
+    foreach ($typeResult as $row) {
+        if ($row['type']) {
+            $typeChoices[] = $row['type'];
+        }
+    }
+
+    return $this->render('poi/updatePoi.html.twig', [
+        'poi' => $poi,
+        'pois' => $pois,
+        'type_choices' => $typeChoices,
+    ]);
 }
 }

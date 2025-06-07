@@ -1,7 +1,40 @@
-{% block title %}Modifier un lieu{% endblock %}
-
 {% block body %}
 <div class="form">
-    <p>Formulaire de modification à venir…</p>
+    <form id="modifPoiForm" action="{{ path('update_poi', {'id': poi.id}) }}" method="post">
+        <label>Sélectionnez le lieu à modifier:</label>
+        <div>
+            <select name="poi_id" required>
+                <option value="" disabled selected>Sélectionnez un lieu</option>
+                {% for p in pois %}
+                    <option value="{{ p.id }}" {% if p.id == poi.id %}selected{% endif %}>{{ p.properties.popup }}</option>
+                {% endfor %}
+            </select>
+            <button class="delBtn" type="button">
+                <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
+            </button>
+        </div>
+        <div>
+            <label for="longitude">Longitude:</label>
+            <input name="longitude" type="number" step="any" value="{{ poi.geometry.coordinates[0]|default('') }}" placeholder="exemple: 2.6587" required />
+        </div>
+        <div>
+            <label for="latitude">Latitude:</label>
+            <input name="latitude" type="number" step="any" value="{{ poi.geometry.coordinates[1]|default('') }}" placeholder="exemple: 48.6587" required />
+        </div>
+        <div>
+            <label>Type de lieu:</label>
+            <select name="type" required>
+                <option value="" disabled>Sélectionnez un type</option>
+                {% for type in type_choices %}
+                    <option value="{{ type }}" {% if poi.properties.type == type %}selected{% endif %}>{{ type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="nom">Nom:</label>
+            <input name="nom" type="text" value="{{ poi.properties.popup|default('') }}" placeholder="Nom du lieu" required />
+        </div>
+        <button type="submit">Envoyer</button>
+    </form>
 </div>
 {% endblock %}
