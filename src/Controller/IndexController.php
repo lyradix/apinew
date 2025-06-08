@@ -749,6 +749,57 @@ public function renderUpdatePoi(EntityManagerInterface $entityManager): Response
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    #[Route('/add-partner', name: 'app_add_partner', methods: ['GET', 'POST'])]
+public function addPartner(
+    Request $request,
+    EntityManagerInterface $entityManager
+): Response {
+    $partner = new \App\Entity\Partners();
+
+    $form = $this->createForm(\App\Form\AddPartnersType::class, $partner);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $type = $form->get('type')->getData();
+
+        // Determine prefix based on type
+        $prefix = '';
+        if (strtolower($type) === 'restaurent') {
+            $prefix = 'a';
+        } elseif (strtolower($type) === 'sponsor') {
+            $prefix = 'b';
+        } elseif (strtolower($type) === 'media') {
+            $prefix = 'c';
+        }
+
+        // Find the last partnerId with this prefix
+        $conn = $entityManager->getConnection();
+        $sql = "SELECT partner_id FROM partners WHERE partner_id LIKE :prefix ORDER BY LENGTH(partner_id) DESC, partner_id DESC LIMIT 1";
+        $last = $conn->executeQuery($sql, ['prefix' => $prefix . '%'])->fetchOne();
+
+        if ($last) {
+            // Extract the numeric part and increment
+            $num = (int)substr($last, 1);
+            $newNum = $num + 1;
+        } else {
+            $newNum = 1;
+        }
+
+        $partnerId = $prefix . $newNum;
+        $partner->setPartnerId($partnerId);
+
+        $entityManager->persist($partner);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Partenaire ajouté avec succès. ID: ' . $partnerId);
+        return $this->redirectToRoute('app_add_partner');
+    }
+
+    return $this->render('partners/add.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
 }
 
 

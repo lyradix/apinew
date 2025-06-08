@@ -9,7 +9,7 @@
 </style>
 
 <div class="example-wrapper">
-      <a href="{{ path('app_adminConcerts') }}" > 
+      <a href="{{ path('app_adminConcerts') }}"> 
         <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
      </a>
     <h1>{{ controller_name }}</h1>
@@ -17,7 +17,9 @@
     <a href="{{ path('app_pois') }}" > 
         <button class="box">Ajouter ou modifier un lieu</button>
     </a>
+    <a href="{{ path('app_add_partner') }}">
     <button class="box">Ajouter ou modifier un Partenaire Commercial</button>
+    </a>
     <button class="box">Ajouter ou modifier une info générale</button>
     <button class="box">Ajouter un nouvel utilisateur</button>
     <img class="profile" src="{{ asset('images/profil.png') }}" alt="profil">
