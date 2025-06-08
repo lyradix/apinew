@@ -9,28 +9,31 @@
 </style>
 
 <div class="example-wrapper">
-      <a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
+      <a href="{{ path('app_adminConcerts') }}" > 
         <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
      </a>
     <h1>{{ controller_name }}</h1>
-    <button class="box">Ajouter un nouvel utilisateur</button>
-    <a href="{{ path('app_pois') }}" class="btn btn-success"> 
+    
+    <a href="{{ path('app_pois') }}" > 
         <button class="box">Ajouter ou modifier un lieu</button>
     </a>
+    <button class="box">Ajouter ou modifier un Partenaire Commercial</button>
+    <button class="box">Ajouter ou modifier une info générale</button>
+    <button class="box">Ajouter un nouvel utilisateur</button>
     <img class="profile" src="{{ asset('images/profil.png') }}" alt="profil">
 
     {# map through the Concerts #}
     <ul class="wrapbox">
      <li class="boxconcert">
             <div>
-                <a href="{{ path('app_addConcert') }}" class="btn btn-success"> 
+                <a href="{{ path('app_addConcert') }}" > 
                 <img class="addbtn" src="{{ asset('images/more.png') }}" alt="add button" >
                 </a>
             </div>
             </li>
         {% for concert in concerts %}
             <li class="boxconcert">
-            <a href="{{ path('app_concert_show', {'id': concert.id}) }}" class="btn btn-success"> 
+            <a href="{{ path('app_concert_show', {'id': concert.id}) }}" > 
                 <div class="btnConcert">
                     <p class="text"> {{ concert.nom }} </p> 
                     <p class="text"> {{ concert.startTime|date('d/m/Y H:i') }} </p> 
