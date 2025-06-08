@@ -574,34 +574,34 @@ public function renderNewPlace(): Response
 }
 
 
-    #[Route('/updatePoi/{id}', name: 'update_poi', methods: ['GET', 'POST'])]
-public function updatePoi(
-    int $id,
-    Request $request,
-    EntityManagerInterface $entityManager
-): Response {
-    $poi = $entityManager->getRepository(Poi::class)->find($id);
-    if (!$poi) {
-        $this->addFlash('danger', 'POI introuvable.');
-        return $this->redirectToRoute('app_pois');
-    }
+//     #[Route('/updatePoi/{id}', name: 'update_poi', methods: ['GET', 'POST'])]
+// public function updatePoi(
+//     int $id,
+//     Request $request,
+//     EntityManagerInterface $entityManager
+// ): Response {
+//     $poi = $entityManager->getRepository(Poi::class)->find($id);
+//     if (!$poi) {
+//         $this->addFlash('danger', 'POI introuvable.');
+//         return $this->redirectToRoute('app_pois');
+//     }
 
-    $form = $this->createForm(\App\Form\ModifPlaceType::class, $poi, [
-        // pass type_choices if needed
-    ]);
-    $form->handleRequest($request);
+//     $form = $this->createForm(\App\Form\ModifPlaceType::class, $poi, [
+//         // pass type_choices if needed
+//     ]);
+//     $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->flush();
-        $this->addFlash('success', 'Lieu modifié avec succès.');
-        return $this->redirectToRoute('app_pois');
-    }
+//     if ($form->isSubmitted() && $form->isValid()) {
+//         $entityManager->flush();
+//         $this->addFlash('success', 'Lieu modifié avec succès.');
+//         return $this->redirectToRoute('app_pois');
+//     }
 
-    return $this->render('poi/updatePoi.html.twig', [
-        'form' => $form->createView(),
-        'poi' => $poi,
-    ]);
-}
+//     return $this->render('poi/updatePoi.html.twig', [
+//         'form' => $form->createView(),
+//         'poi' => $poi,
+//     ]);
+// }
 
 #[Route('/pois', name: 'app_pois', methods: ['GET'])]
 public function pois(EntityManagerInterface $entityManager): Response
@@ -689,4 +689,67 @@ public function renderUpdatePoi(EntityManagerInterface $entityManager): Response
         'pois' => $pois,
     ]);
 }
+   #[Route('/updatePoi', name: 'update_poi', methods: ['PUT'])]
+    public function updatePoi(
+        HttpFoundationRequest $request,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        // Validate required fields
+        if (!isset($data['id'], $data['popup'], $data['longitude'], $data['latitude'], $data['type'])) {
+            return new JsonResponse(['error' => 'Invalid data. "id", "popup", "longitude", "latitude", and "type" are required.'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        // Validate longitude and latitude
+        if ($data['longitude'] < -180 || $data['longitude'] > 180 || $data['latitude'] < -90 || $data['latitude'] > 90) {
+            return new JsonResponse(['error' => 'Invalid longitude or latitude values.'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            // Construct GeoJSON format
+            $geoJson = json_encode([
+                'type' => 'Point',
+                'coordinates' => [(float)$data['longitude'], (float)$data['latitude']]
+            ]);
+
+            // Preset properties
+            $presetProperties = [
+                'popup' => $data['popup'],
+                'type' => $data['type'],
+                'marker-color' => '#d21e96',
+                'marker-symbol' => 'camping',
+                'image' => 'tent'
+            ];
+
+            // Update the Poi record using raw SQL
+            $sql = 'UPDATE poi SET type = :type, properties = :properties, geometry = ST_GeomFromGeoJSON(:geometry) WHERE id = :id';
+            $stmt = $entityManager->getConnection()->prepare($sql);
+
+            $stmt->executeStatement([
+                'id' => $data['id'],
+                'type' => 'Feature',
+                'properties' => json_encode($presetProperties),
+                'geometry' => $geoJson
+            ]);
+
+            // Log the update
+            error_log('Updated Poi ID: ' . $data['id']);
+
+            // Return success response
+            return new JsonResponse(['message' => 'Poi updated successfully.'], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            // Log the exception details
+            error_log('Exception occurred: ' . $e->getMessage());
+            error_log('Exception trace: ' . $e->getTraceAsString());
+
+            return new JsonResponse([
+                'error' => 'An error occurred while updating the Poi.',
+                'message' => $e->getMessage()
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
+
+
+

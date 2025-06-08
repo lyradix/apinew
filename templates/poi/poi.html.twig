@@ -14,9 +14,12 @@
         Ajouter
     </label>
     <label>
-        <input type="radio" name="formMode" value="modify">
+        <input type="radio" name="formMode" value="modify" id="modifyRadio">
+         <button type="button" id="refreshModify" style="display:none; margin-left:8px;">Rafraîchir</button>
+         </input>
         Modifier
     </label>
+   
 </div>
 
 <div id="addForm" class="form">
@@ -33,6 +36,15 @@
             <option value="">-- Choisir un lieu --</option>
             <!-- Options will be filled by JS -->
         </select>
+        <label>Longitude</label>
+        <input name="longitude" placeholder="exemple:2.4566">
+        <label>Latitude</label>
+        <input name="latitude" placeholder="48.7586">
+         <label>Sélectionnez le type :</label>
+        <select name="type" id="typeSelect" required>
+            <option value="">-- Choisir un type --</option>
+            <!-- Options will be filled by JS -->
+        </select>
         <button type="submit">Modifier</button>
     </form>
 </div>
@@ -41,6 +53,104 @@
 </div>
 
 <script>
+let poiData = {}; // <-- Move this to the top, outside any function
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/poi') 
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('poiId');
+            const typeSelect = document.getElementById('typeSelect');
+            const typesSet = new Set();
+            
+
+            data.features.forEach(feature => {
+                // Fill POI select
+                const option = document.createElement('option');
+                option.value = feature.id;
+                option.textContent = feature.properties.popup || 'POI ' + feature.id;
+                select.appendChild(option);
+
+                // Store POI data for quick lookup
+                poiData[feature.id] = feature;
+                // Collect unique types
+                if (feature.properties.type) {
+                    typesSet.add(feature.properties.type);
+                }
+            });
+
+            // Fill type select
+            typesSet.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                typeSelect.appendChild(option);
+            });
+
+            // Add event listener for POI select change
+            select.addEventListener('change', function() {
+                const selectedId = this.value;
+                const longitudeInput = document.querySelector('#modifForm input[placeholder^="exemple"]');
+                const latitudeInput = document.querySelector('#modifForm input[placeholder^="48."]');
+                if (poiData[selectedId]) {
+                    const coords = poiData[selectedId].geometry.coordinates;
+                    // Set input values (not just placeholders)
+                    longitudeInput.value = coords[0];
+                    latitudeInput.value = coords[1];
+                    // Optionally, set placeholders instead:
+                    // longitudeInput.placeholder = coords[0];
+                    // latitudeInput.placeholder = coords[1];
+                    // Optionally, set type select value:
+                    if (poiData[selectedId].properties.type) {
+                        document.getElementById('typeSelect').value = poiData[selectedId].properties.type;
+                    }
+                } else {
+                    longitudeInput.value = '';
+                    latitudeInput.value = '';
+                    document.getElementById('typeSelect').value = '';
+                }
+            });
+        });
+
+    document.getElementById('modifForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Now poiData is accessible here!
+        const poiId = document.getElementById('poiId').value;
+        const longitude = document.querySelector('#modifForm input[name="longitude"]').value;
+        const latitude = document.querySelector('#modifForm input[name="latitude"]').value;
+        const type = document.getElementById('typeSelect').value;
+
+        // Get the popup (name) from the selected POI in poiData
+        const popup = poiData[poiId] && poiData[poiId].properties.popup ? poiData[poiId].properties.popup : '';
+
+        if (poiId) {
+            fetch('/updatePoi', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    id: poiId,
+                    popup: popup,
+                    longitude: parseFloat(longitude),
+                    latitude: parseFloat(latitude),
+                    type: type
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success || data.message) {
+                    alert('Lieu modifié avec succès !');
+                } else {
+                    alert('Erreur : ' + (data.error || 'Une erreur est survenue.'));
+                }
+            })
+            .catch(() => alert('Erreur lors de l\'envoi du formulaire.'));
+        }
+    });
+});
+
 document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
     radio.addEventListener('change', function() {
         if (this.value === 'add') {
@@ -51,15 +161,67 @@ document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
             document.getElementById('addForm').style.display = 'none';
             document.getElementById('modifyForm').style.display = '';
             document.getElementById('updateForm').style.display = 'none';
+            reloadPoiData(); // <-- Refresh POI data when Modifier is selected
         }
     });
 });
 
-// Hide modifyForm and updateForm by default
+// Hide modifyForm, updateForm, and refresh button by default
 document.getElementById('modifyForm').style.display = 'none';
 document.getElementById('updateForm').style.display = 'none';
+document.getElementById('refreshModify').style.display = 'none';
 
-// Handle AJAX POST for add form when type is "scène"
+// Function to reload POI data and reset the modify form
+function reloadPoiData() {
+    const select = document.getElementById('poiId');
+    const typeSelect = document.getElementById('typeSelect');
+    select.innerHTML = '<option value="">-- Choisir un lieu --</option>';
+    typeSelect.innerHTML = '<option value="">-- Choisir un type --</option>';
+    // (Re-run your fetch code here)
+    fetch('/poi') 
+        .then(response => response.json())
+        .then(data => {
+            const typesSet = new Set();
+            data.features.forEach(feature => {
+                const option = document.createElement('option');
+                option.value = feature.id;
+                option.textContent = feature.properties.popup || 'POI ' + feature.id;
+                select.appendChild(option);
+                poiData[feature.id] = feature;
+                if (feature.properties.type) {
+                    typesSet.add(feature.properties.type);
+                }
+            });
+            typesSet.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                typeSelect.appendChild(option);
+            });
+        
+            select.addEventListener('change', function() {
+                const selectedId = this.value;
+                const longitudeInput = document.querySelector('#modifForm input[placeholder^="exemple"]');
+                const latitudeInput = document.querySelector('#modifForm input[placeholder^="48."]');
+                if (poiData[selectedId]) {
+                    const coords = poiData[selectedId].geometry.coordinates;
+                    longitudeInput.value = coords[0];
+                    latitudeInput.value = coords[1];
+                    if (poiData[selectedId].properties.type) {
+                        document.getElementById('typeSelect').value = poiData[selectedId].properties.type;
+                    }
+                } else {
+                    longitudeInput.value = '';
+                    latitudeInput.value = '';
+                    document.getElementById('typeSelect').value = '';
+                }
+            });
+        });
+}
+
+// Attach the refresh function to the button
+document.getElementById('refreshModify').addEventListener('click', reloadPoiData);
+
 document.getElementById('poiForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const form = e.target;
@@ -86,28 +248,6 @@ document.getElementById('poiForm').addEventListener('submit', function(e) {
     } else {
         form.submit(); // fallback for other types
     }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('/poi') // Your JSON endpoint
-        .then(response => response.json())
-        .then(data => {
-            const select = document.getElementById('poiId');
-            data.features.forEach(feature => {
-                const option = document.createElement('option');
-                option.value = feature.id;
-                option.textContent = feature.properties.popup || 'POI ' + feature.id;
-                select.appendChild(option);
-            });
-        });
-
-    document.getElementById('modifForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const poiId = document.getElementById('poiId').value;
-        if (poiId) {
-            window.location.href = '/updatePoi/' + poiId;
-        }
-    });
 });
 </script>
 {% endblock %}
