@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello IndexController!{% endblock %}
+
+{% block body %}
+<a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
+<img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+</a>
+    <h1>Ajouter un partenaire</h1>
+<div class="form">
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">Ajouter</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
