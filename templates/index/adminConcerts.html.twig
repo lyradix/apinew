@@ -9,9 +9,23 @@
 </style>
 
 <div class="example-wrapper">
-      <a href="{{ path('app_adminConcerts') }}"> 
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    {% if app.user %}
+        <div class="mb-3">
+            Vous êtes connecter en tant que {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+
+    <a href="{{ path('app_adminConcerts') }}"> 
         <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
      </a>
+
+     
+
     <h1>{{ controller_name }}</h1>
     
     <a href="{{ path('app_pois') }}" > 
@@ -20,7 +34,15 @@
     <a href="{{ path('app_add_partner') }}">
     <button class="box">Ajouter ou modifier un Partenaire Commercial</button>
     </a>
-    <button class="box">Ajouter ou modifier une info générale</button>
+
+    {% if info is defined %}
+        <a href="{{ path('app_updateInfo', {'id': info.id}) }}">
+            <button class="box">Ajouter ou modifier une info générale</button>
+        </a>
+    {% else %}
+        <button class="box" disabled>Aucune info à modifier</button>
+    {% endif %}
+
     <button class="box">Ajouter un nouvel utilisateur</button>
     <img class="profile" src="{{ asset('images/profil.png') }}" alt="profil">
 
@@ -52,33 +74,7 @@
 
     </ul>
 
-    <button class="box">Retour</button>
+<button class="box" type="button" onclick="window.history.back()">Retour</button>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.delBtn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const concertId = this.getAttribute('data-id');
-            if (window.confirm('Supprimer ce concert ?')) {
-                fetch('/deleteConcert/' + concertId, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        // Optionally remove the concert from the DOM
-                        this.closest('li').remove();
-                    } else {
-                        alert('Erreur lors de la suppression.');
-                    }
-                });
-            }
-        });
-    });
-});
-</script>
+<script src="{{ asset('js/adminConcerts.js') }}"></script>
 {% endblock %}

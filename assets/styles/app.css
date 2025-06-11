@@ -64,6 +64,12 @@ li{
     background-color: #E5C8C8;
 }
 
+.radio{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1em;
+    
+}
 .delBtn{
       margin: 1rem;;
     width: 40px !important;

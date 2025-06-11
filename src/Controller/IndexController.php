@@ -9,6 +9,7 @@ use App\Entity\Artist;
 use App\Entity\Info;
 use App\Form\ModifPlaceType;
 use App\Form\NewSceneType;
+use App\Form\UpdateInfoType;
 use App\Repository\ArtistRepository;
 use App\Repository\InfoRepository;
 use App\Repository\PartnersRepository;
@@ -40,14 +41,18 @@ final class IndexController extends ApiController
 
     #[Route('/admin-concerts', name: 'app_adminConcerts')]
     public function adminConcerts(
-        ArtistRepository $ArtistRepository
+        ArtistRepository $ArtistRepository,
+        InfoRepository $infoRepository
     ): Response
     {
         $concerts = $ArtistRepository->findAllWithScenes();
+        $info = $infoRepository->findOneBy([]); // Gets the first Info entity, or null if none
+
         return $this->render('index/adminConcerts.html.twig', [
-        'controller_name' => 'Administration concerts',
-        'concerts' => $concerts,
-    ]);
+            'concerts' => $concerts,
+            'info' => $info,
+            'controller_name' => 'Administration Concerts',
+        ]);
      
     }
 
@@ -267,40 +272,65 @@ public function postPoi(
     }
 
 
-    #[Route('/updateInfo', name: 'app-updateInfo', methods: ['PUT'])]
-    public function putInfo(HttpFoundationRequest $request,
-    infoRepository $infoRepository,
-    SerializerInterface $serializer,
-    EntityManagerInterface $entityManager): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        if (!isset($data['id'])) {
-            return new JsonResponse(['error' => 'Info ID is required'], Response::HTTP_BAD_REQUEST);
-        }
-
-        $info = $infoRepository->find($data['id']);
-        if (!$info) {
-            return new JsonResponse(['error' => 'Info introuvable'], Response::HTTP_NOT_FOUND);
-        }
-
-        if (isset($data['title'])) {
-            $info->setTitle($data['title']);
-        }
-        if (isset($data['descriptif'])) {
-            $info->setDescriptif($data['descriptif']);
-        }
-        if (isset($data['type'])) {
-            $info->setType($data['type']);
-        }
-
-        $entityManager->persist($info);
-        $entityManager->flush();
-
-        $jsonData = $serializer->serialize($info, 'json', ['groups' => ['info:read']]);
-
-        return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
+    #[Route('/updateInfo/{id}', name: 'app_updateInfo', methods: ['GET', 'POST'])]
+public function updateInfo(
+    int $id,
+    Request $request,
+    InfoRepository $infoRepository,
+    EntityManagerInterface $entityManager
+): Response {
+    $info = $infoRepository->find($id);
+    if (!$info) {
+        $this->addFlash('danger', 'Info introuvable.');
+        return $this->redirectToRoute('app_info');
     }
- 
+
+    $titles = $entityManager->getRepository(Info::class)
+    ->createQueryBuilder('i')
+    ->select('i.title')
+    ->distinct()
+    ->getQuery()
+    ->getResult();
+
+$titleChoices = [];
+foreach ($titles as $row) {
+    $titleChoices[$row['title']] = $row['title'];
+}
+
+$types = $entityManager->getRepository(Info::class)
+    ->createQueryBuilder('i')
+    ->select('i.type')
+    ->distinct()
+    ->getQuery()
+    ->getResult();
+
+$typeChoices = [];
+foreach ($types as $row) {
+    $typeChoices[$row['type']] = $row['type'];
+}
+
+$form = $this->createForm(UpdateInfoType::class, $info, [
+    'title_choices' => $titleChoices,
+    'type_choices' => $typeChoices,
+]);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->flush();
+        $this->addFlash('success', 'Info modifiée avec succès.');
+        return $this->redirectToRoute('app_info');
+    }
+
+    $infos = $infoRepository->findAll();
+    $titleToId = [];
+    foreach ($infos as $info) {
+        $titleToId[$info->getTitle()] = $info->getId();
+    }
+    return $this->render('info/update.html.twig', [
+        'form' => $form->createView(),
+        'title_to_id' => $titleToId,
+    ]);
+}
 
     #[Route('/partners', name: 'app_partners')]
     public function getPartners(PartnersRepository $PartnersRepository, SerializerInterface $serializer): JsonResponse
@@ -799,6 +829,42 @@ public function addPartner(
     return $this->render('partners/add.html.twig', [
         'form' => $form->createView(),
     ]);
+}
+
+#[Route('/update-partner', name: 'app_update_partner', methods: ['PUT'])]
+public function updatePartner(
+    Request $request,
+    EntityManagerInterface $entityManager,
+    PartnersRepository $partnersRepository
+): JsonResponse {
+    $data = json_decode($request->getContent(), true);
+
+    if (!isset($data['id'])) {
+        return new JsonResponse(['error' => 'Partner ID is required'], JsonResponse::HTTP_BAD_REQUEST);
+    }
+
+    $partner = $partnersRepository->find($data['id']);
+    if (!$partner) {
+        return new JsonResponse(['error' => 'Partner not found'], JsonResponse::HTTP_NOT_FOUND);
+    }
+
+    // Update fields if provided
+    if (isset($data['title'])) {
+        $partner->setTitle($data['title']);
+    }
+    if (isset($data['type'])) {
+        $partner->setType($data['type']);
+    }
+    if (isset($data['link'])) {
+        $partner->setLink($data['link']);
+    }
+    if (isset($data['frontPage'])) {
+        $partner->setFrontPage((bool)$data['frontPage']);
+    }
+
+    $entityManager->flush();
+
+    return new JsonResponse(['success' => true, 'message' => 'Partner updated successfully.']);
 }
 }
 

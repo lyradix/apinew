@@ -14,7 +14,13 @@ class LoginType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email')
+            ->add('email', null, [
+                'label' => 'Email',
+                'attr' => [
+                    'autocomplete' => 'email',
+                    'class' => 'form-control',
+                ],
+            ])
             ->add('password', PasswordType::class)
             ->add('_csrf_token', HiddenType::class, [
                 'mapped' => false,

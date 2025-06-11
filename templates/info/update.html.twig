@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello IndexController!{% endblock %}
+
+{% block body %}
+<a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
+    <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+</a>
+    <h1>Modifier une info</h1>
+    <div class="form">
+    {{ form_start(form) }}
+        <div style="display: flex; align-items: center; gap: 10px;">
+            {{ form_widget(form.title) }}
+            <button type="button" id="refreshInfoBtn" style="height: 38px;">Charger cette info</button>
+        </div>
+        {{ form_widget(form.type) }}
+        {{ form_widget(form.descriptif) }}
+        <button type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+    </div>
+<script>
+const infoData = {
+    'Titre générale': { type: 'Générale', descriptif: 'Description générale...' },
+    'Titre pratique': { type: 'Pratique', descriptif: 'Description pratique...' },
+    'Titre sécurité': { type: 'Sécurité', descriptif: 'Description sécurité...' }
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const titleSelect = document.getElementById('{{ form.title.vars.id }}');
+    const typeSelect = document.getElementById('{{ form.type.vars.id }}');
+    const descInput = document.getElementById('{{ form.descriptif.vars.id }}');
+    const refreshBtn = document.getElementById('refreshInfoBtn');
+    // Map titles to their info IDs (you must pass this from your controller)
+    const titleToId = {{ title_to_id|json_encode|raw }};
+
+    titleSelect.addEventListener('change', function() {
+        const selected = this.value;
+        if (infoData[selected]) {
+            typeSelect.value = infoData[selected].type;
+            descInput.value = infoData[selected].descriptif;
+        } else {
+            typeSelect.value = '';
+            descInput.value = '';
+        }
+    });
+
+    refreshBtn.addEventListener('click', function() {
+        const selectedTitle = titleSelect.value;
+        if (titleToId[selectedTitle]) {
+            window.location.href = "{{ path('app_updateInfo', {'id': 'INFO_ID'}) }}".replace('INFO_ID', titleToId[selectedTitle]);
+        } else {
+            alert('Veuillez sélectionner un titre valide.');
+        }
+    });
+});
+</script>
+{% endblock %}

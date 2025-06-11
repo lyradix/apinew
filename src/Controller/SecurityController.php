@@ -41,6 +41,19 @@ class SecurityController extends AbstractController
         throw new \LogicException('');
     }
 
-   
+    #[Route('/register-admin', name: 'app_register_admin')]
+    public function registerAdmin(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    {
+        $user = new User();
+        $user->setEmail(User::DEFAULT_ADMIN_EMAIL);
+        $user->setRoles(['ROLE_ADMIN']);
+        $user->setPassword(
+            $passwordHasher->hashPassword($user, User::DEFAULT_ADMIN_PASSWORD)
+        );
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return new Response('Admin créé avec succés!');
+    }
 }
 

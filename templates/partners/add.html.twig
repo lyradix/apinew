@@ -6,20 +6,57 @@
 <a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
     <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
 </a>
-<h1>Ajouter un partenaire commercial</h1>
-<div class="form">
-{{ form_start(form) }}
-    {{ form_row(form.title) }}
-    {{ form_row(form.frontPage) }}
-    {{ form_row(form.type) }}
-    {{ form_row(form.link) }}
-    <button type="submit">Ajouter</button>
-{{ form_end(form) }}
+<h1>Ajouter ou modifer un partenaire commercial</h1>
+<div class="radio">
+    <label>
+        <input type="radio" name="formMode" value="add" checked>
+        Ajouter
+    </label>
+    <label style="display: inline-flex; align-items: center;">
+        <input type="radio" name="formMode" value="modify" id="modifyRadio">
+        Modifier
+    </label>
 </div>
+
+<div class="form">
+<div id="addForm">
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.frontPage) }}
+        {{ form_row(form.type) }}
+        {{ form_row(form.link) }}
+        <button type="submit">Ajouter</button>
+        <button class="box" type="button" onclick="window.history.back()">Retour</button>
+    {{ form_end(form) }}
+</div>
+<div id="modifyForm"  style="display:none;">
+    <form id="modifForm" method="get">
+        <label for="Id">Sélectionnez le partenaire :</label>
+        <select name="Id" id="Id" required>
+            <option value="">-- Choisir un partenaire --</option>
+            <!-- Options will be filled by JS -->
+        </select>
+        <label>Page d'accueil</label>
+        <input type="checkbox">
+        <label>Type</label>  
+        <select name="type" id="typeSelect" required>
+            <option value="">-- Choisir un type --</option>
+            <!-- Options will be filled by JS -->
+        </select>
+        <label>lien</label>
+        <input name="link">
+        <button type="submit">Modifier</button>
+        <button class="box" type="button" onclick="window.history.back()">Retour</button>
+    </form>
+</div>
+</div>
+
 
 {% for message in app.flashes('success') %}
     <script>
         alert("{{ message|e('js') }}");
     </script>
 {% endfor %}
+
+<script src="{{ asset('js/addPartners.js') }}"></script>
 {% endblock %}
