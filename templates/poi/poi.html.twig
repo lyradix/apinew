@@ -32,11 +32,17 @@
 
 <div id="modifyForm" class="form" style="display:none;">
     <form id="modifForm" method="get">
-        <label for="poiId">Sélectionnez le lieu à modifier :</label>
-        <select name="poiId" id="poiId" required>
-            <option value="">-- Choisir un lieu --</option>
-            <!-- Options will be filled by JS -->
-        </select>
+
+         <div>
+            <label for="poiId">Sélectionnez le lieu à modifier :</label>
+            <select name="poiId" id="poiId" required>
+                <option value="">-- Choisir un lieu --</option>
+                <!-- Options rempli par javasScript -->
+            </select>
+            <button class="delBtn" >
+                <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
+            </button>
+        </div>
         <label>Longitude</label>
         <input name="longitude" placeholder="exemple:2.4566">
         <label>Latitude</label>
@@ -44,7 +50,7 @@
          <label>Sélectionnez le type :</label>
         <select name="type" id="typeSelect" required>
             <option value="">-- Choisir un type --</option>
-            <!-- Options will be filled by JS -->
+            <!-- Options remplis par javasScript -->
         </select>
         <button type="submit">Modifier</button>
         <button class="box" type="button" onclick="window.history.back()">Retour</button>

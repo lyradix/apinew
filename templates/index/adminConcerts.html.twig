@@ -15,8 +15,11 @@
     {% endif %}
 
     {% if app.user %}
-        <div class="mb-3">
-            Vous êtes connecter en tant que {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+        <div class="user-status-bar">
+            <h2>
+            Vous êtes connecté en tant que    
+            </h2> 
+            <div class="navli">{{ app.user.userIdentifier }}</div>
         </div>
     {% endif %}
 
@@ -24,7 +27,20 @@
         <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
      </a>
 
-     
+    <div class="profile-bar">
+        <span class="boxli">+</span>
+        <div class="profileContainer">
+            <img class="profile" id="profileImg" src="{{ asset('images/profil.png') }}" alt="profil">
+            <div id="profileDropdown" class="dropdownMenu" style="display:none;">
+                <ul>
+                <a href="{{ path('app_login') }}">
+                    <li class="navliProfil">s'identifier</li>
+                </a>
+                    <li class="navliProfil" id="logoutBtn">Déconnexion</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <h1>{{ controller_name }}</h1>
     
@@ -43,8 +59,7 @@
         <button class="box" disabled>Aucune info à modifier</button>
     {% endif %}
 
-    <button class="box">Ajouter un nouvel utilisateur</button>
-    <img class="profile" src="{{ asset('images/profil.png') }}" alt="profil">
+  
 
     {# map through the Concerts #}
     <ul class="wrapbox">
@@ -76,5 +91,9 @@
 
 <button class="box" type="button" onclick="window.history.back()">Retour</button>
 </div>
+<script>
+    window.logoutUrl = "{{ path('app_logout') }}";
+</script>
+<script src="{{ asset('js/dropDown.js') }}"></script>
 <script src="{{ asset('js/adminConcerts.js') }}"></script>
 {% endblock %}

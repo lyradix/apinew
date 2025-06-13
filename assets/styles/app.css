@@ -30,6 +30,11 @@ h1{
     
 }
 
+h2{
+    font-family: bungee,Arial, sans-serif;
+    color:#fff;
+    font-size: 12px;
+}
 label{
     color:#fff;
     font-family: bungee,Arial, sans-serif;
@@ -38,6 +43,10 @@ label{
 li{
   margin: 0.5rem;
   list-style: none;
+}
+
+a{
+    text-decoration: none;
 }
 
 .profile{
@@ -124,6 +133,32 @@ section{
     /* overflow-y: scroll;
     scrollbar-width: thin; */
     /* scrollbar-color: #3eb885 #f1f1f1; For Firefox */
+}
+
+.profile-bar{
+    position: absolute;
+    top: 5rem;
+    right: 30%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: transparent;
+}
+.boxli{
+    color:#E5C8C8;
+    background-color:transparent;
+    padding: 3px;
+    border-radius: 8px;
+    font-size: 5rem;
+    font-weight: bold;
+    left: 5rem;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.boxli:hover{
+    opacity: 1;
 }
 
 .boxconcert, .boxNewUser {
@@ -251,7 +286,7 @@ width: 200px;
 .form select {
     width: 50%;
     padding: 10px;
-    margin-bottom: 15px;
+  
     border: 1px solid #E5C8C8 !important;
     border-radius: 5rem;
 }
@@ -266,7 +301,7 @@ width: 200px;
 }
 
 .form button {
-    margin-top: 7px;
+    margin-top: 10px;
     padding: 10px;
     color: #096662 !important;
     background-color: #E5C8C8 !important;
@@ -290,9 +325,214 @@ width: 200px;
     transition: 500ms;
 }
 .form .error {
-    color: red;
+
     font-size: 0.9rem;
     margin-top: -10px;
     margin-bottom: 10px;
 }
+
+.wrapbtn{
+     display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 1rem;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.navli {
+    text-align: center;   
+    width: 80%;    
+    margin: 0.02rem; 
+    padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+    background-color: #096662;
+    color: #fff;
+    border-radius: 0.5rem;
+    font-family: bungee, Arial, sans-serif;
+    transition: opacity 0.2s;
+    box-sizing: border-box;
+}
+
+.user-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; 
+    margin-bottom: 1rem;
+}
+
+.user-status-bar .navli {
+    width: auto;          
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    background-color: #096662;
+    color: #fff;
+    border-radius: 0.5rem;
+    font-family: bungee, Arial, sans-serif;
+    font-size: 16px;
+    transition: opacity 0.2s;
+    box-sizing: border-box;
+}
+
+.dropdownMenu {
+    display: none;
+    position: absolute;
+    top: 100%;     
+    left: 0;  
+    transform: translateX(-50%);
+    margin-left: 8px; 
+    min-width: 140px;
+    max-width: 200px;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 8px 0;
+    z-index: 1000;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.dropdownMenu ul {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+}
+
+.navliProfil {
+    width: 100%;
+    text-align: left;       
+    margin: 0.02rem; 
+    padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+    background-color: #096662;
+    color: #fff;
+    border-radius: 0.5rem;
+    font-size: 16px;
+    font-family: bungee, Arial, sans-serif;
+    opacity: 0.8;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    box-sizing: border-box;
+}
+
+.navliProfil:focus,
+.navliProfil:hover {
+    opacity: 1;
+}
+
+.profileContainer {
+    position: relative; 
+    display: inline-block; 
+    cursor: pointer;
+    vertical-align: middle;
+    z-index: 2;
+}
+
+.profileContainer img.profile {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+.profileContainer img.profile:active {
+    transform: scale(1); 
+    outline: none; 
+}
+
+.profileContainer img.profile:focus {
+    outline: none; 
+}
+
+.dropdownMenu {
+    position:absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width:auto;
+    height: auto;
+    background-color: #E5C8C8;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropDownItem, .li{
+    color:#ffffff;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.dropDownItem:hover{
+    opacity: 1;
+}
+
+
+
+    .profileContainer {
+        display: inline-block;
+    }
+    
+    .dropdownMenu {
+       display: none;
+    }
+
+    /* .sidebarMenuProfile{
+        padding-top: 50%;
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #096662;
+        width:57.3%;
+        height: 100rem;
+        top:0px;
+        z-index: 4;
+    } */
+
+    .navliProfil{
+        list-style: none;
+        color:#ffffff;
+        font-size:18px ; 
+        font-family: bungee,Arial, sans-serif;
+        background-color: #096662;
+        opacity: 0.8;
+        border-radius: 0.5rem;
+        width: 100%;
+    }
+
+    .navliProfil:focus, .navliProfil:hover{
+        opacity: 1;
+    }
+
+
+
+    .navliProfil{
+        list-style: none;
+        color:#ffffff;
+        font-size:18px ; 
+        font-family: bungee,Arial, sans-serif;
+        padding: 0.3rem 1rem;
+        margin-top: 0 0.5rem;
+        background-color: #096662;
+        opacity: 0.8;
+        border-radius: 0.5rem;
+        width: 100%;
+    }
+
 

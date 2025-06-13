@@ -4,8 +4,68 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "85bbf483a0bd5784e7b2ba69bbd2fe16",
+    "content-hash": "c0d201870971b60e7d36d8b5bb9399ce",
     "packages": [
+        {
+            "name": "bcremer/doctrine-mysql-spatial",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bcremer/doctrine-mysql-spatial.git",
+                "reference": "58ea5fae1c1b450ee08d7dac25cd9e8f5e6fdebd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bcremer/doctrine-mysql-spatial/zipball/58ea5fae1c1b450ee08d7dac25cd9e8f5e6fdebd",
+                "reference": "58ea5fae1c1b450ee08d7dac25cd9e8f5e6fdebd",
+                "shasum": ""
+            },
+            "require": {
+                "creof/geo-parser": "~2.0",
+                "creof/wkb-parser": "~2.0",
+                "creof/wkt-parser": "~2.0",
+                "doctrine/orm": ">=2.3"
+            },
+            "require-dev": {
+                "phpunit/phpcov": "*",
+                "phpunit/phpunit": "<5.0",
+                "satooshi/php-coveralls": "~1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "CrEOF\\Spatial": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Derek Lambert",
+                    "email": "dlambert@dereklambert.com"
+                }
+            ],
+            "description": "Doctrine2 multi-platform support for spatial types and functions",
+            "keywords": [
+                "database",
+                "dbal",
+                "geography",
+                "geometry",
+                "gis",
+                "mysql",
+                "opengis",
+                "orm",
+                "postgis",
+                "postgresql",
+                "spatial"
+            ],
+            "support": {
+                "source": "https://github.com/bcremer/doctrine-mysql-spatial/tree/1.2.0"
+            },
+            "time": "2017-07-13T16:48:25+00:00"
+        },
         {
             "name": "composer/semver",
             "version": "3.4.3",
@@ -86,67 +146,6 @@
                 }
             ],
             "time": "2024-09-19T14:15:21+00:00"
-        },
-        {
-            "name": "creof/doctrine2-spatial",
-            "version": "1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/creof/doctrine2-spatial.git",
-                "reference": "58ea5fae1c1b450ee08d7dac25cd9e8f5e6fdebd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/creof/doctrine2-spatial/zipball/58ea5fae1c1b450ee08d7dac25cd9e8f5e6fdebd",
-                "reference": "58ea5fae1c1b450ee08d7dac25cd9e8f5e6fdebd",
-                "shasum": ""
-            },
-            "require": {
-                "creof/geo-parser": "~2.0",
-                "creof/wkb-parser": "~2.0",
-                "creof/wkt-parser": "~2.0",
-                "doctrine/orm": ">=2.3"
-            },
-            "require-dev": {
-                "phpunit/phpcov": "*",
-                "phpunit/phpunit": "<5.0",
-                "satooshi/php-coveralls": "~1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "CrEOF\\Spatial": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Derek Lambert",
-                    "email": "dlambert@dereklambert.com"
-                }
-            ],
-            "description": "Doctrine2 multi-platform support for spatial types and functions",
-            "keywords": [
-                "database",
-                "dbal",
-                "geography",
-                "geometry",
-                "gis",
-                "mysql",
-                "opengis",
-                "orm",
-                "postgis",
-                "postgresql",
-                "spatial"
-            ],
-            "support": {
-                "issues": "https://github.com/creof/doctrine2-spatial/issues",
-                "source": "https://github.com/creof/doctrine2-spatial/tree/master"
-            },
-            "time": "2017-07-13T16:48:25+00:00"
         },
         {
             "name": "creof/geo-parser",
@@ -7931,6 +7930,175 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "doctrine/data-fixtures",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/data-fixtures.git",
+                "reference": "f7f1e12d6bceb58c204b3e77210a103c1c57601e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/f7f1e12d6bceb58c204b3e77210a103c1c57601e",
+                "reference": "f7f1e12d6bceb58c204b3e77210a103c1c57601e",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/persistence": "^3.1 || ^4.0",
+                "php": "^8.1",
+                "psr/log": "^1.1 || ^2 || ^3"
+            },
+            "conflict": {
+                "doctrine/dbal": "<3.5 || >=5",
+                "doctrine/orm": "<2.14 || >=4",
+                "doctrine/phpcr-odm": "<1.3.0"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^12",
+                "doctrine/dbal": "^3.5 || ^4",
+                "doctrine/mongodb-odm": "^1.3.0 || ^2.0.0",
+                "doctrine/orm": "^2.14 || ^3",
+                "ext-sqlite3": "*",
+                "fig/log-test": "^1",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.5.3",
+                "symfony/cache": "^6.4 || ^7",
+                "symfony/var-exporter": "^6.4 || ^7"
+            },
+            "suggest": {
+                "alcaeus/mongo-php-adapter": "For using MongoDB ODM 1.3 with PHP 7 (deprecated)",
+                "doctrine/mongodb-odm": "For loading MongoDB ODM fixtures",
+                "doctrine/orm": "For loading ORM fixtures",
+                "doctrine/phpcr-odm": "For loading PHPCR ODM fixtures"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Common\\DataFixtures\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                }
+            ],
+            "description": "Data Fixtures for all Doctrine Object Managers",
+            "homepage": "https://www.doctrine-project.org",
+            "keywords": [
+                "database"
+            ],
+            "support": {
+                "issues": "https://github.com/doctrine/data-fixtures/issues",
+                "source": "https://github.com/doctrine/data-fixtures/tree/2.0.2"
+            },
+            "funding": [
+                {
+                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/phpdoctrine",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fdata-fixtures",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-01-21T13:21:31+00:00"
+        },
+        {
+            "name": "doctrine/doctrine-fixtures-bundle",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/DoctrineFixturesBundle.git",
+                "reference": "a06db6b81ff20a2980bf92063d80c013bb8b4b7c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/DoctrineFixturesBundle/zipball/a06db6b81ff20a2980bf92063d80c013bb8b4b7c",
+                "reference": "a06db6b81ff20a2980bf92063d80c013bb8b4b7c",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/data-fixtures": "^2.0",
+                "doctrine/doctrine-bundle": "^2.2",
+                "doctrine/orm": "^2.14.0 || ^3.0",
+                "doctrine/persistence": "^2.4 || ^3.0 || ^4.0",
+                "php": "^8.1",
+                "psr/log": "^2 || ^3",
+                "symfony/config": "^6.4 || ^7.0",
+                "symfony/console": "^6.4 || ^7.0",
+                "symfony/dependency-injection": "^6.4 || ^7.0",
+                "symfony/deprecation-contracts": "^2.1 || ^3",
+                "symfony/doctrine-bridge": "^6.4.16 || ^7.1.9",
+                "symfony/http-kernel": "^6.4 || ^7.0"
+            },
+            "conflict": {
+                "doctrine/dbal": "< 3"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "13.0.0",
+                "phpstan/phpstan": "2.1.11",
+                "phpunit/phpunit": "^10.5.38 || 11.4.14"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Bundle\\FixturesBundle\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Doctrine Project",
+                    "homepage": "https://www.doctrine-project.org"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony DoctrineFixturesBundle",
+            "homepage": "https://www.doctrine-project.org",
+            "keywords": [
+                "Fixture",
+                "persistence"
+            ],
+            "support": {
+                "issues": "https://github.com/doctrine/DoctrineFixturesBundle/issues",
+                "source": "https://github.com/doctrine/DoctrineFixturesBundle/tree/4.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/phpdoctrine",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fdoctrine-fixtures-bundle",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-03-26T10:56:26+00:00"
+        },
         {
             "name": "masterminds/html5",
             "version": "2.9.0",

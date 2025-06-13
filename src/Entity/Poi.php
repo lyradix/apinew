@@ -6,6 +6,7 @@ use App\Repository\PoiRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PoiRepository::class)]
 
@@ -30,9 +31,19 @@ class Poi
     private ?string $nom = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\NotBlank(message: 'La longitude ne doit pas être vide')]
+    #[Assert\Regex(
+        pattern: '/^-?\d+(\.\d+)?$/',
+        message: 'La longitude doit être un nombre valide'
+    )]
     private ?string $longitude = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\NotBlank(message: 'La latitude ne doit pas être vide')]
+    #[Assert\Regex(
+        pattern: '/^-?\d+(\.\d+)?$/',
+        message: 'La latitude doit être un nombre valide'
+    )]
     private ?string $latitude = null;
 
     public function getId(): ?int
