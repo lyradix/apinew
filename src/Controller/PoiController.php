@@ -18,13 +18,15 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class PoiController extends AbstractController
 {
+
+    // Route pour créer un point d'intérêt (POI)
     #[Route('/create-poi', name: 'create_poi', methods: ['POST'])]
     public function createPoi(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $user = $this->validateToken($request);
 
         if (!$user instanceof User) {
-            return $user; // Return the error response from validateToken()
+            return $user; 
         }
 
         $data = json_decode($request->getContent(), true);
@@ -34,7 +36,7 @@ final class PoiController extends AbstractController
         }
 
         $poi = new Poi();
-        $poi->setId($data['id']); // Manually assign the ID
+        $poi->setId($data['id']);
         $poi->setType($data['type']);
         $poi->setProperties($data['properties']);
         $poi->setGeometry($data['geometry']);
@@ -48,13 +50,12 @@ final class PoiController extends AbstractController
     #[Route('/poi', name: 'app_poi', methods: ['GET'])]
     public function getData(EntityManagerInterface $entityManager): JsonResponse
     {
-        // Use Doctrine's DBAL connection to execute a raw SQL query
+     // à revoir
         $connection = $entityManager->getConnection();
         $sql = 'SELECT id, type, properties, ST_AsGeoJSON(geometry) AS geometry FROM poi';
         $stmt = $connection->prepare($sql);
         $result = $stmt->executeQuery()->fetchAllAssociative();
 
-        // Build the GeoJSON structure
         $geoJson = [
             'type' => 'FeatureCollection',
             'features' => array_map(function ($row) {
@@ -70,7 +71,7 @@ final class PoiController extends AbstractController
         return new JsonResponse($geoJson, JsonResponse::HTTP_OK);
     }
 
-    
+    // route pour créer un point d'intérêt (POI) avec des coordonnées
     #[Route('/postPlace', name: 'app_Place', methods: ['POST'])]
     public function postCoordinates(
         HttpFoundationRequest $request,

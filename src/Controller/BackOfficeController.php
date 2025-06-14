@@ -528,6 +528,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     //     return $user;
     // }
 
+    // Route pour supprimer un POI
     #[Route('/deletePoi/{id}', name: 'delete_poi', methods: ['POST'])]
     public function deletePoi(
         int $id,
@@ -562,6 +563,8 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return $this->redirectToRoute('app_render_updatePoi');
     }
 
+
+    // Route pour afficher le formulaire de création d'un nouveau lieu
     #[Route('/render-new-place', name: 'app_render_newPlace')]
     public function renderNewPlace(): Response
     {
@@ -586,10 +589,10 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         ];
     }
 
-    // Add this before rendering the template
+// nouveau POI pour le formulaire d'ajout
     $poi = new Poi();
 
-    // Get unique types for the add form (reuse your logic)
+  // Requête SQL pour extraire les types uniques de poi
     $connection = $entityManager->getConnection();
     $sql = "SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type FROM poi WHERE JSON_EXTRACT(properties, '$.type') IS NOT NULL";
     $result = $connection->executeQuery($sql)->fetchAllAssociative();
@@ -604,7 +607,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     'type_choices' => $typeChoices,
     ]);
 
-    // If you also need the modify form:
+    // les choix de poi sont en forme de tableau
     $poiChoices = [];
     foreach ($pois as $poi) {
     $poiChoices[$poi->properties->popup] = $poi->id;
@@ -616,14 +619,17 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     return $this->render('poi/poi.html.twig', [
         'formAddPoi' => $formAddPoi->createView(),
         'formModifPoi' => $formModifPoi->createView(),
-        'pois' => $pois, // <-- Add this line!
+        'pois' => $pois, 
     ]);
     }
 
+
+    // Route pour afficher la page de mise à jour des POI
     #[Route('/render-update-poi', name: 'app_render_updatePoi')]
     public function renderUpdatePoi(EntityManagerInterface $entityManager): Response
     {
-    // Fetch all POIs
+    
+        // Réccupération des POI depuis la base de données
     $connection = $entityManager->getConnection();
     $poisResult = $connection->executeQuery(
         "SELECT id, JSON_UNQUOTE(JSON_EXTRACT(properties, '$.popup')) AS popup 
@@ -654,6 +660,8 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         'pois' => $pois,
     ]);
     }
+
+    // Route pour mettre à jour un POI avec la méthode PUT
     #[Route('/updatePoi', name: 'update_poi', methods: ['PUT'])]
     public function updatePoi(
         HttpFoundationRequest $request,
@@ -661,24 +669,24 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
-        // Validate required fields
+     // vérifier si les données nécessaires sont présentes
         if (!isset($data['id'], $data['popup'], $data['longitude'], $data['latitude'], $data['type'])) {
             return new JsonResponse(['error' => 'Invalid data. "id", "popup", "longitude", "latitude", and "type" are required.'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        // Validate longitude and latitude
+        // vérifier la longitude et la latitude
         if ($data['longitude'] < -180 || $data['longitude'] > 180 || $data['latitude'] < -90 || $data['latitude'] > 90) {
             return new JsonResponse(['error' => 'Invalid longitude or latitude values.'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
         try {
-            // Construct GeoJSON format
+            // construire le GeoJSON pour la géométrie avec les données type : point et les coordonnées
             $geoJson = json_encode([
                 'type' => 'Point',
                 'coordinates' => [(float)$data['longitude'], (float)$data['latitude']]
             ]);
 
-            // Preset properties
+            // Preset properties pour le POI
             $presetProperties = [
                 'popup' => $data['popup'],
                 'type' => $data['type'],
@@ -687,7 +695,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
                 'image' => 'tent'
             ];
 
-            // Update the Poi record using raw SQL
+            // Mise à jour du POI dans la base de données
             $sql = 'UPDATE poi SET type = :type, properties = :properties, geometry = ST_GeomFromGeoJSON(:geometry) WHERE id = :id';
             $stmt = $entityManager->getConnection()->prepare($sql);
 
@@ -698,13 +706,13 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
                 'geometry' => $geoJson
             ]);
 
-            // Log the update
+           
             error_log('Updated Poi ID: ' . $data['id']);
 
-            // Return success response
+        // retourne une réponse JSON
             return new JsonResponse(['message' => 'Poi updated successfully.'], JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
-            // Log the exception details
+ 
             error_log('Exception occurred: ' . $e->getMessage());
             error_log('Exception trace: ' . $e->getTraceAsString());
 
@@ -715,6 +723,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         }
     }
 
+    // Route pour ajouter un partenaire
     #[Route('/add-partner', name: 'app_add_partner', methods: ['GET', 'POST'])]
     public function addPartner(
     Request $request,
@@ -728,7 +737,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     if ($form->isSubmitted() && $form->isValid()) {
         $type = $form->get('type')->getData();
 
-        // Determine prefix based on type
+        // Préfixes
         $prefix = '';
         if (strtolower($type) === 'restaurent') {
             $prefix = 'a';
@@ -738,13 +747,13 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
             $prefix = 'c';
         }
 
-        // Find the last partnerId with this prefix
+    
         $conn = $entityManager->getConnection();
         $sql = "SELECT partner_id FROM partners WHERE partner_id LIKE :prefix ORDER BY LENGTH(partner_id) DESC, partner_id DESC LIMIT 1";
         $last = $conn->executeQuery($sql, ['prefix' => $prefix . '%'])->fetchOne();
 
         if ($last) {
-            // Extract the numeric part and increment
+            // Extraire le numéro du dernier partenaire
             $num = (int)substr($last, 1);
             $newNum = $num + 1;
         } else {
@@ -766,6 +775,8 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ]);
     }
 
+
+    // Route pour mettre à jour un partenaire
     #[Route('/update-partner', name: 'app_update_partner', methods: ['PUT'])]
     public function updatePartner(
     Request $request,
@@ -783,7 +794,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return new JsonResponse(['error' => 'Partner not found'], JsonResponse::HTTP_NOT_FOUND);
     }
 
-    // Update fields if provided
+// si les propriétés sont définies, on les met à jour
     if (isset($data['title'])) {
         $partner->setTitle($data['title']);
     }

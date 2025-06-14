@@ -25,8 +25,10 @@
 <div id="addForm" class="form">
     <form id="poiForm" action="{{ path('post_poi') }}" method="post">
         {{ form_widget(formAddPoi) }}
+    <div class="wrapbtn">
         <button type="submit">Envoyer</button>
         <button class="box" type="button" onclick="window.history.back()">Retour</button>
+    </div>
     </form>
 </div>
 
@@ -52,8 +54,10 @@
             <option value="">-- Choisir un type --</option>
             <!-- Options remplis par javasScript -->
         </select>
+    <div class="wrapbtn">
         <button type="submit">Modifier</button>
         <button class="box" type="button" onclick="window.history.back()">Retour</button>
+    </div>
     </form>
 </div>
 
