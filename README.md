@@ -1,10 +1,18 @@
 # API and Back Office Nation Sound # 
 
-### Description
+## Description
+The back end project for the responsive website of Nation Sound, an event of 3 days near Paris.
+This app will be used for back end and API purposes. Front user will fetch data from database and admin will run different operations to 
+read, add, delete and update data in database though a user-friendly interface.
 
-## Attention to folders and files to be modified
+### To load data in database
+in cmd make :
+php bin/console doctrine:fixtures:load
+yes
 
-## For API uses
+### Attention to folders and files to be modified
+
+#### For API uses
 apinewsymfony/
 ├── config/
 │   ├── packages/
@@ -25,7 +33,7 @@ apinewsymfony/
 │   │   └── All related repositories
 ├── .env
 
-## for Back Office 
+#### for Back Office 
 apinewsymfony/
 ├── config/
 │   ├── packages/
@@ -56,7 +64,7 @@ apinewsymfony/
 ├── .env
 ├── README.md
 
-## Test
+#### Test
 
 apinewsymfony/
 │   ├── DataFixtures/
@@ -69,10 +77,10 @@ apinewsymfony/
 │   │   ├── PoiTest.php
 ├── phpunit.xml.dist
 
-## Controller and Entity
-Controler is used to 
+### Controller and Entity
+Check controller and entities to make necessary change for the routes and properties.
 
-# php folder
+### php folder
 check for php :
 php --ini
 if php is not present on local machine, download php files from php.net, save it in C: folder and locate php.ini

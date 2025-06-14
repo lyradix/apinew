@@ -350,7 +350,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
                 'coordinates' => [(float)$longitude, (float)$latitude]
             ]);
 
-            // Insert POI
+            //Inserer donnée poi avec raw SQL
             $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
             $stmt = $entityManager->getConnection()->prepare($sql);
             $stmt->executeStatement([
@@ -360,7 +360,8 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
             ]);
             $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
 
-            // Insert Scene
+          
+            //Inserer donnée scène avec raw SQL
             $sqlScene = 'INSERT INTO scene (poi_FK_id, nom) VALUES (:poiId, :nom)';
             $stmtScene = $entityManager->getConnection()->prepare($sqlScene);
             $stmtScene->executeStatement([
@@ -373,9 +374,9 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return new JsonResponse(['success' => false, 'message' => 'Paramètres manquants'], 400);
     }
 
-    // Handle Symfony form as before
+    // soumettre le formulaire pour ajouter une scène
     $form = $this->createForm(NewSceneType::class, null, [
-        'data_class' => null // Use array data, not an entity
+        'data_class' => null // null pour ne pas lier à une entité parce que les données sont envoyés en brutes
     ]);
     $form->handleRequest($request);
 
@@ -385,7 +386,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         $longitude = $data['longitude'];
         $latitude = $data['latitude'];
 
-        // Preset properties for Poi
+        // Propriétés preset pour la scène
         $presetProperties = [
             'popup' => $nom,
             'type' => 'scène',
@@ -394,13 +395,13 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
             'image' => 'star'
         ];
 
-        // GeoJSON geometry
+        // donnée spatiale en GeoJSON avec le type Point 
         $geoJson = json_encode([
             'type' => 'Point',
             'coordinates' => [(float)$longitude, (float)$latitude]
         ]);
 
-        // 1. Insert Poi using raw SQL
+        // insertion en SQL brute
         $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
         $stmt = $entityManager->getConnection()->prepare($sql);
         $stmt->executeStatement([
@@ -410,7 +411,8 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         ]);
         $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
 
-        // 2. Insert Scene using raw SQL
+
+        // insertion en SQL brute
         $sqlScene = 'INSERT INTO scene (poi_FK_id, nom) VALUES (:poiId, :nom)';
         $stmtScene = $entityManager->getConnection()->prepare($sqlScene);
         $stmtScene->executeStatement([
@@ -418,7 +420,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
             'nom' => $nom
         ]);
 
-        // Add success message and redirect
+        // Redirection après l'ajout de la scène
         $this->addFlash('success', 'Scène ajoutée avec succès');
         return $this->redirectToRoute('app_addConcert');
         }
@@ -428,6 +430,8 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ]);
     }
 
+
+    // Route pour ajouter un concert
     #[Route('/addConcert', name: 'app_addConcert', methods: ['GET', 'POST'])]
     public function addConcert(
     Request $request,
@@ -438,6 +442,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
 
     $form->handleRequest($request);
 
+    // Si le formulaire est soumis et valide, on persiste l'entité et on redirige
     if ($form->isSubmitted() && $form->isValid()) {
         $entityManager->persist($artist);
         $entityManager->flush();
@@ -451,6 +456,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ]);
     }
 
+    // Route pour ajouter des informations générales
     #[Route('/addInfo', name:'app_addInfo', methods:['POST'])]
     public function addInfo(
         Request $request,
@@ -459,7 +465,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ): JsonResponse{
         
         $data = Json_decode($request->getContent(), true);
-
+// Vérification des données reçues en json
         if(!isset($data['title'],
             $data['descriptif'],
             $data['type']
@@ -480,6 +486,8 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return new JsonResponse(['message' => 'info générale ajoutée avec succès'], JsonResponse::HTTP_CREATED);
     }
 
+
+    // Route pour supprimer un concert
         #[Route('/deleteConcert/{id}', name: 'delete_concert', methods: ['DELETE'])]
     public function deleteConcert(int $id, EntityManagerInterface $entityManager, ArtistRepository $artistRepository): JsonResponse
     {
@@ -492,33 +500,33 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return new JsonResponse(['error' => 'Not found'], 404);
     }
 
-        /**
+    /**
      * Validate the token from the Authorization header and return the authenticated user.
      */
-    private function validateToken(Request $request): JsonResponse|User
-    {
-        $authHeader = $request->headers->get('Authorization');
+    // private function validateToken(Request $request): JsonResponse|User
+    // {
+    //     $authHeader = $request->headers->get('Authorization');
 
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-            return new JsonResponse(['error' => 'Authentication failed: invalid or missing token.'], JsonResponse::HTTP_UNAUTHORIZED);
-        }
+    //     if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+    //         return new JsonResponse(['error' => 'Authentication failed: invalid or missing token.'], JsonResponse::HTTP_UNAUTHORIZED);
+    //     }
 
-        $token = substr($authHeader, 7);
+    //     $token = substr($authHeader, 7);
 
-        // Find the user by the token
-        $user = $this->userRepository->findOneBy(['apiToken' => $token]);
+    //     // Find the user by the token
+    //     $user = $this->userRepository->findOneBy(['apiToken' => $token]);
 
-        if (!$user) {
-            return new JsonResponse(['error' => 'Authentication failed: invalid user'], JsonResponse::HTTP_UNAUTHORIZED);
-        }
+    //     if (!$user) {
+    //         return new JsonResponse(['error' => 'Authentication failed: invalid user'], JsonResponse::HTTP_UNAUTHORIZED);
+    //     }
 
-        // Check if the user has the ROLE_USER role
-        if (!in_array('ROLE_USER', $user->getRoles())) {
-            return new JsonResponse(['error' => 'Authentication failed: invalid roles.'], JsonResponse::HTTP_UNAUTHORIZED);
-        }
+    //     // Check if the user has the ROLE_USER role
+    //     if (!in_array('ROLE_USER', $user->getRoles())) {
+    //         return new JsonResponse(['error' => 'Authentication failed: invalid roles.'], JsonResponse::HTTP_UNAUTHORIZED);
+    //     }
 
-        return $user;
-    }
+    //     return $user;
+    // }
 
     #[Route('/deletePoi/{id}', name: 'delete_poi', methods: ['POST'])]
     public function deletePoi(
