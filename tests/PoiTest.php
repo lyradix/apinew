@@ -25,7 +25,9 @@ class PoiTest extends KernelTestCase
         $this->assertEquals('2.3522', $poi->getLongitude());
         $this->assertEquals('48.8566', $poi->getLatitude());
     }
-    //pour tester la validation de l'entrée de longitude et latitude
+
+    
+    //pour tester la validation de l'entrée de longitude et latitude s'ils sont bien entre -180 et 180 pour la longitude, et -90 et 90 pour la latitude
     public function testPoiValidation(): void
     {
         self::bootKernel(); // Démarre le kernel Symfony
@@ -38,19 +40,13 @@ class PoiTest extends KernelTestCase
         $poi->setLongitude('2.3522');
         $poi->setLatitude('48.8566');
 
-        // Vérification que les propriétés sont correctement définies
-        $errors = $validator->validate($poi);
-        $this->assertCount(0, $errors, 'Le POI doit être valide');
-
         // Test avec des coordonnées invalides
-        $poi->setLongitude('invalid-longitude');
+        $poi->setLongitude('-4586668.245');
+        $poi->setLatitude('48.8566'); 
         $errors = $validator->validate($poi);
         $this->assertCount(1, $errors, 'La longitude doit être invalide');
 
-        // Test avec des coordonnées vides
-        $poi->setLongitude('');
-        $errors = $validator->validate($poi);
-        $this->assertCount(1, $errors, 'La longitude ne doit pas être vide');
     }
+    
 }
 

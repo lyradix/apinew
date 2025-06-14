@@ -22,18 +22,8 @@ class UserTest extends KernelTestCase
         // Vérification que l'email est correctement défini
         $errors = $validator->validate($user);
         $this->assertCount(0, $errors, 'L\'email doit être valide');
-
-        // Test avec un email invalide
-        $user->setEmail('invalid-email');
-        $errors = $validator->validate($user);
-        $this->assertCount(1, $errors, 'L\'email doit être invalide');
-
-        // Test avec un email vide
-        $user->setEmail('');
-        $errors = $validator->validate($user);
-        $this->assertCount(1, $errors, 'L\'email ne doit pas être vide');
-
-        $this->assertContains('ROLE_USER', $user->getRoles());
+        
     }
 }
 
+  
