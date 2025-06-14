@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\CreateUserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,35 +13,32 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
 {
-    #[Route('/register', name: 'app_register', methods: ['POST'])]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+
+    // Route pour enregistrer un nouvel administrateur
+    #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
+    public function registerAdmin(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
-        // Decode the JSON payload from the request
-        $data = json_decode($request->getContent(), true);
-
-        // Validate the input data
-        if (!isset($data['email']) || !isset($data['password'])) {
-            return $this->json(['error' => 'Invalid data. Email and password are required.'], Response::HTTP_BAD_REQUEST);
-        }
-
-        // Check if the user already exists
-        $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $data['email']]);
-        if ($existingUser) {
-            return $this->json(['error' => 'User with this email already exists.'], Response::HTTP_CONFLICT);
-        }
-
-        // Create a new user
         $user = new User();
-        $user->setEmail($data['email']);
-        $hashedPassword = $userPasswordHasher->hashPassword($user, $data['password']);
-        $user->setPassword($hashedPassword);
-        $user->setRoles(['ROLE_ADMIN']); // Assign default role
+        $form = $this->createForm(CreateUserType::class, $user);
+        $form->handleRequest($request);
 
-        // Persist the user to the database
-        $entityManager->persist($user);
-        $entityManager->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            // mot de pase hashé
+            $user->setPassword(
+                $passwordHasher->hashPassword($user, $user->getPassword())
+            );
+         // Le role est défini comme ROLE_ADMIN par défault
+            $user->setRoles(['ROLE_ADMIN']);
 
-        // Return a success response
-        return $this->json(['message' => 'User registered successfully.'], Response::HTTP_CREATED);
+            // Persist les donées
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return new Response('Admin created successfully!', Response::HTTP_CREATED);
+        }
+
+        return $this->render('registration/register.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }

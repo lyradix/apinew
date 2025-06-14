@@ -1,19 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+<a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
+    <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+</a>
+<h1>Nouvel administrateur</h1>
 
-    {{ form_errors(registrationForm) }}
+<div class="form">
+    {{ form_errors(form) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
-
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+    {{ form_start(form) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.plainPassword.first) }}
+        {{ form_row(form.plainPassword.second) }}
+    <div class="wrapbtn">
+        <button type="submit" class="btn">Enregistrer</button>
+        <button class="box" type="button" onclick="window.history.back()">Retour</button>
+    </div>
+    {{ form_end(form) }}
+</div>
 {% endblock %}

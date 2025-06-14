@@ -20,16 +20,15 @@ use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator; 
 class SecurityController extends AbstractController
 {
+
+    // Route pour la page de connexion
+    // Cette route est utilisée pour afficher le formulaire de connexion
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $AuthenticationUtils): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('target_path');
-        // }
-
-        // get the login error if there is one
+    
         $error = $AuthenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
+
         $lastUsername = $AuthenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
