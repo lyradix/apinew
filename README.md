@@ -5,11 +5,40 @@ The back end project for the responsive website of Nation Sound, an event of 3 d
 This app will be used for back end and API purposes. Front user will fetch data from database and admin will run different operations to 
 read, add, delete and update data in database though a user-friendly interface.
 
+### Pre-requirement:
+Install composer on https://getcomposer.org/download/
+
+install nelmio CORE bundle
+install maker Bundle
+
+in cmd, write these commands :
+composer require symfony/security-core
+
+composer require symfony/security-bundle
+composer require form validator
+Now go to the RegistrationControllerand change the redirect after registration from _preview_error to app_login.
+
+#### php folder
+check for php :
+php --ini
+if php is not present on local machine, download php files from php.net, save it in C: folder and locate php.ini
+modified php.ini by uncommenting these lines with:
+extension=mysqli
+extension=openssl
+extension=pdo_mysql
+extension=mbstring
+extension=intl
+
+It will enable mySql, the encoding of characters and so on. Make sure the dll files are present in the ext folder.
+
 ### To load data in database
 in cmd make :
 php bin/console doctrine:fixtures:load
 yes
 
+### launch in local
+in cmd, write the command :
+"symfony serve --no-tls"
 ### Attention to folders and files to be modified
 
 #### For API uses
@@ -80,52 +109,22 @@ apinewsymfony/
 ### Controller and Entity
 Check controller and entities to make necessary change for the routes and properties.
 
-### php folder
-check for php :
-php --ini
-if php is not present on local machine, download php files from php.net, save it in C: folder and locate php.ini
-modified php.ini by uncommenting these lines with:
-extension=mysqli
-extension=openssl
-extension=pdo_mysql
-extension=mbstring
-extension=intl
-
-It will enable mySql, the encoding of characters and so on. Make sure the dll files are present in the ext folder.
-
-## Pre-requirement:
-Install composer on https://getcomposer.org/download/
-
-install nelmio CORE bundle
-install maker Bundle
-
-in cmd, write these commands :
-composer require symfony/security-core
-
-composer require symfony/security-bundle
-composer require form validator
-Now go to the RegistrationControllerand change the redirect after registration from _preview_error to app_login.
-
-## Spatial data for the Poi Entity
+### Spatial data for the Poi Entity
 
 For the coordinates of the map:
 composer require creof/doctrine2-spatial
 
 
-## files modification
+### files modification
 -> services.yaml (config\services.yaml)
 -> .env (.env)
 -> nelmio_cors.yaml (config\packages\nelmio_cors.yaml)
 -> security.yaml (config\packages\security.yaml)
 
-## add file:
+### add file:
 (src/Security/LoginSuccesHandler.php) 
 
-## launch in local
-in cmd, write the command :
-"symfony serve --no-tls"
-
-## For the Test
+### For the Test
 in cmd, write these commands :
 composer require --dev symfony/test-pack
 php bin/phpunit
