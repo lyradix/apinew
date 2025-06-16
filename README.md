@@ -131,6 +131,10 @@ in cmd, write these commands :
 composer require --dev symfony/test-pack
 php bin/phpunit
 composer require --dev doctrine/doctrine-fixtures-bundle
+php bin/console --env=test doctrine:database:create
+php bin/console --env=test doctrine:schema:create
+php bin/console --env=test doctrine:fixtures:load
+php bin/phpunit
 
 Recommentdation: check DataFixtures/AppFixtures.php
 copy paste code in notepad++ (Download app if needed on https://notepad-plus-plus.org/downloads/ )

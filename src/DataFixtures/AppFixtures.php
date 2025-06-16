@@ -30,10 +30,7 @@ class AppFixtures extends Fixture
         $manager->flush();
 
         // Exécuter le script SQL liveEvent.sql après l'insertion de l'utilisateur
-        // Les données seront envoyées dans la base de données en requêtes SQL (RAW SQL)
-        // En raison d'une impcompatibilité  de CrEOF\Spatial\DBAL\Types\Geometry avec mySQL 8.0,
-        // bcremer/doctrine-mysql-spatial n'est pas envisageable parce que l'application utilise l'ORM version 3.2
-        // une downgrade de l'ORM n'est pas envisageable non plus en raison d'imcompatibilité avec les dépendances déjà installées
+ 
         $connection = $manager->getConnection();
         $sqlFile = __DIR__ . '/data/liveEvent.sql'; // Assurez-vous que le chemin est correct
 
