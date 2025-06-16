@@ -33,6 +33,8 @@ It will enable mySql, the encoding of characters and so on. Make sure the dll fi
 
 ### To load data in database
 in cmd make :
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
 php bin/console doctrine:fixtures:load
 yes
 

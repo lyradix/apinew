@@ -19,11 +19,8 @@ class UserTest extends KernelTestCase
         $user->setRoles(['ROLE_ADMIN']);
         $user->setPassword('password123');
 
-        // Vérification que l'email est correctement défini
         $errors = $validator->validate($user);
         $this->assertCount(0, $errors, 'L\'email doit être valide');
-        
     }
 }
 
-  
