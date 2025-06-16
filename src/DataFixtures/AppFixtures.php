@@ -20,7 +20,7 @@ class AppFixtures extends Fixture
     {
      
         $user = new User();
-        $user->setEmail('test@example.com');
+        $user->setEmail('admin@nationsound.com');
         $user->setRoles(['ROLE_ADMIN']);
         $user->setPassword(
             $this->passwordHasher->hashPassword($user, 'Password123')
