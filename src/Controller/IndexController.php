@@ -32,16 +32,6 @@ use Symfony\Bundle\MakerBundle\Security\Model\Authenticator;
 // Ce fichier extend la classe ApiController 
 final class IndexController extends ApiController
 {
-    // Route pour la page d'accueil
-     #[Route('/', name: 'app_home')]
-    public function index(): Response
-    {
-        // retourne la vue index/index.html.twig
-        return $this->render('index/index.html.twig', [
-            'controller_name' => 'IndexController',
-        ]);
-    }
-
 
 // Route pour réccuperer tous les données sur les artists 
     #[Route('/concerts', name: 'app_concerts')]

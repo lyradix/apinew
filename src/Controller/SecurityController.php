@@ -23,7 +23,7 @@ class SecurityController extends AbstractController
 
     // Route pour la page de connexion
     // Cette route est utilisée pour afficher le formulaire de connexion
-    #[Route(path: '/login', name: 'app_login')]
+    #[Route(path: '/', name: 'app_login')]
     public function login(AuthenticationUtils $AuthenticationUtils): Response
     {
     
