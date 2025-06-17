@@ -22,11 +22,11 @@ class Artist
     #[Groups(['artist:read'])]
     private ?string $nom = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: 'datetime')]
     #[Groups('artist:read')]
     private ?\DateTimeInterface $startTime = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: 'datetime')]
     #[Groups('artist:read')]
     private ?\DateTimeInterface $endTime = null;
 
@@ -53,9 +53,6 @@ class Artist
     #[ORM\ManyToOne(targetEntity: Scene::class, inversedBy: 'artistFK')]
     #[Groups(['artist:read'])]
     private ?Scene $sceneFK = null;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $dateModified = null;
 
     public function getId(): ?int
     {
@@ -99,10 +96,9 @@ public function setDate(?\DateTimeInterface $date): self
         return $this->startTime;
     }
 
-    public function setStartTime(\DateTimeInterface $startTime): static
+    public function setStartTime(?\DateTimeInterface $startTime): self
     {
         $this->startTime = $startTime;
-
         return $this;
     }
 
@@ -111,10 +107,9 @@ public function setDate(?\DateTimeInterface $date): self
         return $this->endTime;
     }
 
-    public function setEndTime(\DateTimeInterface $endTime): static
+    public function setEndTime(?\DateTimeInterface $endTime): self
     {
         $this->endTime = $endTime;
-
         return $this;
     }
 
@@ -188,16 +183,5 @@ public function setDate(?\DateTimeInterface $date): self
         $this->sceneFK = $sceneFK;
 
         return $this;
-    }
-
-    public function setDateModified(?\DateTimeInterface $dateModified): self
-    {
-        $this->dateModified = $dateModified;
-        return $this;
-    }
-
-    public function getDateModified(): ?\DateTimeInterface
-    {
-        return $this->dateModified;
     }
 }

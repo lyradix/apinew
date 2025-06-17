@@ -55,4 +55,3 @@ class SecurityController extends AbstractController
         return new Response('Admin créé avec succés!');
     }
 }
-

@@ -77,6 +77,25 @@ public function showConcert(
     // Si le formulaire est soumis et valide, mettre à jour le concert
     // et rediriger vers la page de détails du concert
     if ($form->isSubmitted() && $form->isValid()) {
+        $concert = $form->getData();
+
+        // GRéccuperer la date
+        $date = $form->get('date')->getData();
+
+        // Get the current times from the entity
+        $currentStart = $concert->getStartTime(); // DateTime object
+        $currentEnd = $concert->getEndTime();     // DateTime object
+
+        if ($date && $currentStart) {
+            // nouvelle date + heure de début
+            $concert->setStartTime(new \DateTime($date->format('Y-m-d') . ' ' . $currentStart->format('H:i:s')));
+        }
+        if ($date && $currentEnd) {
+            // nouvelle date + heure de fin
+
+            $concert->setEndTime(new \DateTime($date->format('Y-m-d') . ' ' . $currentEnd->format('H:i:s')));
+        }
+
         $entityManager->flush();
         $this->addFlash('success', 'Concert modifié avec succès.');
         return $this->redirectToRoute('app_concert_show', ['id' => $id]);

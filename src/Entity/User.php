@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -17,8 +18,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const DEFAULT_ADMIN_EMAIL = 'admin@example.com';
-    public const DEFAULT_ADMIN_PASSWORD = 'admin123';
+    public const DEFAULT_ADMIN_EMAIL = 'test@example.com';
+    public const DEFAULT_ADMIN_PASSWORD = 'Password123';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -42,8 +43,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 64, nullable: true)]
-    private ?string $apiToken = null;
+    #[Assert\NotBlank(message: 'Please enter a password')]
+    private ?string $plainPassword = null;
 
     public function getId(): ?int
     {
@@ -80,7 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
+    
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -96,9 +97,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
+    // /**
+    //  * @see PasswordAuthenticatedUserInterface
+    //  */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -111,24 +112,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
     /**
      * @see UserInterface
      */
     public function eraseCredentials(): void
     {
-  
-    }
-
-
-    public function getApiToken(): ?string
-    {
-        return $this->apiToken;
-    }
-
-    public function setApiToken(?string $apiToken): static
-    {
-        $this->apiToken = $apiToken;
-
-        return $this;
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }

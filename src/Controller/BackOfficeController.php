@@ -64,6 +64,7 @@ class BackOfficeController extends ApiController
 
 
         // si l'id ne correspond pas ou si le concert n'esxist pas, retourne une erreur
+        
         if (!isset($data['id'])) {
             return new JsonResponse(['error' => 'Scene ID is required'], Response::HTTP_BAD_REQUEST);
         }
@@ -74,6 +75,19 @@ class BackOfficeController extends ApiController
         }
 
         // MAJ des données du concert, startTime, endTime, sceneFK
+        if (isset($data['date'])) {
+            $newDate = $data['date']; // e.g. '2025-07-01'
+            // Update startTime
+            if ($concert->getStartTime()) {
+                $startTimeString = $newDate . ' ' . $concert->getStartTime()->format('H:i:s');
+                $concert->setStartTime(new \DateTime($startTimeString));
+            }
+            // Update endTime
+            if ($concert->getEndTime()) {
+                $endTimeString = $newDate . ' ' . $concert->getEndTime()->format('H:i:s');
+                $concert->setEndTime(new \DateTime($endTimeString));
+            }
+        }
         if (isset($data['startTime'])) {
             try {
                 $concert->setStartTime(new \DateTime($data['startTime']));
