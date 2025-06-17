@@ -84,12 +84,12 @@ final class PoiController extends AbstractController
            $user = $this->validateToken($request);
 
         if (!$user instanceof User) {
-            return $user; // Return the error response from validateToken()
+            return $user; 
         }
 
         $data = json_decode($request->getContent(), true);
 
-        // Log the incoming request data
+ 
         error_log('Incoming request data: ' . json_encode($data));
 
         if (!isset($data['popup'])) {
@@ -98,13 +98,12 @@ final class PoiController extends AbstractController
     
     
 
-        // Validate required fields
+
         if (!isset($data['longitude']) || !isset($data['latitude']) ) {
             error_log('Validation failed: Missing required fields.');
             return new JsonResponse(['error' => 'Invalid data. "longitude", "latitude", " are required.'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Validate longitude and latitude
         if ($data['longitude'] < -180 || $data['longitude'] > 180 || $data['latitude'] < -90 || $data['latitude'] > 90) {
             error_log('Validation failed: Invalid longitude or latitude values.');
             return new JsonResponse(['error' => 'Invalid longitude or latitude values.'], Response::HTTP_BAD_REQUEST);

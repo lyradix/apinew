@@ -350,7 +350,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
                 'coordinates' => [(float)$longitude, (float)$latitude]
             ]);
 
-            //Inserer donnée poi avec raw SQL
+            // Insert POI
             $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
             $stmt = $entityManager->getConnection()->prepare($sql);
             $stmt->executeStatement([
@@ -360,8 +360,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
             ]);
             $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
 
-          
-            //Inserer donnée scène avec raw SQL
+            // Insert Scene
             $sqlScene = 'INSERT INTO scene (poi_FK_id, nom) VALUES (:poiId, :nom)';
             $stmtScene = $entityManager->getConnection()->prepare($sqlScene);
             $stmtScene->executeStatement([
@@ -374,9 +373,9 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return new JsonResponse(['success' => false, 'message' => 'Paramètres manquants'], 400);
     }
 
-    // soumettre le formulaire pour ajouter une scène
+    // Handle Symfony form as before
     $form = $this->createForm(NewSceneType::class, null, [
-        'data_class' => null // null pour ne pas lier à une entité parce que les données sont envoyés en brutes
+        'data_class' => null // Use array data, not an entity
     ]);
     $form->handleRequest($request);
 
@@ -386,7 +385,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         $longitude = $data['longitude'];
         $latitude = $data['latitude'];
 
-        // Propriétés preset pour la scène
+        // Preset properties for Poi
         $presetProperties = [
             'popup' => $nom,
             'type' => 'scène',
@@ -395,13 +394,13 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
             'image' => 'star'
         ];
 
-        // donnée spatiale en GeoJSON avec le type Point 
+        // GeoJSON geometry
         $geoJson = json_encode([
             'type' => 'Point',
             'coordinates' => [(float)$longitude, (float)$latitude]
         ]);
 
-        // insertion en SQL brute
+        // 1. Insert Poi using raw SQL
         $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
         $stmt = $entityManager->getConnection()->prepare($sql);
         $stmt->executeStatement([
@@ -411,8 +410,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         ]);
         $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
 
-
-        // insertion en SQL brute
+        // 2. Insert Scene using raw SQL
         $sqlScene = 'INSERT INTO scene (poi_FK_id, nom) VALUES (:poiId, :nom)';
         $stmtScene = $entityManager->getConnection()->prepare($sqlScene);
         $stmtScene->executeStatement([
@@ -420,7 +418,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
             'nom' => $nom
         ]);
 
-        // Redirection après l'ajout de la scène
+        // Add success message and redirect
         $this->addFlash('success', 'Scène ajoutée avec succès');
         return $this->redirectToRoute('app_addConcert');
         }
@@ -430,8 +428,6 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ]);
     }
 
-
-    // Route pour ajouter un concert
     #[Route('/addConcert', name: 'app_addConcert', methods: ['GET', 'POST'])]
     public function addConcert(
     Request $request,
@@ -442,7 +438,6 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
 
     $form->handleRequest($request);
 
-    // Si le formulaire est soumis et valide, on persiste l'entité et on redirige
     if ($form->isSubmitted() && $form->isValid()) {
         $entityManager->persist($artist);
         $entityManager->flush();
@@ -456,7 +451,6 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ]);
     }
 
-    // Route pour ajouter des informations générales
     #[Route('/addInfo', name:'app_addInfo', methods:['POST'])]
     public function addInfo(
         Request $request,
@@ -465,7 +459,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ): JsonResponse{
         
         $data = Json_decode($request->getContent(), true);
-// Vérification des données reçues en json
+
         if(!isset($data['title'],
             $data['descriptif'],
             $data['type']
@@ -486,8 +480,6 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return new JsonResponse(['message' => 'info générale ajoutée avec succès'], JsonResponse::HTTP_CREATED);
     }
 
-
-    // Route pour supprimer un concert
         #[Route('/deleteConcert/{id}', name: 'delete_concert', methods: ['DELETE'])]
     public function deleteConcert(int $id, EntityManagerInterface $entityManager, ArtistRepository $artistRepository): JsonResponse
     {
@@ -500,35 +492,34 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return new JsonResponse(['error' => 'Not found'], 404);
     }
 
-    /**
+        /**
      * Validate the token from the Authorization header and return the authenticated user.
      */
-    // private function validateToken(Request $request): JsonResponse|User
-    // {
-    //     $authHeader = $request->headers->get('Authorization');
+    private function validateToken(Request $request): JsonResponse|User
+    {
+        $authHeader = $request->headers->get('Authorization');
 
-    //     if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-    //         return new JsonResponse(['error' => 'Authentication failed: invalid or missing token.'], JsonResponse::HTTP_UNAUTHORIZED);
-    //     }
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return new JsonResponse(['error' => 'Authentication failed: invalid or missing token.'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
 
-    //     $token = substr($authHeader, 7);
+        $token = substr($authHeader, 7);
 
-    //     // Find the user by the token
-    //     $user = $this->userRepository->findOneBy(['apiToken' => $token]);
+        // Find the user by the token
+        $user = $this->userRepository->findOneBy(['apiToken' => $token]);
 
-    //     if (!$user) {
-    //         return new JsonResponse(['error' => 'Authentication failed: invalid user'], JsonResponse::HTTP_UNAUTHORIZED);
-    //     }
+        if (!$user) {
+            return new JsonResponse(['error' => 'Authentication failed: invalid user'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
 
-    //     // Check if the user has the ROLE_USER role
-    //     if (!in_array('ROLE_USER', $user->getRoles())) {
-    //         return new JsonResponse(['error' => 'Authentication failed: invalid roles.'], JsonResponse::HTTP_UNAUTHORIZED);
-    //     }
+        // Check if the user has the ROLE_USER role
+        if (!in_array('ROLE_USER', $user->getRoles())) {
+            return new JsonResponse(['error' => 'Authentication failed: invalid roles.'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
 
-    //     return $user;
-    // }
+        return $user;
+    }
 
-    // Route pour supprimer un POI
     #[Route('/deletePoi/{id}', name: 'delete_poi', methods: ['POST'])]
     public function deletePoi(
         int $id,
@@ -563,8 +554,6 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return $this->redirectToRoute('app_render_updatePoi');
     }
 
-
-    // Route pour afficher le formulaire de création d'un nouveau lieu
     #[Route('/render-new-place', name: 'app_render_newPlace')]
     public function renderNewPlace(): Response
     {
@@ -589,10 +578,10 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         ];
     }
 
-// nouveau POI pour le formulaire d'ajout
+    // Add this before rendering the template
     $poi = new Poi();
 
-  // Requête SQL pour extraire les types uniques de poi
+    // Get unique types for the add form (reuse your logic)
     $connection = $entityManager->getConnection();
     $sql = "SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type FROM poi WHERE JSON_EXTRACT(properties, '$.type') IS NOT NULL";
     $result = $connection->executeQuery($sql)->fetchAllAssociative();
@@ -607,7 +596,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     'type_choices' => $typeChoices,
     ]);
 
-    // les choix de poi sont en forme de tableau
+    // If you also need the modify form:
     $poiChoices = [];
     foreach ($pois as $poi) {
     $poiChoices[$poi->properties->popup] = $poi->id;
@@ -619,17 +608,14 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     return $this->render('poi/poi.html.twig', [
         'formAddPoi' => $formAddPoi->createView(),
         'formModifPoi' => $formModifPoi->createView(),
-        'pois' => $pois, 
+        'pois' => $pois, // <-- Add this line!
     ]);
     }
 
-
-    // Route pour afficher la page de mise à jour des POI
     #[Route('/render-update-poi', name: 'app_render_updatePoi')]
     public function renderUpdatePoi(EntityManagerInterface $entityManager): Response
     {
-    
-        // Réccupération des POI depuis la base de données
+    // Fetch all POIs
     $connection = $entityManager->getConnection();
     $poisResult = $connection->executeQuery(
         "SELECT id, JSON_UNQUOTE(JSON_EXTRACT(properties, '$.popup')) AS popup 
@@ -660,8 +646,6 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         'pois' => $pois,
     ]);
     }
-
-    // Route pour mettre à jour un POI avec la méthode PUT
     #[Route('/updatePoi', name: 'update_poi', methods: ['PUT'])]
     public function updatePoi(
         HttpFoundationRequest $request,
@@ -669,24 +653,24 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
-     // vérifier si les données nécessaires sont présentes
+        // Validate required fields
         if (!isset($data['id'], $data['popup'], $data['longitude'], $data['latitude'], $data['type'])) {
             return new JsonResponse(['error' => 'Invalid data. "id", "popup", "longitude", "latitude", and "type" are required.'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        // vérifier la longitude et la latitude
+        // Validate longitude and latitude
         if ($data['longitude'] < -180 || $data['longitude'] > 180 || $data['latitude'] < -90 || $data['latitude'] > 90) {
             return new JsonResponse(['error' => 'Invalid longitude or latitude values.'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
         try {
-            // construire le GeoJSON pour la géométrie avec les données type : point et les coordonnées
+            // Construct GeoJSON format
             $geoJson = json_encode([
                 'type' => 'Point',
                 'coordinates' => [(float)$data['longitude'], (float)$data['latitude']]
             ]);
 
-            // Preset properties pour le POI
+            // Preset properties
             $presetProperties = [
                 'popup' => $data['popup'],
                 'type' => $data['type'],
@@ -695,7 +679,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
                 'image' => 'tent'
             ];
 
-            // Mise à jour du POI dans la base de données
+            // Update the Poi record using raw SQL
             $sql = 'UPDATE poi SET type = :type, properties = :properties, geometry = ST_GeomFromGeoJSON(:geometry) WHERE id = :id';
             $stmt = $entityManager->getConnection()->prepare($sql);
 
@@ -706,13 +690,13 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
                 'geometry' => $geoJson
             ]);
 
-           
+            // Log the update
             error_log('Updated Poi ID: ' . $data['id']);
 
-        // retourne une réponse JSON
+            // Return success response
             return new JsonResponse(['message' => 'Poi updated successfully.'], JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
- 
+            // Log the exception details
             error_log('Exception occurred: ' . $e->getMessage());
             error_log('Exception trace: ' . $e->getTraceAsString());
 
@@ -723,7 +707,6 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         }
     }
 
-    // Route pour ajouter un partenaire
     #[Route('/add-partner', name: 'app_add_partner', methods: ['GET', 'POST'])]
     public function addPartner(
     Request $request,
@@ -737,7 +720,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     if ($form->isSubmitted() && $form->isValid()) {
         $type = $form->get('type')->getData();
 
-        // Préfixes
+        // Determine prefix based on type
         $prefix = '';
         if (strtolower($type) === 'restaurent') {
             $prefix = 'a';
@@ -747,13 +730,13 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
             $prefix = 'c';
         }
 
-    
+        // Find the last partnerId with this prefix
         $conn = $entityManager->getConnection();
         $sql = "SELECT partner_id FROM partners WHERE partner_id LIKE :prefix ORDER BY LENGTH(partner_id) DESC, partner_id DESC LIMIT 1";
         $last = $conn->executeQuery($sql, ['prefix' => $prefix . '%'])->fetchOne();
 
         if ($last) {
-            // Extraire le numéro du dernier partenaire
+            // Extract the numeric part and increment
             $num = (int)substr($last, 1);
             $newNum = $num + 1;
         } else {
@@ -775,8 +758,6 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ]);
     }
 
-
-    // Route pour mettre à jour un partenaire
     #[Route('/update-partner', name: 'app_update_partner', methods: ['PUT'])]
     public function updatePartner(
     Request $request,
@@ -794,7 +775,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return new JsonResponse(['error' => 'Partner not found'], JsonResponse::HTTP_NOT_FOUND);
     }
 
-// si les propriétés sont définies, on les met à jour
+    // Update fields if provided
     if (isset($data['title'])) {
         $partner->setTitle($data['title']);
     }

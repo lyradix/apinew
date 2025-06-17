@@ -54,6 +54,9 @@ class Artist
     #[Groups(['artist:read'])]
     private ?Scene $sceneFK = null;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $dateModified = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -187,5 +190,14 @@ public function setDate(?\DateTimeInterface $date): self
         return $this;
     }
 
-   
+    public function setDateModified(?\DateTimeInterface $dateModified): self
+    {
+        $this->dateModified = $dateModified;
+        return $this;
+    }
+
+    public function getDateModified(): ?\DateTimeInterface
+    {
+        return $this->dateModified;
+    }
 }
