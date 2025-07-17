@@ -79,12 +79,12 @@ public function showConcert(
     if ($form->isSubmitted() && $form->isValid()) {
         $concert = $form->getData();
 
-        // GRéccuperer la date
+        // Réccuperer la date
         $date = $form->get('date')->getData();
 
         // Get the current times from the entity
-        $currentStart = $concert->getStartTime(); // DateTime object
-        $currentEnd = $concert->getEndTime();     // DateTime object
+        $currentStart = $concert->getStartTime(); 
+        $currentEnd = $concert->getEndTime();    
 
         if ($date && $currentStart) {
             // nouvelle date + heure de début
@@ -110,11 +110,33 @@ public function showConcert(
 }
 
 
+// Route API pour réccuperer les details des artist 
+#[Route('/concerts/{id}', name: 'app_concert_details', methods: ['GET'])]
+public function getConcertDetails(
+    int $id,
+    ArtistRepository $artistRepository,
+    SerializerInterface $serializer
+): JsonResponse {
+    // Trouver l'artiste par son ID
+    $artist = $artistRepository->find($id);
+
+    // Si l'artiste n'existe pas, retourner une erreur 404
+    if (!$artist) {
+        return new JsonResponse(['error' => 'Artist not found'], 404);
+    }
+
+    // Sérialiser les données de l'artiste avec les scènes associées
+    $jsonData = $serializer->serialize($artist, 'json', ['groups' => ['artist:read', 'scene:read']]);
+
+    // Retourner les données en JSON
+    return new JsonResponse($jsonData, 200, [], true);
+}
+
 // Routes pour lire les données sur les scènes
     #[Route('/scenes', name: 'app_scenes', methods: ['GET'])]
     public function getScenes(SceneRepository $sceneRepository, SerializerInterface $serializer): JsonResponse
     {
-        // FTouver toutes les scènes en utilisant le repository
+        // Touver toutes les scènes en utilisant le repository
         $scenes = $sceneRepository->findAll();
     
         // Serialize les groupes de données avec un json

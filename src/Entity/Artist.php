@@ -80,6 +80,9 @@ class Artist
 
 private ?\DateTimeInterface $date = null;
 
+#[ORM\Column(type: Types::TEXT, nullable: true)]
+private ?string $image = null;
+
 public function getDate(): ?\DateTimeInterface
 {
     return $this->date;
@@ -181,6 +184,18 @@ public function setDate(?\DateTimeInterface $date): self
     public function setSceneFK(?Scene $sceneFK): self
     {
         $this->sceneFK = $sceneFK;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
