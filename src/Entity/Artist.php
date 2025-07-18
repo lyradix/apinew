@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\ArtistRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ArtistRepository::class)]
@@ -53,6 +55,21 @@ class Artist
     #[ORM\ManyToOne(targetEntity: Scene::class, inversedBy: 'artistFK')]
     #[Groups(['artist:read'])]
     private ?Scene $sceneFK = null;
+    
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $date = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('artist:read')]
+    private ?string $image = null;
+
+    #[Assert\File(
+        maxSize: '2M',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        mimeTypesMessage: 'Merci de télécharger une image valide (JPEG, PNG, WEBP)'
+    )]
+
+    private ?File $imageFile = null;
 
     public function getId(): ?int
     {
@@ -78,10 +95,6 @@ class Artist
         return $this;
     }
 
-private ?\DateTimeInterface $date = null;
-
-#[ORM\Column(type: Types::TEXT, nullable: true)]
-private ?string $image = null;
 
 public function getDate(): ?\DateTimeInterface
 {
@@ -197,6 +210,18 @@ public function setDate(?\DateTimeInterface $date): self
     {
         $this->image = $image;
 
+        return $this;
+    }
+    
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+    
+    public function setImageFile(?File $imageFile): static
+    {
+        $this->imageFile = $imageFile;
+        
         return $this;
     }
 }

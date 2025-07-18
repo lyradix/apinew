@@ -6,6 +6,7 @@ use App\Entity\Scene;
 use App\Entity\Poi;
 use App\Entity\Artist;
 use App\Entity\Info;
+use App\Entity\User;
 use App\Form\ModifPlaceType;
 use App\Form\NewSceneType;
 use App\Form\UpdateInfoType;
@@ -17,7 +18,6 @@ use App\Repository\SceneRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationRequestHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,8 +25,13 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class BackOfficeController extends ApiController
-
 {
+    private UserRepository $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
     
     // route pour la page d'administration des concerts
     #[Route('/admin-concerts', name: 'app_adminConcerts')]
@@ -54,7 +59,7 @@ class BackOfficeController extends ApiController
 
     // Route pour mettre à jour un concert, utilisation de la méthode PUT
      #[Route('/updateconcert', name: 'app_updateconcert', methods: ['PUT'])]
-    public function putConcert(HttpFoundationRequestHandler $request,
+    public function putConcert(Request $request,
         ArtistRepository $ArtistRepository, 
         SerializerInterface $serializer,
         EntityManagerInterface $entityManager): JsonResponse
@@ -111,7 +116,7 @@ class BackOfficeController extends ApiController
             }
             $concert->setSceneFK($scene); 
         }
-    
+
         // persiter et flush des données du concert
         $entityManager->persist($concert);
         $entityManager->flush();
@@ -208,7 +213,7 @@ public function postPoi(
 }
 
     #[Route('/updateScene', name: 'app_updateScene', methods: ['PUT'])]  
-    public function putScene(HttpFoundationRequest $request,
+    public function putScene(Request $request,
     SceneRepository $sceneRepository,
     SerializerInterface $serializer,
     EntityManagerInterface $entityManager): JsonResponse
@@ -472,7 +477,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         EntityManagerInterface $entityManager
     ): JsonResponse{
         
-        $data = Json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), true);
 
         if(!isset($data['title'],
             $data['descriptif'],
@@ -662,7 +667,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     }
     #[Route('/updatePoi', name: 'update_poi', methods: ['PUT'])]
     public function updatePoi(
-        HttpFoundationRequest $request,
+        Request $request,
         EntityManagerInterface $entityManager
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);

@@ -1,0 +1,35 @@
+[18-Jul-2025 10:29:43 UTC] Test error log location
+[18-Jul-2025 10:30:02 UTC] Testing error_log from script
+[18-Jul-2025 13:01:25 UTC] TEST: File upload test script started
+[18-Jul-2025 13:01:25 UTC] TEST: Target directory: C:\Users\daryl\apinewsymfony\public/images
+[18-Jul-2025 13:01:25 UTC] TEST: Directory exists: YES
+[18-Jul-2025 13:01:25 UTC] TEST: Directory is writable: YES
+[18-Jul-2025 13:01:25 UTC] TEST: Successfully created test file: C:\Users\daryl\apinewsymfony\public/images/test-687a45a52ce7f.txt
+[18-Jul-2025 13:01:25 UTC] TEST: File exists after creation: YES
+[18-Jul-2025 13:01:25 UTC] TEST: Test file deleted
+[18-Jul-2025 13:02:43 UTC] PHP Warning:  require_once(C:\Users\daryl\apinewsymfony\public/../config/bootstrap.php): Failed to open stream: No such file or directory in C:\Users\daryl\apinewsymfony\public\check_db.php on line 5
+[18-Jul-2025 13:02:43 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\daryl\apinewsymfony\public/../config/bootstrap.php' (include_path='.;C:\php\pear') in C:\Users\daryl\apinewsymfony\public\check_db.php:5
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\apinewsymfony\public\check_db.php on line 5
+[18-Jul-2025 13:03:28 UTC] Connecting to MySQL: host=127.0.0.1, dbname=sounddb, user=root
+[18-Jul-2025 13:03:28 UTC] Database error: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO)
+[18-Jul-2025 13:03:44 UTC] Connecting to MySQL: host=localhost, dbname=sounddb, user=root
+[18-Jul-2025 13:03:44 UTC] Database error: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO)
+[18-Jul-2025 13:03:57 UTC] 2025-07-18T13:03:57+00:00 [critical] Uncaught Error: syntax error, unexpected variable "$concert"
+[18-Jul-2025 13:05:12 UTC] 2025-07-18T13:05:12+00:00 [critical] Uncaught Error: Unmatched '}'
+[18-Jul-2025 13:07:50 UTC] Starting image upload test script
+[18-Jul-2025 13:07:50 UTC] Target directory: C:\Users\daryl\apinewsymfony\public/images
+[18-Jul-2025 13:07:50 UTC] Directory exists: YES
+[18-Jul-2025 13:07:50 UTC] Directory is writable: YES
+[18-Jul-2025 13:07:50 UTC] Trying to write test file: C:\Users\daryl\apinewsymfony\public/images/test-687a4726b37f7.png
+[18-Jul-2025 13:07:50 UTC] File written successfully: C:\Users\daryl\apinewsymfony\public/images/test-687a4726b37f7.png
+[18-Jul-2025 13:07:50 UTC] File size: 70 bytes
+[18-Jul-2025 13:07:50 UTC] File exists: YES
+[18-Jul-2025 13:07:50 UTC] File can be read: YES
+[18-Jul-2025 13:07:50 UTC] Test file deleted
+[18-Jul-2025 13:08:28 UTC] Test image created: C:\Users\daryl\apinewsymfony\public/images/test-image-687a474c86d94.png
+[18-Jul-2025 13:08:28 UTC] Original image value: image-2.jpg
+[18-Jul-2025 13:08:28 UTC] Image field updated to: test-image-687a474c86d94.png
+[18-Jul-2025 13:08:28 UTC] Artist ID: 2
+[18-Jul-2025 13:08:28 UTC] Saved image value: test-image-687a474c86d94.png

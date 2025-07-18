@@ -4,13 +4,25 @@
 
 {% block body %}
 <a href="{{ path('app_adminConcerts') }}" > 
-<img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+<img class="logoXtra" src="{{ asset('images/Preview.png') }}" alt="logo">
 </a>
 <h1>Modifier le concert</h1>
 <div class="form">
-{{ form_start(form) }}
+{{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
     {{ form_widget(form) }}
-    <button  class="box">Enregistrer</button>
+    {# Display current concert image if it exists #}
+{% if concert.image %}
+    <div class="current-image">
+        <img src="{{ asset('images/' ~ concert.image) }}" alt="Concert Image" style="max-width: 300px; height: auto;" 
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div style="display:none; color: red;">
+            Erreur: Image non trouvée - {{ asset('images/' ~ concert.image) }}
+        </div>
+    </div>
+{% endif %}
+{{ form_errors(form) }}
+{{ form_errors(form.imageFile) }}
+    <button class="box">Enregistrer</button>
     <button class="box" type="button" onclick="window.history.back()">Retour</button>
 {{ form_end(form) }}
 </div>
