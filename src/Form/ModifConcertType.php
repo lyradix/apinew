@@ -30,7 +30,18 @@ class ModifConcertType extends AbstractType
                 'mapped' => false,
                 'data' => $options['data']->artist ? $options['data']->artist->getStartTime() : null,
             ])
-            ->add('imageFile', FileType::class, [
+          
+           ->add('sceneFK', EntityType::class, [
+                'class' => Scene::class,
+                'choice_label' => 'nom',
+                'label' => 'Scène',
+                'placeholder' => 'Sélectionnez une scène',
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-select',
+                ],
+            ])
+              ->add('imageFile', FileType::class, [
                 'label' => 'Ajouter image',
                 'required' => false,
                 'constraints' => [
@@ -44,16 +55,6 @@ class ModifConcertType extends AbstractType
                         'mimeTypesMessage' => 'Merci de télécharger une image valide (JPEG, PNG, WEBP)',
                     ])
                 ]
-            ])
-           ->add('sceneFK', EntityType::class, [
-                'class' => Scene::class,
-                'choice_label' => 'nom',
-                'label' => 'Scène',
-                'placeholder' => 'Sélectionnez une scène',
-                'required' => true,
-                'attr' => [
-                    'class' => 'form-select',
-                ],
             ])
            
         ;
