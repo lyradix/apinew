@@ -33,3 +33,5 @@ Stack trace:
 [18-Jul-2025 13:08:28 UTC] Image field updated to: test-image-687a474c86d94.png
 [18-Jul-2025 13:08:28 UTC] Artist ID: 2
 [18-Jul-2025 13:08:28 UTC] Saved image value: test-image-687a474c86d94.png
+[21-Jul-2025 16:46:09 UTC] PHP Warning:  Undefined array key "HTTP_HOST" in C:\Users\daryl\Downloads\public_html (3)\public\debug_concert_routes.php on line 136
+[21-Jul-2025 16:46:09 UTC] PHP Warning:  Undefined array key "SERVER_SOFTWARE" in C:\Users\daryl\Downloads\public_html (3)\public\debug_concert_routes.php on line 152

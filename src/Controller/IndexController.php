@@ -112,119 +112,60 @@ public function showConcert(
 
          /** @var UploadedFile $imageFile */
         $imageFile = $concertDto->imageFile;
-
-        error_log("[DEBUG] Starting file upload process");
-        error_log("[DEBUG] imageFile object: " . ($imageFile ? get_class($imageFile) : 'NULL'));
         
         if ($imageFile) {
             try {
-                error_log("[DEBUG] Getting original filename");
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                error_log("[DEBUG] Original filename: " . $originalFilename);
-                
-                error_log("[DEBUG] Slugifying filename");
                 $safeFilename = $slugger->slug($originalFilename);
-                error_log("[DEBUG] Safe filename: " . $safeFilename);
-                
-                error_log("[DEBUG] Creating unique filename");
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
-                error_log("[DEBUG] New filename: " . $newFilename);
-
-                error_log("[DEBUG] Getting images directory parameter");
                 $imagesDirectory = $this->getParameter('images_directory');
-                
-                // Log directory information for debugging
-                error_log("[DEBUG] Images directory: " . $imagesDirectory);
-                error_log("[DEBUG] Directory exists: " . (is_dir($imagesDirectory) ? 'YES' : 'NO'));
-                error_log("[DEBUG] Directory is writable: " . (is_writable($imagesDirectory) ? 'YES' : 'NO'));
                 
                 // Create directory if it doesn't exist
                 if (!is_dir($imagesDirectory)) {
-                    error_log("[DEBUG] Creating directory");
                     $result = mkdir($imagesDirectory, 0777, true);
-                    error_log("[DEBUG] Directory creation result: " . ($result ? 'SUCCESS' : 'FAILED'));
-                    error_log("[DEBUG] Created directory: " . $imagesDirectory);
                 }
-                
-                // Log file information
-                error_log("[DEBUG] File details:");
-                error_log("[DEBUG] - Original filename: " . $imageFile->getClientOriginalName());
-                error_log("[DEBUG] - File size: " . $imageFile->getSize() . " bytes");
-                error_log("[DEBUG] - MIME type: " . $imageFile->getMimeType());
-                error_log("[DEBUG] - Error code: " . $imageFile->getError());
-                error_log("[DEBUG] - File extension: " . $imageFile->guessExtension());
-                error_log("[DEBUG] - Is valid: " . ($imageFile->isValid() ? 'YES' : 'NO'));
                 
                 // Check if the file is valid before moving
                 if (!$imageFile->isValid()) {
                     throw new \Exception("Uploaded file is not valid. Error code: " . $imageFile->getError());
                 }
                 
-                error_log("[DEBUG] Attempting to move file to: " . $imagesDirectory . '/' . $newFilename);
                 // Move the file
                 $imageFile->move(
                     $imagesDirectory,
                     $newFilename
                 );
                 
-                error_log("[DEBUG] File moved successfully: " . $imagesDirectory . '/' . $newFilename);
-                
                 // Verify the file was actually moved
                 $fullPath = $imagesDirectory . '/' . $newFilename;
-                error_log("[DEBUG] Checking if file exists at: " . $fullPath);
-                error_log("[DEBUG] File exists: " . (file_exists($fullPath) ? 'YES' : 'NO'));
-                
-                if (file_exists($fullPath)) {
-                    error_log("[DEBUG] File size after move: " . filesize($fullPath) . " bytes");
-                }
                 
                 // Save filename in DB
-                error_log("[DEBUG] Setting image on artist entity");
-                $artist->setImage($newFilename); 
-                error_log("[DEBUG] Image filename set to: " . $newFilename);
+                $artist->setImage($newFilename);
                 
             } catch (FileException $e) {
-
                 // Handle exception if something happens during file upload
-                error_log("[ERROR] File upload exception: " . $e->getMessage());
-                error_log("[ERROR] Stack trace: " . $e->getTraceAsString());
                 $this->addFlash('danger', 'Erreur lors de l\'upload de l\'image: ' . $e->getMessage());
                 return $this->redirectToRoute('app_concert_show', ['id' => $id]);
             } catch (\Exception $e) {
                 // Catch any other exceptions
-                error_log("[ERROR] General exception during file processing: " . $e->getMessage());
-                error_log("[ERROR] Stack trace: " . $e->getTraceAsString());
-                error_log("[ERROR] General error during file processing: " . $e->getMessage() . "\n" . $e->getTraceAsString());
                 $this->addFlash('danger', 'Erreur lors du traitement de l\'image: ' . $e->getMessage());
                 return $this->redirectToRoute('app_concert_show', ['id' => $id]);
             }
-        } else {
-            error_log("[DEBUG] No image file uploaded");
         }
         
         // Persist and flush changes
         try {
-            error_log("[DEBUG] Persisting artist entity");
             $entityManager->persist($artist);
-            error_log("[DEBUG] Flushing changes to database");
             $entityManager->flush();
             
-            error_log("[DEBUG] Database update successful");
             $this->addFlash('success', 'Concert modifié avec succès.');
             return $this->redirectToRoute('app_concert_show', ['id' => $id]);
         } catch (\Exception $e) {
-            error_log("[ERROR] Database error: " . $e->getMessage());
-            error_log("[ERROR] Stack trace: " . $e->getTraceAsString());
             $this->addFlash('danger', 'Erreur lors de la sauvegarde des données: ' . $e->getMessage());
             return $this->redirectToRoute('app_concert_show', ['id' => $id]);
         }
     }
     
-    // Only log and dump if not redirecting (i.e., GET or invalid POST)
-    error_log('Upload code reached');
-    $imageFile = $form->get('imageFile')->getData();
-    dump($imageFile);
-
     return $this->render('index/concert.html.twig', [
         'concert' => $concert,
         'concertDto' => $concertDto,
