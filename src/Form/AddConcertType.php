@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 class AddConcertType extends AbstractType
 {
@@ -43,6 +45,21 @@ class AddConcertType extends AbstractType
                 'attr' => [
                     'class' => 'form-select',
                 ],
+            ])
+                 ->add('imageFile', FileType::class, [
+                'label' => 'Ajouter image',
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                            'image/webp',
+                        ],
+                        'mimeTypesMessage' => 'Merci de télécharger une image valide (JPEG, PNG, WEBP)',
+                    ])
+                ]
             ])
         ;
     }

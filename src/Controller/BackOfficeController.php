@@ -458,13 +458,20 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+        $imageFile = $form->get('imageFile')->getData();
+        if ($imageFile) {
+            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '', $originalFilename);
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+            $imagesDirectory = $this->getParameter('images_directory');
+            $imageFile->move($imagesDirectory, $newFilename);
+            $artist->setImage($newFilename);
+        }
         $entityManager->persist($artist);
         $entityManager->flush();
-
         $this->addFlash('success', 'Concert créé avec succès');
         return $this->redirectToRoute('app_adminConcerts');
     }
-
     return $this->render('index/addConcert.html.twig', [
         'form' => $form->createView(),
     ]);
