@@ -14,44 +14,55 @@
     </label>
     <label style="display: inline-flex; align-items: center;">
         <input type="radio" name="formMode" value="modify" id="modifyRadio">
+            <button type="button" id="refreshModify" style="display:none; margin-left:8px;">
+            Rafraîchir
+            </button>
+        </input>
         Modifier
     </label>
 </div>
 
 <div class="form">
 <div id="addForm">
-    {{ form_start(form) }}
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
         {{ form_row(form.title) }}
         {{ form_row(form.frontPage) }}
         {{ form_row(form.type) }}
         {{ form_row(form.link) }}
+        {{ form_row(form.imageFile) }}
         <button type="submit">Ajouter</button>
         <button class="box" type="button" onclick="window.history.back()">Retour</button>
     {{ form_end(form) }}
 </div>
-<div id="modifyForm"  style="display:none;">
-    <form id="modifForm" method="get">
+<div id="modifyForm" style="display:none;">
+    <form id="modifForm">
         <label for="Id">Sélectionnez le partenaire :</label>
         <select name="Id" id="Id" required>
             <option value="">-- Choisir un partenaire --</option>
             <!-- Options will be filled by JS -->
         </select>
-        <label>Page d'accueil</label>
-        <input type="checkbox">
-        <label>Type</label>  
+        
+        <label for="frontPageCheckbox">Page d'accueil :</label>
+        <input type="checkbox" name="frontPage" id="frontPageCheckbox">
+        
+        <label for="typeSelect">Type :</label>  
         <select name="type" id="typeSelect" required>
             <option value="">-- Choisir un type --</option>
             <!-- Options will be filled by JS -->
         </select>
-        <label>lien</label>
-        <input name="link">
+        
+        <label for="linkInput">Lien :</label>
+        <input type="url" name="link" id="linkInput" required>
+        
         <button type="submit">Modifier</button>
         <button class="box" type="button" onclick="window.history.back()">Retour</button>
     </form>
 </div>
+
+<div id="updateForm" class="form">
 </div>
 
-6
+
 {% for message in app.flashes('success') %}
     <script>
         alert("{{ message|e('js') }}");
@@ -59,4 +70,5 @@
 {% endfor %}
 
 <script src="{{ asset('js/addPartners.js') }}"></script>
+<script src="{{ asset('js/radio.js') }}"></script>
 {% endblock %}

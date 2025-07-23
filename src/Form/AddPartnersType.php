@@ -6,6 +6,7 @@ use App\Entity\Partners;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -32,6 +33,21 @@ class AddPartnersType extends AbstractType
             ->add('link', null, [
             'label' => 'Lien'
         ])
+         ->add('imageFile', FileType::class, [
+                'label' => 'Ajouter image',
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                            'image/webp',
+                        ],
+                        'mimeTypesMessage' => 'Merci de télécharger une image valide (JPEG, PNG, WEBP)',
+                    ])
+                ]
+            ])
     ;
     }
 

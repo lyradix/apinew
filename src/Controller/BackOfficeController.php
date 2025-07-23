@@ -745,10 +745,19 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
 
     if ($form->isSubmitted() && $form->isValid()) {
         $type = $form->get('type')->getData();
-
+        $imageFile = $form->get('imageFile')->getData();
+        if ($imageFile) {
+            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '', $originalFilename);
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+            $imagesDirectory = $this->getParameter('images_directory');
+            $imageFile->move($imagesDirectory, $newFilename);
+            $partner->setImage($newFilename);
+        }
+        
         // Determine prefix based on type
         $prefix = '';
-        if (strtolower($type) === 'restaurent') {
+        if (strtolower($type) === 'restauration') {
             $prefix = 'a';
         } elseif (strtolower($type) === 'sponsor') {
             $prefix = 'b';
@@ -814,7 +823,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     if (isset($data['frontPage'])) {
         $partner->setFrontPage((bool)$data['frontPage']);
     }
-
+    
     $entityManager->flush();
 
     return new JsonResponse(['success' => true, 'message' => 'Partner updated successfully.']);

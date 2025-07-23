@@ -35,3 +35,5 @@ Stack trace:
 [18-Jul-2025 13:08:28 UTC] Saved image value: test-image-687a474c86d94.png
 [21-Jul-2025 16:46:09 UTC] PHP Warning:  Undefined array key "HTTP_HOST" in C:\Users\daryl\Downloads\public_html (3)\public\debug_concert_routes.php on line 136
 [21-Jul-2025 16:46:09 UTC] PHP Warning:  Undefined array key "SERVER_SOFTWARE" in C:\Users\daryl\Downloads\public_html (3)\public\debug_concert_routes.php on line 152
+[23-Jul-2025 12:24:52 UTC] PHP Fatal error:  Cannot use Doctrine\DBAL\Types\Types as Types because the name is already in use in C:\Users\daryl\apinewsymfony\src\Entity\Partners.php on line 6
+[23-Jul-2025 12:25:22 UTC] PHP Fatal error:  Cannot use Doctrine\DBAL\Types\Types as Types because the name is already in use in C:\Users\daryl\apinewsymfony\src\Entity\Partners.php on line 6

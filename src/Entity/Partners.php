@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\PartnersRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PartnersRepository::class)]
@@ -12,22 +15,40 @@ class Partners
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('partners:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups('partners:read')]
     private ?string $title = null;
 
     #[ORM\Column]
+    #[Groups('partners:read')]
     private ?bool $frontPage = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups('partners:read')]
     private ?string $type = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('partners:read')]
     private ?string $link = null;
 
     #[ORM\Column(length: 5)]
+    #[Groups('partners:read')]
     private ?string $partnerId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('partners:read')]
+    private ?string $image = null;
+
+    #[Assert\File(
+        maxSize: '2M',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        mimeTypesMessage: 'Merci de télécharger une image valide (JPEG, PNG, WEBP)'
+    )]
+    private ?File $imageFile = null;
+
 
     public function getId(): ?int
     {
@@ -91,6 +112,30 @@ class Partners
     {
         $this->partnerId = $partnerId;
 
+        return $this;
+    }
+
+        public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+    
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+    
+    public function setImageFile(?File $imageFile): static
+    {
+        $this->imageFile = $imageFile;
+        
         return $this;
     }
 }

@@ -296,41 +296,41 @@ FROM scene;
 
 /*Table partners */
 INSERT INTO partners
-			(title, front_page, type, link,partner_id)
+			(title, front_page, type, link,partner_id, image)
 			VALUES
 			('Affligen',true,'Restauration',
 			'https://www.affligembeer.com/fr/fr/age-gate?returnUrl=https%3A%2F%2Fwww.affligembeer.com%2Ffr%2Ffr%2Fhomepage',
-			'a1'),
+			'a1', "image-a1.png"),
 			('Breiz Cola',true,'Restauration',
 			'https://www.breizhcola.bzh/',
-			'a2'),
+			'a2', "image-a2.png"),
 			('Mcdonalds',true,'Restauration',
 			'https://www.mcdonalds.fr/?gclsrc=aw.ds&gad_source=1&gclid=CjwKCAiA3ZC6BhBaEiwAeqfvyrLYv4OaWzd6rcLBBhiVLHp7mlZU1gSKPIpc7y0z26IKd3a9A4PrNBoCe13QAvD_BwE&gclsrc=aw.ds',
-			'a3'),
+			'a3', "image-a3.png"),
 			('Cristaline',false,'Restauration',
 			'https://www.moneaucristaline.fr/origine-et-sources/',
-			'a4'),
+			'a4', "image-a4.png"),
 			('Dominos',true,'Restauration',
 			'https://www.dominos.fr/?gad_source=1&gclid=CjwKCAiA3ZC6BhBaEiwAeqfvypMnQ9Po4ArPsVzXvJjlGvu2uDeljhUJVpZmbbf6xX98QfkE0Ox3HhoCmlAQAvD_BwE',
-			'a5'),
+			'a5', "image-a5.png"),
 			('Crédit Agricole',true,'Sponsor',
 			'https://www.credit-agricole.com/',
-			'b1'),
+			'b1', "image-b1.png"),
 			('Citroen',false,'Sponsor',
 			'https://www.citroen.fr/',
-			'b2'),
+			'b2', "image-b2.png"),
 			('Engie',true,'Sponsor',
 			'https://www.engie.com/jobs/alternance',
-			'b3'),
+			'b3', "image-b3.png"),
 			('NRJ',true,'Media',
 			'https://www.nrj.fr/',
-			'c1'),
+			'c1', "image-c1.png"),
 			('Deezer',true,'Media',
 			'https://www.deezer.com/fr/offers/premium/acq?utm_source=adwords&utm_medium=search&utm_campaign=acq_fr_sea-brd_web_search_perf_tnb-directsub_pure&utm_content=brd_premium_tnb_pure-exact&utm_term=deezer&gad_source=1&gclid=CjwKCAiA3ZC6BhBaEiwAeqfvyin6TjPo4hPeVWy_ORcm9K14Wl0pfoD_NFi0yZaGoZZ9_CmKtIS5nhoCro0QAvD_BwE',
-			'c2'),
+			'c2', "image-c2.png"),
 			('ladepeche',false,'Media',
 			'https://www.ladepeche.fr/',
-			'c3');
+			'c3', "image-c3.png");
 
 SELECT *
 FROM partners; 

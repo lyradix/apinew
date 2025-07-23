@@ -8,7 +8,7 @@
 </a>
 <h1>Ajouter un concert</h1>
     <div class="form">
-    {{ form_start(form) }}
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
          {{ form_row(form.nom) }}
         {{ form_row(form.date) }}
         {{ form_row(form.startTime) }}
@@ -18,19 +18,23 @@
         {{ form_row(form.description) }}
         {{ form_row(form.source) }}
         {{ form_row(form.lien) }}
+        {{ form_row(form.imageFile) }}
     
         <div style="display: flex; align-items: center; gap: 8px;">
         {{ form_widget(form.sceneFK) }}
 
-    <button class="delBtn>
-        <a href="#" "
-           onclick="return confirm('Voulez-vous vraiment supprimer cette scène et son POI ?');">
-            <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
-        </a>
-    </button>
+        <button class="delBtn" type="button">
+            <a href="#" 
+               onclick="return confirm('Voulez-vous vraiment supprimer cette scène et son POI ?');">
+                <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
+            </a>
+        </button>
          </div>
-        <button class="btn btn-primary">Ajouter</button>
-         <button type="button" onclick="window.history.back()">Retour</button>
+        
+        <div style="margin-top: 15px;">
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+            <button type="button" class="btn btn-secondary" onclick="window.history.back()">Retour</button>
+        </div>
     {{ form_end(form) }}
     </div>
 
