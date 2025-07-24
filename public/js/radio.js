@@ -1,3 +1,9 @@
+// Hide modifyForm, updateForm, and refresh button by default
+document.getElementById('modifyForm').style.display = 'none';
+document.getElementById('updateForm').style.display = 'none';
+document.getElementById('refreshModify').style.display = 'none';
+
+
 document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
     radio.addEventListener('change', function() {
         if (this.value === 'add') {
@@ -13,7 +19,4 @@ document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
     });
 });
 
-// Hide modifyForm, updateForm, and refresh button by default
-document.getElementById('modifyForm').style.display = 'none';
-document.getElementById('updateForm').style.display = 'none';
-document.getElementById('refreshModify').style.display = 'none';
+document.getElementById('refreshModify').addEventListener('click', reloadPoiData);

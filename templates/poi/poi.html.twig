@@ -18,24 +18,22 @@
          <button type="button" id="refreshModify" style="display:none; margin-left:8px;">Rafraîchir</button>
          </input>
         Modifier
-    </label>
-   
+    </label>  
 </div>
 
 <div id="addForm" class="form">
     <form id="poiForm" action="{{ path('post_poi') }}" method="post">
         {{ form_widget(formAddPoi) }}
-    <div class="wrapbtn">
-        <button type="submit">Envoyer</button>
-        <button class="box" type="button" onclick="window.history.back()">Retour</button>
-    </div>
+        <div class="wrapbtn">
+            <button type="submit">Envoyer</button>
+            <button class="box" type="button" onclick="window.history.back()">Retour</button>
+        </div>
     </form>
 </div>
 
 <div id="modifyForm" class="form" style="display:none;">
     <form id="modifForm" method="get">
-
-         <div>
+        <div>
             <label for="poiId">Sélectionnez le lieu à modifier :</label>
             <select name="poiId" id="poiId" required>
                 <option value="">-- Choisir un lieu --</option>
@@ -45,19 +43,21 @@
                 <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
             </button>
         </div>
+
         <label>Longitude</label>
         <input name="longitude" placeholder="exemple:2.4566">
         <label>Latitude</label>
         <input name="latitude" placeholder="48.7586">
-         <label>Sélectionnez le type :</label>
+        <label>Sélectionnez le type :</label>
         <select name="type" id="typeSelect" required>
             <option value="">-- Choisir un type --</option>
             <!-- Options remplis par javasScript -->
         </select>
-    <div class="wrapbtn">
-        <button type="submit">Modifier</button>
-        <button class="box" type="button" onclick="window.history.back()">Retour</button>
-    </div>
+    
+        <div class="wrapbtn">
+            <button type="submit">Modifier</button>
+            <button class="box" type="button" onclick="window.history.back()">Retour</button>
+        </div>
     </form>
 </div>
 

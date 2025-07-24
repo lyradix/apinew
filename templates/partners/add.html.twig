@@ -22,40 +22,51 @@
     </label>
 </div>
 
-<div class="form">
-<div id="addForm">
-    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
-        {{ form_row(form.title) }}
-        {{ form_row(form.frontPage) }}
-        {{ form_row(form.type) }}
-        {{ form_row(form.link) }}
-        {{ form_row(form.imageFile) }}
-        <button type="submit">Ajouter</button>
-        <button class="box" type="button" onclick="window.history.back()">Retour</button>
-    {{ form_end(form) }}
-</div>
-<div id="modifyForm" style="display:none;">
-    <form id="modifForm">
-        <label for="Id">Sélectionnez le partenaire :</label>
-        <select name="Id" id="Id" required>
-            <option value="">-- Choisir un partenaire --</option>
-            <!-- Options will be filled by JS -->
-        </select>
-        
-        <label for="frontPageCheckbox">Page d'accueil :</label>
-        <input type="checkbox" name="frontPage" id="frontPageCheckbox">
-        
-        <label for="typeSelect">Type :</label>  
-        <select name="type" id="typeSelect" required>
-            <option value="">-- Choisir un type --</option>
-            <!-- Options will be filled by JS -->
-        </select>
-        
-        <label for="linkInput">Lien :</label>
-        <input type="url" name="link" id="linkInput" required>
-        
-        <button type="submit">Modifier</button>
-        <button class="box" type="button" onclick="window.history.back()">Retour</button>
+<div id="addForm" class="form">
+    <form id="partnerForm" action="{{ path('app_add_partner') }}" method="post">
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+            {{ form_row(form.title) }}
+            {{ form_row(form.frontPage) }}
+            {{ form_row(form.type) }}
+            {{ form_row(form.link) }}
+            {{ form_row(form.imageFile) }}
+            <button type="submit">Ajouter</button>
+            <button class="box" type="button" onclick="window.history.back()">Retour</button>
+        {{ form_end(form) }}
+        </form>
+    </div>
+
+<div id="modifyForm"  class="form"  style="display:none;">
+    <form id="modifForm" method="get">
+         <div>
+            <label for="Id">Sélectionnez le partenaire :</label>
+            <select name="Id" id="Id" required>
+                <option value="">-- Choisir un partenaire --</option>
+                <!-- Options will be filled by JS -->
+            </select>
+            <button class="delBtn" >
+                <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
+            </button>
+        </div>
+
+            <label for="frontPageCheckbox">Page d'accueil :</label>
+            <input type="checkbox" name="frontPage" id="frontPageCheckbox">
+            
+            <label for="typeSelect">Type :</label>  
+            <select name="type" id="typeSelect" required>
+                <option value="">-- Choisir un type --</option>
+                <!-- Options will be filled by JS -->
+            </select>
+            
+            <label for="linkInput">Lien :</label>
+            <input type="url" name="link" id="linkInput" required>
+
+            <label>Ajouter une image</label>
+            <input type="file" name="imageUpload"/>
+        <div>
+            <button type="submit">Modifier</button>
+            <button class="box" type="button" onclick="window.history.back()">Retour</button>
+        </div>
     </form>
 </div>
 

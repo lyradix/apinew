@@ -34,7 +34,7 @@ class AddPartnersType extends AbstractType
             'label' => 'Lien'
         ])
          ->add('imageFile', FileType::class, [
-                'label' => 'Ajouter image',
+                'label' => 'Ajouter une image',
                 'required' => false,
                 'constraints' => [
                     new File([
