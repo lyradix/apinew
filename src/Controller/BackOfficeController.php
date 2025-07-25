@@ -312,7 +312,34 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     public function getPartners(PartnersRepository $PartnersRepository, SerializerInterface $serializer): JsonResponse
     {
         $data = $PartnersRepository->findAll();
-        $jsonData = $serializer->serialize($data, 'json', ['partners:read']);
+        
+        // Enhance the data with image information for debugging
+        $enhancedData = [];
+        $imagesDir = $this->getParameter('images_directory');
+        
+        foreach ($data as $partner) {
+            $partnerData = [
+                'id' => $partner->getId(),
+                'title' => $partner->getTitle(),
+                'frontPage' => $partner->isFrontPage(),
+                'type' => $partner->getType(),
+                'link' => $partner->getLink(),
+                'partnerId' => $partner->getPartnerId(),
+                'image' => $partner->getImage(),
+            ];
+            
+            // Add image validation info
+            if ($partner->getImage()) {
+                $imagePath = $imagesDir . '/' . $partner->getImage();
+                $partnerData['imageExists'] = file_exists($imagePath);
+                $partnerData['imageFullPath'] = $imagePath;
+            }
+            
+            $enhancedData[] = $partnerData;
+        }
+        
+        // Return with standard serialization for consistent format
+        $jsonData = $serializer->serialize($enhancedData, 'json');
         return new JsonResponse($jsonData, 200, [], true);
     }
 
@@ -320,7 +347,7 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     public function getInfo(InfoRepository $InfoRepository, SerializerInterface $serializer): JsonResponse
     {
         $data = $InfoRepository->findAll();
-        $jsonData = $serializer->serialize($data, 'json', ['info:read']);
+        $jsonData = $serializer->serialize($data, 'json', ['groups' => ['info:read']]);
         return new JsonResponse($jsonData, 200, [], true);
     }
 
@@ -793,36 +820,45 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
     ]);
     }
 
-    #[Route('/update-partner', name: 'app_update_partner', methods: ['PUT'])]
+    #[Route('/update-partner', name: 'app_update_partner', methods: ['PUT', 'POST'])]
     public function updatePartner(
     Request $request,
     EntityManagerInterface $entityManager,
     PartnersRepository $partnersRepository
     ): JsonResponse {
-    $data = json_decode($request->getContent(), true);
-
-    if (!isset($data['id'])) {
+    $id = $request->request->get('id');
+    if (!$id) {
         return new JsonResponse(['error' => 'Partner ID is required'], JsonResponse::HTTP_BAD_REQUEST);
     }
 
-    $partner = $partnersRepository->find($data['id']);
+    $partner = $partnersRepository->find($id);
     if (!$partner) {
         return new JsonResponse(['error' => 'Partner not found'], JsonResponse::HTTP_NOT_FOUND);
     }
 
     // Update fields if provided
-    if (isset($data['title'])) {
-        $partner->setTitle($data['title']);
+    if ($type = $request->request->get('type')) {
+        $partner->setType($type);
     }
-    if (isset($data['type'])) {
-        $partner->setType($data['type']);
+    if ($link = $request->request->get('link')) {
+        $partner->setLink($link);
     }
-    if (isset($data['link'])) {
-        $partner->setLink($data['link']);
+    
+    // Handle frontPage checkbox
+    $frontPage = $request->request->get('frontPage');
+    $partner->setFrontPage($frontPage === 'true');
+
+    // Handle file upload
+    $imageFile = $request->files->get('imageFile');
+    if ($imageFile) {
+        $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '', $originalFilename);
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+        $imagesDirectory = $this->getParameter('images_directory');
+        $imageFile->move($imagesDirectory, $newFilename);
+        $partner->setImage($newFilename);
     }
-    if (isset($data['frontPage'])) {
-        $partner->setFrontPage((bool)$data['frontPage']);
-    }
+
     
     $entityManager->flush();
 

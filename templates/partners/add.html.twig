@@ -14,55 +14,66 @@
     </label>
     <label style="display: inline-flex; align-items: center;">
         <input type="radio" name="formMode" value="modify" id="modifyRadio">
-            <button type="button" id="refreshModify" style="display:none; margin-left:8px;">
+        <button type="button" id="refreshModifyPartner" style="display:none; margin-left:8px;" onclick="document.dispatchEvent(new Event('refreshPartners'))">
             Rafraîchir
-            </button>
-        </input>
+          
+        </button>
         Modifier
     </label>
 </div>
 
 <div id="addForm" class="form">
-    <form id="partnerForm" action="{{ path('app_add_partner') }}" method="post">
-        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
-            {{ form_row(form.title) }}
-            {{ form_row(form.frontPage) }}
-            {{ form_row(form.type) }}
-            {{ form_row(form.link) }}
-            {{ form_row(form.imageFile) }}
-            <button type="submit">Ajouter</button>
-            <button class="box" type="button" onclick="window.history.back()">Retour</button>
-        {{ form_end(form) }}
-        </form>
-    </div>
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'id': 'partnerForm', 'action': path('app_add_partner')}}) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.frontPage) }}
+        {{ form_row(form.type) }}
+        {{ form_row(form.link) }}
+        {{ form_row(form.imageFile) }}
+        <button type="submit">Ajouter</button>
+        <button class="box" type="button" onclick="window.history.back()">Retour</button>
+    {{ form_end(form) }}
+</div>
 
-<div id="modifyForm"  class="form"  style="display:none;">
-    <form id="modifForm" method="get">
-         <div>
+<div id="modifyForm" class="form" style="display:none;">
+    <form id="modifForm" method="POST">
+        <div>
             <label for="Id">Sélectionnez le partenaire :</label>
             <select name="Id" id="Id" required>
                 <option value="">-- Choisir un partenaire --</option>
                 <!-- Options will be filled by JS -->
             </select>
-            <button class="delBtn" >
+            <button class="delBtn" type="button">
                 <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
             </button>
         </div>
 
-            <label for="frontPageCheckbox">Page d'accueil :</label>
-            <input type="checkbox" name="frontPage" id="frontPageCheckbox">
-            
-            <label for="typeSelect">Type :</label>  
-            <select name="type" id="typeSelect" required>
-                <option value="">-- Choisir un type --</option>
-                <!-- Options will be filled by JS -->
-            </select>
-            
-            <label for="linkInput">Lien :</label>
-            <input type="url" name="link" id="linkInput" required>
+        <label for="frontPageCheckbox">Page d'accueil :</label>
+        <input type="checkbox" name="frontPage" id="frontPageCheckbox">
+        
+        <label for="typeSelect">Type :</label>  
+        <select name="type" id="typeSelect" required>
+            <option value="">-- Choisir un type --</option>
+            <!-- Options will be filled by JS -->
+        </select>
+        
+        <label for="linkInput">Lien :</label>
+        <input type="url" name="link" id="linkInput" required>
 
-            <label>Ajouter une image</label>
-            <input type="file" name="imageUpload"/>
+        {# Show current image for selected partner #}
+        <div id="currentImageContainer" style="display:none; margin: 10px 0;">
+            <label>Image actuelle :</label>
+            <div class="current-image">
+                <img id="currentImage" src="" alt="Partner Image" style="max-width: 300px; height: auto;" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div id="imageError" style="display:none; color: red;">
+                    Erreur: Image non trouvée
+                </div>
+            </div>
+        </div>
+
+        <label>Ajouter une image</label>
+        <input type="file" name="imageUpload"/>
+        
         <div>
             <button type="submit">Modifier</button>
             <button class="box" type="button" onclick="window.history.back()">Retour</button>
@@ -70,7 +81,7 @@
     </form>
 </div>
 
-<div id="updateForm" class="form">
+<div id="updateForm" class="form" style="display:none;">
 </div>
 
 
@@ -80,6 +91,10 @@
     </script>
 {% endfor %}
 
-<script src="{{ asset('js/addPartners.js') }}"></script>
-<script src="{{ asset('js/radio.js') }}"></script>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/addPartners.js') }}?v={{ 'now'|date('YmdHis') }}"></script>
+    <script src="{{ asset('js/radioPartners.js') }}?v={{ 'now'|date('YmdHis') }}"></script>
 {% endblock %}
