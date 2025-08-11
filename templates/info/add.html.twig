@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello IndexController!{% endblock %}
+
+{% block body %}
+<a href="{{ path('app_adminConcerts') }}" class="btn btn-success"> 
+    <img class="logoXtra" src="{{ asset('images/preview.png') }}" alt="logo">
+</a>
+    <h1>Ajouter ou modifier une info</h1>
+
+<div class="radio">
+    <label>
+        <input type="radio" name="formMode" value="add" checked>
+        Ajouter
+    </label>
+    <label>
+        <input type="radio" name="formMode" value="modify" id="modifyRadio">
+         <button type="button" id="refreshModify" style="display:none; margin-left:8px;">Rafraîchir</button>
+         </input>
+        Modifier
+    </label>  
+</div>
+
+<div id="addForm" class="form">
+    <form id="infoForm" action="{{ path('app_addInfo') }}" method="post">
+            {{ form_widget(formAddInfo) }}
+            <div class="wrapbtn">
+                <button type="submit">Envoyer</button>
+                <button class="box" type="button" onclick="window.history.back()">Retour</button>
+            </div>
+        {{ form_end(formAddInfo) }}
+    </form>
+</div>
+
+<div id="modifyForm" class="form" style="display:none;">
+    <form id="modifForm" method="POST">
+        <div>
+            <label for="Id">Sélectionnez une info</label>
+            <select name="Id" id="Id" required>
+                <option value="">-- Choisir une info --</option>
+                <!-- Options will be filled by JS -->
+            </select>
+            <button class="delBtn" type="button">
+                <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
+            </button>
+        </div>
+        <div>
+            <label for="title">Titre</label>
+            <input type="text" name="title" id="title" required>
+        </div>
+        <div>
+            <label for="typeSelect">Type</label>
+            <select name="type" id="typeSelect" required>
+                <option value="">-- Choisir un type --</option>
+                <!-- Options will be filled by JS -->
+            </select>
+        </div>
+        <div>
+            <label for="descriptif">Description</label>
+            <textarea name="descriptif" id="descriptif" rows="5" required></textarea>
+        </div>
+        <div>
+            <button type="submit">Modifier</button>
+            <button class="box" type="button" onclick="window.history.back()">Retour</button>
+        </div>
+    </form>
+</div>
+
+<div id="updateForm" class="form" style="display:none;">
+</div>
+
+
+{% for message in app.flashes('success') %}
+    <script>
+        alert("{{ message|e('js') }}");
+    </script>
+{% endfor %}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/info.js') }}"></script>
+    <script src="{{ asset('js/radioInfo.js') }}"></script>
+{% endblock %}

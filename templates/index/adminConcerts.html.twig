@@ -55,7 +55,7 @@
     </a>
 
     {% if info is defined %}
-        <a href="{{ path('app_updateInfo', {'id': info.id}) }}">
+        <a href="{{ path('app_addInfo') }}">
             <button class="box">Ajouter ou modifier une info générale</button>
         </a>
     {% else %}

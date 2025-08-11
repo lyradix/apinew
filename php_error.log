@@ -77,3 +77,8 @@ Stack trace:
 [10-Aug-2025 18:52:21 UTC] PHP Parse error:  syntax error, unexpected end of file, expecting "," or ";" in Command line code on line 1
 [10-Aug-2025 18:53:33 UTC] PHP Warning:  file_get_contents(C:\Users\daryl\salon/data.sql): Failed to open stream: No such file or directory in C:\Users\daryl\salon\update_dept_regions.php on line 108
 [10-Aug-2025 21:42:41 UTC] PHP Fatal error:  Cannot redeclare class App\Repository\SalonsRepository (previously declared in C:\Users\daryl\salon\src\Repository\SalonsRepository.php:17) in C:\Users\daryl\salon\src\Repository\SalonsRepositoty.php on line 12
+[11-Aug-2025 06:46:05 UTC] PHP Fatal error:  Cannot redeclare App\Controller\BackOfficeController::addInfo() in C:\Users\daryl\apinewsymfony\src\Controller\BackOfficeController.php on line 520
+[11-Aug-2025 06:46:26 UTC] PHP Fatal error:  Cannot redeclare App\Controller\BackOfficeController::addInfo() in C:\Users\daryl\apinewsymfony\src\Controller\BackOfficeController.php on line 520
+[11-Aug-2025 06:48:59 UTC] PHP Fatal error:  Cannot redeclare App\Controller\BackOfficeController::addInfo() in C:\Users\daryl\apinewsymfony\src\Controller\BackOfficeController.php on line 520
+[11-Aug-2025 08:16:07 UTC] 2025-08-11T08:16:07+00:00 [critical] Uncaught Error: syntax error, unexpected token "return", expecting "function"
+[11-Aug-2025 08:18:55 UTC] 2025-08-11T08:18:55+00:00 [critical] Uncaught Error: syntax error, unexpected token "private", expecting end of file
