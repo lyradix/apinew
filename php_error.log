@@ -37,3 +37,43 @@ Stack trace:
 [21-Jul-2025 16:46:09 UTC] PHP Warning:  Undefined array key "SERVER_SOFTWARE" in C:\Users\daryl\Downloads\public_html (3)\public\debug_concert_routes.php on line 152
 [23-Jul-2025 12:24:52 UTC] PHP Fatal error:  Cannot use Doctrine\DBAL\Types\Types as Types because the name is already in use in C:\Users\daryl\apinewsymfony\src\Entity\Partners.php on line 6
 [23-Jul-2025 12:25:22 UTC] PHP Fatal error:  Cannot use Doctrine\DBAL\Types\Types as Types because the name is already in use in C:\Users\daryl\apinewsymfony\src\Entity\Partners.php on line 6
+[09-Aug-2025 20:22:07 UTC] PHP Warning:  openssl_pkey_export(): Cannot get key from parameter 1 in C:\Users\daryl\salon\config\jwt\generate-keys.php on line 9
+[09-Aug-2025 20:22:07 UTC] PHP Fatal error:  Uncaught TypeError: openssl_pkey_get_details(): Argument #1 ($key) must be of type OpenSSLAsymmetricKey, false given in C:\Users\daryl\salon\config\jwt\generate-keys.php:13
+Stack trace:
+#0 C:\Users\daryl\salon\config\jwt\generate-keys.php(13): openssl_pkey_get_details(false)
+#1 {main}
+  thrown in C:\Users\daryl\salon\config\jwt\generate-keys.php on line 13
+[09-Aug-2025 20:22:15 UTC] PHP Warning:  openssl_pkey_export(): Cannot get key from parameter 1 in C:\Users\daryl\salon\config\jwt\generate-keys.php on line 9
+[09-Aug-2025 20:22:15 UTC] PHP Fatal error:  Uncaught TypeError: openssl_pkey_get_details(): Argument #1 ($key) must be of type OpenSSLAsymmetricKey, false given in C:\Users\daryl\salon\config\jwt\generate-keys.php:13
+Stack trace:
+#0 C:\Users\daryl\salon\config\jwt\generate-keys.php(13): openssl_pkey_get_details(false)
+#1 {main}
+  thrown in C:\Users\daryl\salon\config\jwt\generate-keys.php on line 13
+[09-Aug-2025 20:22:27 UTC] PHP Parse error:  syntax error, unexpected token "=", expecting end of file in Command line code on line 2
+[09-Aug-2025 20:23:03 UTC] PHP Warning:  openssl_pkey_export(): Cannot get key from parameter 1 in C:\Users\daryl\salon\generate_jwt_keys.php on line 12
+[09-Aug-2025 20:23:03 UTC] PHP Fatal error:  Uncaught TypeError: openssl_pkey_get_details(): Argument #1 ($key) must be of type OpenSSLAsymmetricKey, false given in C:\Users\daryl\salon\generate_jwt_keys.php:16
+Stack trace:
+#0 C:\Users\daryl\salon\generate_jwt_keys.php(16): openssl_pkey_get_details(false)
+#1 {main}
+  thrown in C:\Users\daryl\salon\generate_jwt_keys.php on line 16
+[09-Aug-2025 20:23:25 UTC] PHP Parse error:  syntax error, unexpected token "=", expecting end of file in Command line code on line 1
+[09-Aug-2025 20:23:41 UTC] PHP Warning:  openssl_pkey_export(): Cannot get key from parameter 1 in C:\Users\daryl\salon\bin\generate-jwt-keys.php on line 11
+[09-Aug-2025 20:28:04 UTC] PHP Fatal error:  Cannot redeclare class App\DataFixtures\AppFixtures (previously declared in C:\Users\daryl\salon\src\DataFixtures\AppFixtures.php:8) in C:\Users\daryl\salon\src\DataFixtures\Data\AppFixtures.php on line 10
+[09-Aug-2025 20:32:50 UTC] PHP Warning:  file_get_contents(http://localhost:8000/api/login_check): Failed to open stream: Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée in Command line code on line 1
+[10-Aug-2025 12:27:39 UTC] PHP Fatal error:  Cannot use positional argument after named argument in C:\Users\daryl\salon\src\Controller\IndexController.php on line 24
+[10-Aug-2025 12:28:00 UTC] PHP Fatal error:  Cannot use positional argument after named argument in C:\Users\daryl\salon\src\Controller\IndexController.php on line 24
+[10-Aug-2025 12:29:14 UTC] 2025-08-10T12:29:14+00:00 [info] User Deprecated: Method "Symfony\Component\HttpKernel\Bundle\Bundle::build()" might add "void" as a native return type declaration in the future. Do the same in child class "Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle" now to avoid errors or add an explicit @return annotation to suppress this message.
+[10-Aug-2025 12:29:14 UTC] 2025-08-10T12:29:14+00:00 [info] User Deprecated: Method "Symfony\Component\HttpKernel\Bundle\Bundle::registerCommands()" might add "void" as a native return type declaration in the future. Do the same in child class "Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle" now to avoid errors or add an explicit @return annotation to suppress this message.
+[10-Aug-2025 12:29:14 UTC] 2025-08-10T12:29:14+00:00 [critical] Uncaught Error: syntax error, unexpected token "=>"
+[10-Aug-2025 12:30:52 UTC] PHP Fatal error:  Cannot use positional argument after named argument in C:\Users\daryl\salon\src\Controller\IndexController.php on line 24
+[10-Aug-2025 14:45:32 UTC] PHP Fatal error:  Cannot use positional argument after named argument in C:\Users\daryl\salon\src\Controller\IndexController.php on line 24
+[10-Aug-2025 14:49:52 UTC] PHP Fatal error:  Cannot use positional argument after named argument in C:\Users\daryl\salon\src\Controller\IndexController.php on line 25
+[10-Aug-2025 14:50:20 UTC] PHP Fatal error:  Cannot use positional argument after named argument in C:\Users\daryl\salon\src\Controller\IndexController.php on line 25
+[10-Aug-2025 14:53:41 UTC] 2025-08-10T14:53:41+00:00 [info] User Deprecated: Method "Symfony\Component\HttpKernel\Bundle\Bundle::build()" might add "void" as a native return type declaration in the future. Do the same in child class "Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle" now to avoid errors or add an explicit @return annotation to suppress this message.
+[10-Aug-2025 14:53:41 UTC] 2025-08-10T14:53:41+00:00 [info] User Deprecated: Method "Symfony\Component\HttpKernel\Bundle\Bundle::registerCommands()" might add "void" as a native return type declaration in the future. Do the same in child class "Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle" now to avoid errors or add an explicit @return annotation to suppress this message.
+[10-Aug-2025 14:53:41 UTC] 2025-08-10T14:53:41+00:00 [critical] Uncaught Error: syntax error, unexpected single-quoted string "salon:read", expecting "]"
+[10-Aug-2025 18:19:46 UTC] PHP Fatal error:  Cannot redeclare class App\Entity\DepartmentRegion (previously declared in C:\Users\daryl\salon\src\Entity\Department.php:9) in C:\Users\daryl\salon\src\Entity\Department.php on line 9
+[10-Aug-2025 18:40:40 UTC] PHP Fatal error:  Cannot redeclare App\Entity\Turnover::getDept() in C:\Users\daryl\salon\src\Entity\Turnover.php on line 88
+[10-Aug-2025 18:52:21 UTC] PHP Parse error:  syntax error, unexpected end of file, expecting "," or ";" in Command line code on line 1
+[10-Aug-2025 18:53:33 UTC] PHP Warning:  file_get_contents(C:\Users\daryl\salon/data.sql): Failed to open stream: No such file or directory in C:\Users\daryl\salon\update_dept_regions.php on line 108
+[10-Aug-2025 21:42:41 UTC] PHP Fatal error:  Cannot redeclare class App\Repository\SalonsRepository (previously declared in C:\Users\daryl\salon\src\Repository\SalonsRepository.php:17) in C:\Users\daryl\salon\src\Repository\SalonsRepositoty.php on line 12

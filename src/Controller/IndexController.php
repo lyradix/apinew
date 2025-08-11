@@ -118,6 +118,15 @@ public function showConcert(
     ]);
 }
 
+     #[Route('/info', name: 'app_info')]
+    public function getInfo(InfoRepository $InfoRepository, SerializerInterface $serializer): JsonResponse
+    {
+        $data = $InfoRepository->findAll();
+        $jsonData = $serializer->serialize($data, 'json', ['info:read']);
+        return new JsonResponse($jsonData, 200, [], true);
+    }
+    
+
 // // Route pour créer un concert en particulier par l'id, utilisation par le back office
 //    #[Route('/concert/{id}', name: 'app_concert_show', methods: ['GET', 'POST'])]
 // public function showConcert(

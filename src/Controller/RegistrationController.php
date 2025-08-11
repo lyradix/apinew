@@ -14,7 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class RegistrationController extends AbstractController
 {
 
-    // Route pour enregistrer un nouvel administrateur
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
     public function registerAdmin(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
@@ -23,11 +22,27 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // mot de pase hashé
-            $user->setPassword(
-                $passwordHasher->hashPassword($user, $user->getPassword())
-            );
-         // Le role est défini comme ROLE_ADMIN par défault
+            // Get the plain password from the form
+            $plainPassword = $user->getPlainPassword();
+            
+            // Check if password is not null or empty
+            if ($plainPassword) {
+                // Hash the password
+                $user->setPassword(
+                    $passwordHasher->hashPassword($user, $plainPassword)
+                );
+                
+                // Clear the plain password for security
+                $user->setPlainPassword(null);
+            } else {
+                // Handle case where password is null or empty
+                $this->addFlash('error', 'Le mot de passe ne peut pas être vide.');
+                return $this->render('registration/register.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+            
+            // Le role est défini comme ROLE_ADMIN par défault
             $user->setRoles(['ROLE_ADMIN']);
 
             // Persist les donées

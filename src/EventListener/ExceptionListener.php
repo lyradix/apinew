@@ -47,7 +47,7 @@ class ExceptionListener
         // 3. It's an AJAX request
         
         $pathInfo = $request->getPathInfo();
-        $acceptHeader = $request->headers->get('Accept');
+        $acceptHeader = $request->headers->get('Accept') ?? '';
         $isXmlHttpRequest = $request->isXmlHttpRequest();
         
         return (

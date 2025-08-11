@@ -343,13 +343,6 @@ $form = $this->createForm(UpdateInfoType::class, $info, [
         return new JsonResponse($jsonData, 200, [], true);
     }
 
-    #[Route('/info', name: 'app_info')]
-    public function getInfo(InfoRepository $InfoRepository, SerializerInterface $serializer): JsonResponse
-    {
-        $data = $InfoRepository->findAll();
-        $jsonData = $serializer->serialize($data, 'json', ['groups' => ['info:read']]);
-        return new JsonResponse($jsonData, 200, [], true);
-    }
 
     #[Route('/currentuser', name: 'app_current_user', methods: ['GET'])]
     public function getCurrentUser(SerializerInterface $serializer): JsonResponse
