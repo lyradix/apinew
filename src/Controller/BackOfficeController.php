@@ -242,28 +242,40 @@ public function postPoi(
     }
 
 
-    #[Route('/updateInfo/{id}', name: 'app_updateInfo', methods: ['GET', 'POST', 'PUT'])]
+    /**
+     * Handles updating Info entities.
+     *
+     * - GET: Renders the update form for the Info entity with the given ID.
+     * - POST: Processes the submitted form and updates the Info entity if valid.
+     * - PUT (or JSON request): Accepts JSON payload to update Info fields and returns a JSON response.
+     *
+     * @param int $id The ID of the Info entity to update.
+     * @param Request $request The current HTTP request.
+     * @param InfoRepository $infoRepository The repository for Info entities.
+     * @param EntityManagerInterface $entityManager The Doctrine entity manager.
+     * @param SerializerInterface $serializer The Symfony serializer.
+     * @return JsonResponse|Response
+     */
+    #[Route('/updateInfo', name: 'app_updateInfo', methods: ['PUT'])]
 public function updateInfo(
     int $id,
     Request $request,
     InfoRepository $infoRepository,
     EntityManagerInterface $entityManager,
     SerializerInterface $serializer
-): Response {
-    $info = $infoRepository->find($id);
-    if (!$info) {
-        if ($request->getContentTypeFormat() === 'json') {
-            return new JsonResponse(['error' => 'Info introuvable'], Response::HTTP_NOT_FOUND);
-        }
-        $this->addFlash('danger', 'Info introuvable.');
-        return $this->redirectToRoute('app_info');
+): JsonResponse {
+   $data = json_decode($request->getContent(), true);
+
+    if (!isset($data['id'])) {
+        return new JsonResponse(['error' => 'Partner ID is required'], JsonResponse::HTTP_BAD_REQUEST);
     }
-    
-    // Handle JSON request (API call)
-    if ($request->getContentTypeFormat() === 'json' || $request->isXmlHttpRequest() || $request->getMethod() === 'PUT') {
-        $data = json_decode($request->getContent(), true);
-        
-        // Update fields if they exist in the request
+
+    $partner = $partnersRepository->find($data['id']);
+    if (!$info) {
+        return new JsonResponse(['error' => 'Info not found'], JsonResponse::HTTP_NOT_FOUND);
+    }
+
+        // Update fields if provided
         if (isset($data['title'])) {
             $info->setTitle($data['title']);
         }
@@ -276,64 +288,10 @@ public function updateInfo(
             $info->setDescriptif($data['descriptif']);
         }
         
-        // Save changes
-        $entityManager->persist($info);
-        $entityManager->flush();
-        
-        // Return JSON response
-        $jsonData = $serializer->serialize($info, 'json', ['info:read']);
-        return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
+       $entityManager->flush();
+
+    return new JsonResponse(['success' => true, 'message' => 'Info updated successfully.']);
     }
-    
-    // Standard form handling for web interface
-    $titles = $entityManager->getRepository(Info::class)
-        ->createQueryBuilder('i')
-        ->select('i.title')
-        ->distinct()
-        ->getQuery()
-        ->getResult();
-
-    $titleChoices = [];
-    foreach ($titles as $row) {
-        $titleChoices[$row['title']] = $row['title'];
-    }
-
-    $types = $entityManager->getRepository(Info::class)
-        ->createQueryBuilder('i')
-        ->select('i.type')
-        ->distinct()
-        ->getQuery()
-        ->getResult();
-
-    $typeChoices = [];
-    foreach ($types as $row) {
-        $typeChoices[$row['type']] = $row['type'];
-    }
-
-    $form = $this->createForm(UpdateInfoType::class, $info, [
-        'title_choices' => $titleChoices,
-        'type_choices' => $typeChoices,
-    ]);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->flush();
-        $this->addFlash('success', 'Info modifiée avec succès.');
-        return $this->redirectToRoute('app_info');
-    }
-
-    $infos = $infoRepository->findAll();
-    $titleToId = [];
-    foreach ($infos as $infoItem) {
-        $titleToId[$infoItem->getTitle()] = $infoItem->getId();
-    }
-    return $this->render('info/update.html.twig', [
-        'form' => $form->createView(),
-        'title_to_id' => $titleToId,
-        'info' => $info,
-    ]);
-}
-
 
     #[Route('/partners', name: 'app_partners')]
     public function getPartners(PartnersRepository $PartnersRepository, SerializerInterface $serializer): JsonResponse

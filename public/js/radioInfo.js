@@ -1,7 +1,7 @@
 // Hide modifyForm, updateForm, and refresh button by default
 if (document.getElementById('modifyForm')) document.getElementById('modifyForm').style.display = 'none';
 if (document.getElementById('updateForm')) document.getElementById('updateForm').style.display = 'none';
-if (document.getElementById('refreshModify')) document.getElementById('refreshModify').style.display = 'none';
+if (document.getElementById('refreshModifyPartner')) document.getElementById('refreshModifyPartner').style.display = 'none';
 // if (document.getElementById('reloadBtn')) document.getElementById('reloadBtn').style.display = 'none';
 
 
@@ -17,14 +17,14 @@ document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
             if (document.getElementById('addForm')) document.getElementById('addForm').style.display = 'none';
             if (document.getElementById('modifyForm')) document.getElementById('modifyForm').style.display = '';
             if (document.getElementById('updateForm')) document.getElementById('updateForm').style.display = 'none';
-            // Only call reloadInfosData if it exists
-            if (typeof window.reloadInfosData === 'function') {
-                window.reloadInfosData();
-            } else if (typeof reloadInfosData === 'function') {
-                reloadInfosData();
+            // Only call reloadInfoData if it exists
+            if (typeof window.reloadInfoData === 'function') {
+                window.reloadInfoData();
+            } else if (typeof reloadInfoData === 'function') {
+                reloadInfoData();
             } else {
                 // Optionally, show an error or fallback
-                // alert('reloadInfosData is not available');
+                // alert('reloadInfoData is not available');
             }
         }
     });
@@ -32,10 +32,10 @@ document.querySelectorAll('input[name="formMode"]').forEach(function(radio) {
 
 
 
-if (document.getElementById('refreshModify')) {
-    if (typeof window.reloadInfosData === 'function') {
-        document.getElementById('refreshModify').addEventListener('click', window.reloadInfosData);
-    } else if (typeof reloadInfosData === 'function') {
-        document.getElementById('refreshModify').addEventListener('click', reloadInfosData);
+if (document.getElementById('refreshModifyPartner')) {
+    if (typeof window.reloadInfoData === 'function') {
+        document.getElementById('refreshModifyPartner').addEventListener('click', window.reloadInfoData);
+    } else if (typeof reloadInfoData === 'function') {
+        document.getElementById('refreshModifyPartner').addEventListener('click', reloadInfoData);
     }
 }

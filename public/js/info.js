@@ -15,14 +15,13 @@ function initializeInfoForm() {
     const modifyFormDiv = document.getElementById('modifyForm');
     let InfoSelect = document.getElementById('Id');
     const typeSelect = document.getElementById('typeSelect');
-    // Remove references to non-existent elements
     let InfosData = [];
 
     function loadModifyForm() {
         addForm.style.display = 'none';
         modifyFormDiv.style.display = '';
 
-        fetch('/api/info')
+        fetch('/info')
             .then(response => response.json())
             .then(data => {
                 InfosData = data;
@@ -72,23 +71,14 @@ function initializeInfoForm() {
             });
     }
 
-    function reloadInfosData() {
+//radio
+
+// Function to reload info data and reset the modify form
+
+    function reloadInfosData(
+
+    ) {
         return loadModifyForm();
-    }
-
-    // These functions are not needed for Info objects since they don't have images
-    // Keeping simplified versions to maintain code structure
-    
-    function displayImage(Info) {
-        // Not needed for Info objects
-    }
-
-    function displayNoImage(Info) {
-        // Not needed for Info objects
-    }
-
-    function hideInfoImage() {
-        // Not needed for Info objects
     }
 
     radios.forEach(radio => {
@@ -142,7 +132,7 @@ function initializeInfoForm() {
                 };
                 
                 // Submit the form data
-                fetch(`/updateInfo/${id}`, {
+                fetch(`/updateInfo`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

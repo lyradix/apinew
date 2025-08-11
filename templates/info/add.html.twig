@@ -13,9 +13,9 @@
         <input type="radio" name="formMode" value="add" checked>
         Ajouter
     </label>
-    <label>
+    <label style="display: inline-flex; align-items: center;">
         <input type="radio" name="formMode" value="modify" id="modifyRadio">
-         <button type="button" id="refreshModify" style="display:none; margin-left:8px;">Rafraîchir</button>
+         <button type="button" id="refreshModify" style="display:none; margin-left:8px;"  onclick="document.dispatchEvent(new Event('refreshInfo'))">Rafraîchir</button>
          </input>
         Modifier
     </label>  
@@ -80,6 +80,6 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/info.js') }}"></script>
-    <script src="{{ asset('js/radioInfo.js') }}"></script>
+    <script src="{{ asset('js/info.js') }}?v={{ 'now'|date('YmdHis')}}"></script>
+    <script src="{{ asset('js/radioInfo.js') }}?v={{ 'now'|date('YmdHis')}}"></script>
 {% endblock %}
