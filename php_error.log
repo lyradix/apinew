@@ -82,3 +82,248 @@ Stack trace:
 [11-Aug-2025 06:48:59 UTC] PHP Fatal error:  Cannot redeclare App\Controller\BackOfficeController::addInfo() in C:\Users\daryl\apinewsymfony\src\Controller\BackOfficeController.php on line 520
 [11-Aug-2025 08:16:07 UTC] 2025-08-11T08:16:07+00:00 [critical] Uncaught Error: syntax error, unexpected token "return", expecting "function"
 [11-Aug-2025 08:18:55 UTC] 2025-08-11T08:18:55+00:00 [critical] Uncaught Error: syntax error, unexpected token "private", expecting end of file
+[20-Aug-2025 12:40:45 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 13:21:31 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 13:21:31 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function sqlsrv_connect() in Command line code:1
+Stack trace:
+#0 {main}
+  thrown in Command line code on line 1
+[20-Aug-2025 13:21:40 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 13:22:41 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 13:22:41 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function sqlsrv_connect() in C:\Users\daryl\easyloc\sql\connectionSql.php:12
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\sql\connectionSql.php on line 12
+[20-Aug-2025 13:22:47 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 13:23:35 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 13:23:35 UTC] PHP Fatal error:  Uncaught Error: Undefined constant PDO::SQLSRV_ATTR_ENCODING in C:\Users\daryl\easyloc\sql\list_databases.php:17
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\sql\list_databases.php on line 17
+[20-Aug-2025 13:23:42 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 13:23:42 UTC] PHP Fatal error:  Uncaught Error: Undefined constant PDO::SQLSRV_ATTR_ENCODING in C:\Users\daryl\easyloc\sql\list_databases.php:17
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\sql\list_databases.php on line 17
+[20-Aug-2025 13:23:51 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 13:23:51 UTC] PHP Fatal error:  Uncaught Error: Undefined constant PDO::SQLSRV_ATTR_ENCODING in C:\Users\daryl\easyloc\sql\list_databases.php:17
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\sql\list_databases.php on line 17
+[20-Aug-2025 13:24:20 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 13:24:40 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:32:17 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:32:18 UTC] PHP Fatal error:  Uncaught Error: Call to protected method Doctrine\DBAL\Connection::connect() from global scope in C:\Users\daryl\easyloc\db_connection_test.php:112
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\db_connection_test.php on line 112
+[20-Aug-2025 14:33:07 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:33:07 UTC] PHP Fatal error:  Uncaught Error: Call to protected method Doctrine\DBAL\Connection::connect() from global scope in C:\Users\daryl\easyloc\db_connection_test.php:129
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\db_connection_test.php on line 129
+[20-Aug-2025 14:33:54 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:42:11 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:43:28 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:43:28 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function sqlsrv_configure() in C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Driver\SQLSrv\Driver.php:61
+Stack trace:
+#0 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Connection.php(225): Doctrine\DBAL\Driver\SQLSrv\Driver->connect(Object(SensitiveParameterValue))
+#1 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Connection.php(770): Doctrine\DBAL\Connection->connect()
+#2 C:\Users\daryl\easyloc\test_connection.php(25): Doctrine\DBAL\Connection->executeQuery('SELECT @@VERSIO...')
+#3 {main}
+  thrown in C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Driver\SQLSrv\Driver.php on line 61
+[20-Aug-2025 14:43:40 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:43:40 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function sqlsrv_configure() in C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Driver\SQLSrv\Driver.php:61
+Stack trace:
+#0 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Connection.php(225): Doctrine\DBAL\Driver\SQLSrv\Driver->connect(Object(SensitiveParameterValue))
+#1 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Connection.php(770): Doctrine\DBAL\Connection->connect()
+#2 C:\Users\daryl\easyloc\test_connection.php(25): Doctrine\DBAL\Connection->executeQuery('SELECT @@VERSIO...')
+#3 {main}
+  thrown in C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Driver\SQLSrv\Driver.php on line 61
+[20-Aug-2025 14:44:41 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:45:09 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:45:19 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:46:36 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:51:19 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:54:12 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:54:56 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:55:03 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:55:59 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 14:56:27 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[20-Aug-2025 15:25:07 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 06:07:11 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 06:45:59 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 06:46:06 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 07:07:25 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 07:08:29 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 07:15:04 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 07:22:50 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 07:23:16 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 07:29:48 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 08:57:09 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 08:59:27 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 08:59:40 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 09:04:40 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library 'mongodb' (tried: C:\php\ext\mongodb (Le module spécifié est introuvable), C:\php\ext\php_mongodb.dll (%1 n’est pas une application Win32 valide)) in Unknown on line 0
+[25-Aug-2025 12:43:31 UTC] PHP Fatal error:  Uncaught Error: Class "EasyLoc\Database\SqlConnection" not found in C:\Users\daryl\easyloc\tests\connectionTest.php:2
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\tests\connectionTest.php on line 2
+[25-Aug-2025 12:44:12 UTC] PHP Fatal error:  Uncaught Error: Class "EasyLoc\Database\SqlConnection" not found in C:\Users\daryl\easyloc\tests\connectionTest.php:10
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\tests\connectionTest.php on line 10
+[25-Aug-2025 12:44:49 UTC] PHP Fatal error:  Uncaught Error: Class "EasyLoc\Database\SqlConnection" not found in C:\Users\daryl\easyloc\test-connections.php:12
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\test-connections.php on line 12
+[25-Aug-2025 12:45:16 UTC] PHP Parse error:  syntax error, unexpected token "use" in C:\Users\daryl\easyloc\sql-test.php on line 10
+[25-Aug-2025 12:46:24 UTC] PHP Warning:  Undefined property: MongoDB\Driver\Cursor::$ok in C:\Users\daryl\easyloc\tests\connectionTest.php on line 91
+[25-Aug-2025 12:58:42 UTC] PHP Parse error:  syntax error, unexpected token "=", expecting end of file in Command line code on line 1
+[25-Aug-2025 12:59:37 UTC] PHP Parse error:  syntax error, unexpected token "=", expecting end of file in Command line code on line 1
+[25-Aug-2025 13:02:11 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 1
+[25-Aug-2025 13:22:25 UTC] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in C:\Users\daryl\easyloc\templates\home.php on line 3
+[27-Aug-2025 10:08:50 UTC] PHP Fatal error:  Uncaught Error: Class "Dotenv\Dotenv" not found in C:\Users\daryl\easyloc\sql\SqlConnection.php:11
+Stack trace:
+#0 C:\Users\daryl\easyloc\sql\SqlConnection.php(37): EasyLoc\Database\SqlConnection->__construct()
+#1 {main}
+  thrown in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 11
+[27-Aug-2025 10:08:52 UTC] PHP Fatal error:  Uncaught Error: Class "Dotenv\Dotenv" not found in C:\Users\daryl\easyloc\sql\SqlConnection.php:11
+Stack trace:
+#0 C:\Users\daryl\easyloc\sql\SqlConnection.php(37): EasyLoc\Database\SqlConnection->__construct()
+#1 {main}
+  thrown in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 11
+[27-Aug-2025 10:09:10 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 5
+[27-Aug-2025 10:09:32 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 7
+[27-Aug-2025 10:10:02 UTC] PHP Parse error:  Unmatched '}' in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 39
+[27-Aug-2025 10:10:29 UTC] PHP Parse error:  Unmatched '}' in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 40
+[27-Aug-2025 10:10:53 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 16
+[27-Aug-2025 10:11:01 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 16
+[27-Aug-2025 10:11:20 UTC] PHP Fatal error:  Cannot mix bracketed namespace declarations with unbracketed namespace declarations in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 42
+[27-Aug-2025 10:12:24 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in C:\Users\daryl\easyloc\sql\SqlConnection.php on line 8
+[27-Aug-2025 10:15:48 UTC] PHP Warning:  require_once(C:\Users\daryl\easyloc\sql\Database/../vendor/autoload.php): Failed to open stream: No such file or directory in C:\Users\daryl\easyloc\sql\Database\SqlConnection.php on line 9
+[27-Aug-2025 10:15:48 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\daryl\easyloc\sql\Database/../vendor/autoload.php' (include_path='.;C:\php\pear') in C:\Users\daryl\easyloc\sql\Database\SqlConnection.php:9
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\sql\Database\SqlConnection.php on line 9
+[27-Aug-2025 10:17:07 UTC] PHP Fatal error:  Uncaught MongoDB\Driver\Exception\ConnectionTimeoutException: No suitable servers found (`serverSelectionTryOnce` set): [connection refused calling hello on 'localhost:27017']. Topology type: Single in C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\functions.php:600
+Stack trace:
+#0 C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\functions.php(600): MongoDB\Driver\Manager->selectServer(Object(MongoDB\Driver\ReadPreference))
+#1 C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\functions.php(667): MongoDB\select_server(Object(MongoDB\Driver\Manager), Array)
+#2 C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\Collection.php(862): MongoDB\select_server_for_write(Object(MongoDB\Driver\Manager), Array)
+#3 C:\Users\daryl\easyloc\nosql\MongoDBCreation.php(17): MongoDB\Collection->insertMany(Array)
+#4 {main}
+  thrown in C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\functions.php on line 600
+[27-Aug-2025 10:17:40 UTC] PHP Warning:  require_once(C:\Users\daryl\easyloc\sql\Database/../vendor/autoload.php): Failed to open stream: No such file or directory in C:\Users\daryl\easyloc\sql\Database\SqlConnection.php on line 9
+[27-Aug-2025 10:17:40 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\daryl\easyloc\sql\Database/../vendor/autoload.php' (include_path='.;C:\php\pear') in C:\Users\daryl\easyloc\sql\Database\SqlConnection.php:9
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\sql\Database\SqlConnection.php on line 9
+[27-Aug-2025 10:17:56 UTC] PHP Fatal error:  Uncaught MongoDB\Driver\Exception\ConnectionTimeoutException: No suitable servers found (`serverSelectionTryOnce` set): [connection refused calling hello on 'localhost:27017']. Topology type: Single in C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\functions.php:600
+Stack trace:
+#0 C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\functions.php(600): MongoDB\Driver\Manager->selectServer(Object(MongoDB\Driver\ReadPreference))
+#1 C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\functions.php(667): MongoDB\select_server(Object(MongoDB\Driver\Manager), Array)
+#2 C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\Collection.php(862): MongoDB\select_server_for_write(Object(MongoDB\Driver\Manager), Array)
+#3 C:\Users\daryl\easyloc\nosql\MongoDBCreation.php(17): MongoDB\Collection->insertMany(Array)
+#4 {main}
+  thrown in C:\Users\daryl\easyloc\vendor\mongodb\mongodb\src\functions.php on line 600
+[27-Aug-2025 10:19:19 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in C:\Users\daryl\easyloc\sql\Database\SqlConnection.php on line 4
+[27-Aug-2025 10:19:29 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in C:\Users\daryl\easyloc\sql\Database\SqlConnection.php on line 4
+[27-Aug-2025 10:32:40 UTC] PHP Warning:  Undefined variable $username in C:\Users\daryl\easyloc\test-mongodb-connection.php on line 7
+[27-Aug-2025 10:32:40 UTC] PHP Warning:  Undefined variable $password in C:\Users\daryl\easyloc\test-mongodb-connection.php on line 7
+[27-Aug-2025 10:32:40 UTC] PHP Warning:  Undefined variable $clusterUrl in C:\Users\daryl\easyloc\test-mongodb-connection.php on line 7
+[27-Aug-2025 12:42:16 UTC] PHP Parse error:  syntax error, unexpected token "}", expecting "(" in C:\Users\daryl\easyloc\src\Entity\Contract.php on line 63
+[27-Aug-2025 12:43:03 UTC] PHP Parse error:  syntax error, unexpected token "else" in C:\Users\daryl\easyloc\sql\Database\create_tables.php on line 64
+[27-Aug-2025 12:44:20 UTC] PHP Parse error:  syntax error, unexpected token "else" in C:\Users\daryl\easyloc\sql\Database\create_tables.php on line 64
+[27-Aug-2025 12:45:14 UTC] PHP Parse error:  syntax error, unexpected token "else" in C:\Users\daryl\easyloc\sql\Database\create_tables.php on line 64
+[27-Aug-2025 12:46:46 UTC] PHP Parse error:  syntax error, unexpected token "else" in C:\Users\daryl\easyloc\sql\Database\create_tables.php on line 64
+[27-Aug-2025 12:47:05 UTC] PHP Parse error:  syntax error, unexpected token "else" in C:\Users\daryl\easyloc\sql\Database\create_tables.php on line 64
+[27-Aug-2025 12:47:46 UTC] PHP Parse error:  syntax error, unexpected token "else" in C:\Users\daryl\easyloc\sql\Database\create_tables.php on line 80
+[27-Aug-2025 12:47:55 UTC] PHP Parse error:  syntax error, unexpected token "else" in C:\Users\daryl\easyloc\sql\Database\create_tables.php on line 80
+[27-Aug-2025 12:48:27 UTC] PHP Parse error:  syntax error, unexpected token "}", expecting "(" in C:\Users\daryl\easyloc\src\Entity\Contract.php on line 63
+[27-Aug-2025 12:48:55 UTC] PHP Parse error:  syntax error, unexpected token "}", expecting "(" in C:\Users\daryl\easyloc\src\Entity\Contract.php on line 63
+[27-Aug-2025 12:49:49 UTC] PHP Fatal error:  Uncaught Error: Cannot access private property DatabaseSchemaCreator::$entities in C:\Users\daryl\easyloc\sql\Database\create_tables.php:127
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\sql\Database\create_tables.php on line 127
+[27-Aug-2025 12:50:50 UTC] PHP Fatal error:  Uncaught Error: Cannot access private property DatabaseSchemaCreator::$entities in C:\Users\daryl\easyloc\sql\Database\create_tables.php:127
+Stack trace:
+#0 {main}
+  thrown in C:\Users\daryl\easyloc\sql\Database\create_tables.php on line 127
+[27-Aug-2025 12:58:03 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[27-Aug-2025 13:02:26 UTC] PHP Parse error:  syntax error, unexpected token "\", expecting end of file in Command line code on line 3
+[27-Aug-2025 15:57:17 UTC] Table structure: Array
+(
+    [0] => Array
+        (
+            [COLUMN_NAME] => ID
+            [DATA_TYPE] => int
+        )
+
+    [1] => Array
+        (
+            [COLUMN_NAME] => VEHICLE_UID
+            [DATA_TYPE] => nvarchar
+        )
+
+    [2] => Array
+        (
+            [COLUMN_NAME] => CUSTOMER_UID
+            [DATA_TYPE] => nvarchar
+        )
+
+    [3] => Array
+        (
+            [COLUMN_NAME] => SIGN_DATETIME
+            [DATA_TYPE] => nvarchar
+        )
+
+    [4] => Array
+        (
+            [COLUMN_NAME] => LOC_BEGIN_DATETIME
+            [DATA_TYPE] => nvarchar
+        )
+
+    [5] => Array
+        (
+            [COLUMN_NAME] => LOC_END_DATETIME
+            [DATA_TYPE] => nvarchar
+        )
+
+    [6] => Array
+        (
+            [COLUMN_NAME] => RETURNING_DATETIME
+            [DATA_TYPE] => nvarchar
+        )
+
+    [7] => Array
+        (
+            [COLUMN_NAME] => PRICE
+            [DATA_TYPE] => decimal
+        )
+
+)
+
+[27-Aug-2025 15:57:17 UTC] Test query: SELECT * FROM Contract WHERE ID = ? with ID: 1
+[27-Aug-2025 15:57:17 UTC] Error in find method: An exception occurred while executing a query: SQLSTATE [07002, 0]: [Microsoft][ODBC Driver 17 for SQL Server]COUNT field incorrect or syntax error
+[27-Aug-2025 15:57:17 UTC] Stack trace: #0 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Connection.php(1418): Doctrine\DBAL\Driver\API\SQLSrv\ExceptionConverter->convert(Object(Doctrine\DBAL\Driver\SQLSrv\Exception\Error), Object(Doctrine\DBAL\Query))
+#1 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Connection.php(1360): Doctrine\DBAL\Connection->handleDriverException(Object(Doctrine\DBAL\Driver\SQLSrv\Exception\Error), Object(Doctrine\DBAL\Query))
+#2 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Statement.php(108): Doctrine\DBAL\Connection->convertExceptionDuringQuery(Object(Doctrine\DBAL\Driver\SQLSrv\Exception\Error), 'SELECT * FROM C...', Array, Array)
+#3 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Statement.php(119): Doctrine\DBAL\Statement->execute()
+#4 C:\Users\daryl\easyloc\src\Repository\ContractRepository.php(70): Doctrine\DBAL\Statement->executeQuery(Array)
+#5 C:\Users\daryl\easyloc\sql\Database\test_contract_query.php(25): EasyLoc\Repository\ContractRepository->find(1)
+#6 {main}
+[27-Aug-2025 16:17:17 UTC] PHP Fatal error:  Uncaught AssertionError: assert(is_int($param)) in C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Driver\SQLSrv\Statement.php:71
+Stack trace:
+#0 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Driver\SQLSrv\Statement.php(71): assert(false, 'assert(is_int($...')
+#1 C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Statement.php(93): Doctrine\DBAL\Driver\SQLSrv\Statement->bindValue('id', 1, Doctrine\DBAL\ParameterType::STRING)
+#2 C:\Users\daryl\easyloc\sql\Database\test_contract_params.php(44): Doctrine\DBAL\Statement->bindValue('id', 1)
+#3 {main}
+  thrown in C:\Users\daryl\easyloc\vendor\doctrine\dbal\src\Driver\SQLSrv\Statement.php on line 71
+[28-Aug-2025 14:15:24 UTC] 2025-08-28T14:15:24+00:00 [info] User Deprecated: Method "Symfony\Component\HttpKernel\Bundle\Bundle::build()" might add "void" as a native return type declaration in the future. Do the same in child class "Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle" now to avoid errors or add an explicit @return annotation to suppress this message.
+[28-Aug-2025 14:15:24 UTC] 2025-08-28T14:15:24+00:00 [info] User Deprecated: Method "Symfony\Component\HttpKernel\Bundle\Bundle::registerCommands()" might add "void" as a native return type declaration in the future. Do the same in child class "Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle" now to avoid errors or add an explicit @return annotation to suppress this message.
+[28-Aug-2025 14:15:24 UTC] 2025-08-28T14:15:24+00:00 [critical] Uncaught Error: syntax error, unexpected token "public"
+[28-Aug-2025 14:15:46 UTC] 2025-08-28T14:15:46+00:00 [info] User Deprecated: Method "Symfony\Component\HttpKernel\Bundle\Bundle::build()" might add "void" as a native return type declaration in the future. Do the same in child class "Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle" now to avoid errors or add an explicit @return annotation to suppress this message.
+[28-Aug-2025 14:15:46 UTC] 2025-08-28T14:15:46+00:00 [info] User Deprecated: Method "Symfony\Component\HttpKernel\Bundle\Bundle::registerCommands()" might add "void" as a native return type declaration in the future. Do the same in child class "Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle" now to avoid errors or add an explicit @return annotation to suppress this message.
+[28-Aug-2025 14:15:46 UTC] 2025-08-28T14:15:46+00:00 [critical] Uncaught Error: syntax error, unexpected token "public"
+[28-Aug-2025 15:40:37 UTC] PHP Fatal error:  Cannot use App\Repository\SceneRepository as SceneRepository because the name is already in use in C:\Users\daryl\apinewsymfony\src\Controller\PoiController.php on line 11
+[28-Aug-2025 15:40:42 UTC] PHP Fatal error:  Cannot use App\Repository\SceneRepository as SceneRepository because the name is already in use in C:\Users\daryl\apinewsymfony\src\Controller\PoiController.php on line 11

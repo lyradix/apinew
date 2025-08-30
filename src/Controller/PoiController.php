@@ -5,9 +5,6 @@ namespace App\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Poi;
 use App\Entity\Scene;
-use App\Entity\User;
-use App\Repository\PoiRepository;
-use App\Repository\SceneRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
@@ -15,18 +12,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use App\Repository\PoiRepository;
+use App\Repository\SceneRepository;
 
 final class PoiController extends AbstractController
 {
-
-    // Route pour créer un point d'intérêt (POI)
     #[Route('/create-poi', name: 'create_poi', methods: ['POST'])]
     public function createPoi(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $user = $this->validateToken($request);
-
-        if (!$user instanceof User) {
-            return $user; 
+        if (!$this->isGranted('ROLE_USER')) {
+            return new JsonResponse(['error' => 'Access denied'], JsonResponse::HTTP_FORBIDDEN);
         }
 
         $data = json_decode($request->getContent(), true);
@@ -80,11 +75,8 @@ final class PoiController extends AbstractController
         PoiRepository $poiRepository,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-
-           $user = $this->validateToken($request);
-
-        if (!$user instanceof User) {
-            return $user; 
+        if (!$this->isGranted('ROLE_USER')) {
+            return new JsonResponse(['error' => 'Access denied'], JsonResponse::HTTP_FORBIDDEN);
         }
 
         $data = json_decode($request->getContent(), true);
@@ -215,32 +207,42 @@ final class PoiController extends AbstractController
 
     
 
-      /**
-     * Validate the token from the Authorization header and return the authenticated user.
-     */
-    private function validateToken(Request $request): JsonResponse|User
+
+
+    #[Route('/deletepoi', name: 'delete_poi', methods: ['DELETE'])]
+    public function deletePoi(Request $request, EntityManagerInterface $entityManager, PoiRepository $poiRepository): JsonResponse
     {
-        $authHeader = $request->headers->get('Authorization');
+        try {
+            if (!$this->isGranted('ROLE_USER')) {
+                return new JsonResponse(['error' => 'Access denied'], JsonResponse::HTTP_FORBIDDEN);
+            }
 
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-            return new JsonResponse(['error' => 'Token is required'], JsonResponse::HTTP_UNAUTHORIZED);
+            $data = json_decode($request->getContent(), true);
+            if (!isset($data['id'])) {
+                return new JsonResponse(['error' => 'Missing id in request'], JsonResponse::HTTP_BAD_REQUEST);
+            }
+
+            $id = $data['id'];
+            $poi = $poiRepository->find($id);
+            if (!$poi) {
+                return new JsonResponse(['error' => 'Poi not found'], JsonResponse::HTTP_NOT_FOUND);
+            }
+
+            // Delete related scene if it exists
+            $scene = $entityManager->getRepository(Scene::class)->findOneBy(['poiFK' => $poi]);
+            if ($scene) {
+                $entityManager->remove($scene);
+            }
+
+            $entityManager->remove($poi);
+            $entityManager->flush();
+
+            return new JsonResponse(['message' => 'Poi deleted successfully'], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => 'An error occurred while deleting the POI'
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $token = substr($authHeader, 7);
-
-        // Find the user by the token
-        $user = $this->userRepository->findOneBy(['apiToken' => $token]);
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'Invalid token'], JsonResponse::HTTP_UNAUTHORIZED);
-        }
-
-        // Check if the user has the ROLE_USER role
-        if (!in_array('ROLE_USER', $user->getRoles())) {
-            return new JsonResponse(['error' => 'Access denied. User does not have the required role.'], JsonResponse::HTTP_FORBIDDEN);
-        }
-
-        return $user;
     }
 
 }

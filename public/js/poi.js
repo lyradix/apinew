@@ -31,6 +31,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 typeSelect.appendChild(option);
             });
 
+            // Add event listener for delete button
+            document.querySelector('.delBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const poiId = document.getElementById('poiId').value;
+                if (!poiId) {
+                    alert('Veuillez sélectionner un lieu à supprimer');
+                    return;
+                }
+
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce lieu ?')) {
+                    fetch('/deletepoi', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({ id: poiId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            alert('Lieu supprimé avec succès !');
+                            // Reload the POI data to update the list
+                            reloadPoiData();
+                        } else {
+                            alert('Erreur : ' + (data.error || 'Une erreur est survenue.'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Erreur lors de la suppression');
+                    });
+                }
+            });
+
             // Add event listener for POI select change
             select.addEventListener('change', function() {
                 const selectedId = this.value;
