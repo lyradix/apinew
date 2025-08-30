@@ -213,29 +213,22 @@ final class PoiController extends AbstractController
     public function deletePoi(Request $request, EntityManagerInterface $entityManager, PoiRepository $poiRepository): JsonResponse
     {
         try {
-            if (!$this->isGranted('ROLE_USER')) {
-                return new JsonResponse(['error' => 'Access denied'], JsonResponse::HTTP_FORBIDDEN);
-            }
-
             $data = json_decode($request->getContent(), true);
             if (!isset($data['id'])) {
                 return new JsonResponse(['error' => 'Missing id in request'], JsonResponse::HTTP_BAD_REQUEST);
             }
 
             $id = $data['id'];
-            $poi = $poiRepository->find($id);
-            if (!$poi) {
-                return new JsonResponse(['error' => 'Poi not found'], JsonResponse::HTTP_NOT_FOUND);
-            }
 
-            // Delete related scene if it exists
-            $scene = $entityManager->getRepository(Scene::class)->findOneBy(['poiFK' => $poi]);
-            if ($scene) {
-                $entityManager->remove($scene);
-            }
+            // First delete related scenes
+            $deleteScenesSql = 'DELETE FROM scene WHERE poi_fk_id = :poiId';
+            $sceneStmt = $entityManager->getConnection()->prepare($deleteScenesSql);
+            $sceneStmt->executeStatement(['poiId' => $id]);
 
-            $entityManager->remove($poi);
-            $entityManager->flush();
+            // Then delete the POI
+            $deletePoiSql = 'DELETE FROM poi WHERE id = :poiId';
+            $poiStmt = $entityManager->getConnection()->prepare($deletePoiSql);
+            $poiStmt->executeStatement(['poiId' => $id]);
 
             return new JsonResponse(['message' => 'Poi deleted successfully'], JsonResponse::HTTP_OK);
         } catch (\Exception $e) {

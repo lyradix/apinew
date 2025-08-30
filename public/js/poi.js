@@ -55,8 +55,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             alert('Lieu supprimé avec succès !');
                             // Reload the POI data to update the list
                             reloadPoiData();
+                        } else if (data.error) {
+                            alert('Erreur : ' + data.error);
                         } else {
-                            alert('Erreur : ' + (data.error || 'Une erreur est survenue.'));
+                            alert('Une erreur est survenue.');
                         }
                     })
                     .catch(error => {
