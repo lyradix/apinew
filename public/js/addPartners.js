@@ -69,10 +69,49 @@ function initializePartnerForm() {
                 });
                 partnerSelect = newPartnerSelect;
             });
+
+            // Use event delegation to handle clicks on delete buttons within the modify form.
+            // This ensures that when a delete button is clicked, the selected partner is deleted after confirmation.
+            modifyFormDiv.addEventListener('click', function(event) {
+                const delBtn = event.target.closest('.delBtn');
+                if (delBtn) {
+                    const selectedId = partnerSelect.value;
+                    if (!selectedId) {
+                        alert('Veuillez sélectionner un partenaire à supprimer.');
+                        return;
+                    }
+
+                    if (confirm('Êtes-vous sûr de vouloir supprimer ce partenaire ?')) {
+                        fetch(`/deletePartner/${selectedId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            body: JSON.stringify({ id: selectedId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message) {
+                                alert('Partenaire commercial supprimé avec succès !');
+                                // Refresh the partner list
+                                reloadPartnersData();
+                            } else if (data.error) {
+                                alert('Erreur : ' + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Erreur lors de la suppression');
+                        });
+                    }
+                }
+            });
     }
 
+    // Define reloadPartnersData to reload and update the modify form
     function reloadPartnersData() {
-        return loadModifyForm();
+        loadModifyForm();
     }
 
     function displayImage(partner) {
