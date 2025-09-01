@@ -250,6 +250,7 @@ public function showConcert(
 //     ]);
 // }
 
+
 // Route API pour réccuperer les details des artist 
 #[Route('/concerts/{id}', name: 'app_concert_details', methods: ['GET'])]
 public function getConcertDetails(

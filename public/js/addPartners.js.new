@@ -1,15 +1,8 @@
-// Remove DOMContentLoaded to avoid conflicts with Stimulus
-// Initialize immediately when script loads
-initializePartnerForm();
-
-function initializePartnerForm() {
-    // Add defensive checks to ensure elements exist
-    if (!document.getElementById('addForm') || !document.getElementById('modifyForm')) {
-        // Elements not ready yet, try again in a moment
-        setTimeout(initializePartnerForm, 50);
-        return;
-    }
-
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing partner form...');
+    
+    // Get form elements
     const radios = document.getElementsByName('formMode');
     const addForm = document.getElementById('addForm');
     const modifyFormDiv = document.getElementById('modifyForm');
@@ -20,21 +13,28 @@ function initializePartnerForm() {
     let partnersData = [];
 
     function loadModifyForm() {
+        console.log('Loading modify form...');
         addForm.style.display = 'none';
         modifyFormDiv.style.display = '';
 
         fetch('/partners')
-            .then(response => response.json())
+            .then(response => {
+                console.log('Partners response:', response);
+                return response.json();
+            })
             .then(data => {
+                console.log('Partners data:', data);
                 partnersData = data;
                 partnerSelect.innerHTML = '<option value="">-- Choisir un partenaire --</option>';
                 typeSelect.innerHTML = '<option value="">-- Choisir un type --</option>';
+                
                 partnersData.forEach(partner => {
                     const option = document.createElement('option');
                     option.value = partner.id;
                     option.textContent = partner.title;
                     partnerSelect.appendChild(option);
                 });
+                
                 const types = [...new Set(partnersData.map(p => p.type))];
                 types.forEach(type => {
                     if (type) {
@@ -44,6 +44,7 @@ function initializePartnerForm() {
                         typeSelect.appendChild(option);
                     }
                 });
+                
                 // Remove previous event listeners by cloning
                 const newPartnerSelect = partnerSelect.cloneNode(true);
                 partnerSelect.parentNode.replaceChild(newPartnerSelect, partnerSelect);
@@ -68,6 +69,10 @@ function initializePartnerForm() {
                     }
                 });
                 partnerSelect = newPartnerSelect;
+            })
+            .catch(error => {
+                console.error('Error loading partners:', error);
+                alert('Erreur lors du chargement des partenaires');
             });
     }
 
@@ -97,7 +102,6 @@ function initializePartnerForm() {
             
             // Show the container
             imageContainer.style.display = 'block';
-            
         } else {
             displayNoImage(partner);
         }
@@ -130,6 +134,7 @@ function initializePartnerForm() {
         if (imageError) imageError.style.display = 'none';
     }
 
+    // Add radio button event listeners
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
             if (this.value === 'add') {
@@ -180,8 +185,8 @@ function initializePartnerForm() {
                 }
                 
                 // Submit the form data
-                fetch('./update-partner', {
-                    method: 'POST',
+                fetch('/update-partner', {
+                    method: 'PUT',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     },
@@ -206,15 +211,6 @@ function initializePartnerForm() {
         }
     }
 
-    // Refresh button event
-    const refreshButton = document.getElementById('refreshModify');
-    if (refreshButton) {
-        if (!refreshButton.hasAttribute('data-listener-attached')) {
-            refreshButton.addEventListener('click', reloadPartnersData);
-            refreshButton.setAttribute('data-listener-attached', 'true');
-        }
-    }
-
     // Add partner form event
     const partnerForm = document.getElementById('partnerForm');
     if (partnerForm) {
@@ -227,7 +223,7 @@ function initializePartnerForm() {
                 const type = typeField ? typeField.value : '';
 
                 if (type === 'scène') {
-                    fetch(window.addSceneUrl || './add-partner', {
+                    fetch(window.addSceneUrl || '/add-partner', {
                         method: 'POST',
                         body: formData,
                         headers: {'X-Requested-With': 'XMLHttpRequest'}
@@ -253,4 +249,13 @@ function initializePartnerForm() {
             partnerForm.setAttribute('data-listener-attached', 'true');
         }
     }
-}
+
+    // Initialize refresh button if it exists
+    const refreshButton = document.getElementById('refreshModify');
+    if (refreshButton) {
+        if (!refreshButton.hasAttribute('data-listener-attached')) {
+            refreshButton.addEventListener('click', reloadPartnersData);
+            refreshButton.setAttribute('data-listener-attached', 'true');
+        }
+    }
+});
