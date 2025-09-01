@@ -81,7 +81,7 @@
                     <p class="text"> {{ concert.startTime|date('d/m/Y H:i') }} </p> 
                 </div>
             </a>
-              <button class="delBtn" data-id="{{ concert.id }}">
+            <button class="delBtn" data-id="{{ concert.id }}" path="{{ path('delete_concert', {'id': concert.id}) }}">
                 <img class="delImg" src="{{ asset('images/delete.png') }}" alt="delete button">
             </button>
             </li>

@@ -69,6 +69,47 @@ function initializeInfoForm() {
                 });
                 InfoSelect = newInfoSelect;
             });
+
+        //delete button
+        const delBtn = document.querySelector('.delBtn');
+        if (delBtn) {
+            delBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const infoId = InfoSelect.value;
+                if (!infoId) {
+                    alert('Veuillez sélectionner une information à supprimer.');
+                    return;
+                }
+                if (confirm('Êtes-vous sûr de vouloir supprimer cette information ?')) {
+                    fetch(`/deleteInfo/${infoId}`, {
+                        method: 'DELETE',
+                        headers: {
+                             'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ id: infoId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            alert('Information supprimée avec succès !');
+                            // Reload the Info data to update the list
+                            reloadInfosData();
+                        } else if (data.error) {
+                            alert('Erreur : ' + data.error);
+                        }
+                        else {
+                            alert('Une erreur est survenue.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Erreur lors de la suppression');
+                    });
+                }
+            });
+        }
+
     }
 
 //radio

@@ -210,7 +210,10 @@ final class PoiController extends AbstractController
 
 
     #[Route('/deletepoi', name: 'delete_poi', methods: ['DELETE'])]
-    public function deletePoi(Request $request, EntityManagerInterface $entityManager, PoiRepository $poiRepository): JsonResponse
+    public function deletePoi(
+        Request $request, 
+        EntityManagerInterface $entityManager, 
+        PoiRepository $poiRepository): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);

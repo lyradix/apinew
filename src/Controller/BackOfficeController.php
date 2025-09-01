@@ -122,6 +122,33 @@ class BackOfficeController extends ApiController
         return new JsonResponse($jsonData, Response::HTTP_OK, [], true);
     }
 
+// Route to delete concert
+    // #[Route('/deleteConcert', name: 'delete_concert', methods: ['DELETE'])]
+    // public function deleteConcert(
+    //     Request $request,
+    //     EntityManagerInterface $entityManager,
+    //     ArtistRepository $artistRepository
+    //     ) :JsonResponse
+    //     { try {
+    //         $data = json_decode($request->getContent(), true);
+    //         if (!isset($data['id'])) {
+    //             return new JsonResponse(['error' => 'Concert ID is required'], JsonResponse::HTTP_BAD_REQUEST);
+    //         }
+
+    //         $id = $data['id'];
+
+    //         $deleteConcertSql = 'DELETE FROM artist WHERE id = :concertId';
+    //         $stmt = $entityManager->getConnection()->prepare($deleteConcertSql);
+    //         $stmt->executeStatement(['concertId' => $id]);
+
+    //         return new JsonResponse(['message' => 'Concert deleted successfully'], JsonResponse::HTTP_OK);
+    //         } catch (\Exception $e) {   
+    //             return new JsonResponse([
+    //                 'error' => 'An error occurred while deleting the concert'
+    //             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+    //         }
+    //     }
+
     
 // Route pour ajouter un nouveau point d'intérêt (POI) ou une scène si l'utilisateur choisit le type "scène"
     #[Route('/postPoi', name: 'post_poi', methods: ['GET', 'POST'])]
@@ -564,78 +591,108 @@ public function updateInfo(
 }
 
     #[Route('/deleteConcert/{id}', name: 'delete_concert', methods: ['DELETE'])]
-    public function deleteConcert(int $id, EntityManagerInterface $entityManager, ArtistRepository $artistRepository): JsonResponse
+    public function deleteConcert(
+        int $id, 
+        EntityManagerInterface $entityManager, 
+        ArtistRepository $artistRepository): Response
     {
-        $concert = $artistRepository->find($id);
-        if ($concert) {
-            $entityManager->remove($concert);
-            $entityManager->flush();
-            return new JsonResponse(['success' => true]);
+        $concert = $entityManager->getRepository(Artist::class)->find($id);
+        if (!$concert) {
+            $this->addFlash('danger', 'Concert introuvable.');
+            return $this->redirectToRoute('app_adminConcerts');
         }
-        return new JsonResponse(['error' => 'Not found'], 404);
+
+        $entityManager->remove($concert);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Concert supprimé avec succès.');
+        return $this->redirectToRoute('app_adminConcerts');
     }
 
-        /**
-     * Validate the token from the Authorization header and return the authenticated user.
-     */
-    private function validateToken(Request $request): JsonResponse|User
-    {
-        $authHeader = $request->headers->get('Authorization');
-
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-            return new JsonResponse(['error' => 'Authentication failed: invalid or missing token.'], JsonResponse::HTTP_UNAUTHORIZED);
+    #[Route('/deleteInfo/{id}', name: 'delete_info', methods: ['DELETE'])]
+    public function deleteInfo(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        InfoRepository $infoRepository,
+    ): JsonResponse
+    { 
+        try{
+            $data = json_decode($request->getContent(), true);
+            if (!isset($data['id'])) {
+                return new JsonResponse(['error' => 'Missing id in request'], JsonResponse::HTTP_BAD_REQUEST);
+            }
+          $id = $data['id'];
+          
+          //raw sql to delete info
+            $deleteInfoSql = 'DELETE FROM info WHERE id = :infoId';
+            $stmt = $entityManager->getConnection()->prepare($deleteInfoSql);
+            $stmt->executeStatement(['infoId' => $id]);
+            return new JsonResponse(['message' => 'Info supprimé avec succés'], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => 'Une erreur est survenue lors de la suppression de l\'info'
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $token = substr($authHeader, 7);
-
-        // Find the user by the token
-        $user = $this->userRepository->findOneBy(['apiToken' => $token]);
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'Authentication failed: invalid user'], JsonResponse::HTTP_UNAUTHORIZED);
-        }
-
-        // Check if the user has the ROLE_USER role
-        if (!in_array('ROLE_USER', $user->getRoles())) {
-            return new JsonResponse(['error' => 'Authentication failed: invalid roles.'], JsonResponse::HTTP_UNAUTHORIZED);
-        }
-
-        return $user;
     }
 
-    #[Route('/deletePoi/{id}', name: 'delete_poi', methods: ['POST'])]
-    public function deletePoi(
+    #[Route('/deletePartner/{id}', name: 'delete_partner', methods: ['DELETE'])]
+    public function deletePartner (
         int $id,
         Request $request,
         EntityManagerInterface $entityManager,
-        SceneRepository $sceneRepository
-    ): Response {
-        $poi = $entityManager->getRepository(Poi::class)->find($id);
-        if (!$poi) {
-            $this->addFlash('danger', 'POI introuvable.');
-            return $this->redirectToRoute('app_render_updatePoi');
-        }
-
-        // Handle CSRF form
-        $form = $this->createForm(\App\Form\DeletePoiType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Delete related scenes first
-            $scenes = $sceneRepository->findBy(['poiFK' => $poi]);
-            foreach ($scenes as $scene) {
-                $entityManager->remove($scene);
+        PartnersRepository $partnersRepository
+    ): JsonResponse {
+        try {
+            if (!$id) {
+                return new JsonResponse(['error' => 'Missing id in request'], JsonResponse::HTTP_BAD_REQUEST);
             }
-            $entityManager->remove($poi);
-            $entityManager->flush();
 
-            $this->addFlash('success', 'POI supprimé avec succès.');
-            return $this->redirectToRoute('app_render_updatePoi');
+            $deletePartnerSql = 'DELETE FROM partners WHERE id = :partnerId';
+            $stmt = $entityManager->getConnection()->prepare($deletePartnerSql);
+            $stmt->executeStatement(['partnerId' => $id]);
+
+            return new JsonResponse(['message' => 'Partner deleted successfully'], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => 'An error occurred while deleting the partner'
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $this->addFlash('danger', 'Erreur lors de la suppression du POI.');
-        return $this->redirectToRoute('app_render_updatePoi');
     }
+    
+
+    // #[Route('/deletePoi/{id}', name: 'delete_poi', methods: ['POST'])]
+    // public function deletePoi(
+    //     int $id,
+    //     Request $request,
+    //     EntityManagerInterface $entityManager,
+    //     SceneRepository $sceneRepository
+    // ): Response {
+    //     $poi = $entityManager->getRepository(Poi::class)->find($id);
+    //     if (!$poi) {
+    //         $this->addFlash('danger', 'POI introuvable.');
+    //         return $this->redirectToRoute('app_render_updatePoi');
+    //     }
+
+    //     // Handle CSRF form
+    //     $form = $this->createForm(\App\Form\DeletePoiType::class);
+    //     $form->handleRequest($request);
+
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         // Delete related scenes first
+    //         $scenes = $sceneRepository->findBy(['poiFK' => $poi]);
+    //         foreach ($scenes as $scene) {
+    //             $entityManager->remove($scene);
+    //         }
+    //         $entityManager->remove($poi);
+    //         $entityManager->flush();
+
+    //         $this->addFlash('success', 'POI supprimé avec succès.');
+    //         return $this->redirectToRoute('app_render_updatePoi');
+    //     }
+
+    //     $this->addFlash('danger', 'Erreur lors de la suppression du POI.');
+    //     return $this->redirectToRoute('app_render_updatePoi');
+    // }
 
     #[Route('/render-new-place', name: 'app_render_newPlace')]
     public function renderNewPlace(): Response
@@ -841,16 +898,44 @@ public function updateInfo(
     ]);
     }
 
-    #[Route('/update-partner', name: 'app_update_partner', methods: ['PUT'])]
+    #[Route('/update-partner', name: 'app_update_partner', methods: ['POST', 'PUT'])]
     public function updatePartner(
     Request $request,
     EntityManagerInterface $entityManager,
     PartnersRepository $partnersRepository
     ): JsonResponse {
-    $data = json_decode($request->getContent(), true);
-
-    if (!isset($data['id'])) {
+    // Get data from POST parameters
+    $id = $request->request->get('id');
+    
+    if (!$id) {
         return new JsonResponse(['error' => 'Partner ID is required'], JsonResponse::HTTP_BAD_REQUEST);
+    }
+    
+    $data = [
+        'id' => $id,
+        'frontPage' => $request->request->getBoolean('frontPage'),
+        'type' => $request->request->get('type'),
+        'link' => $request->request->get('link')
+    ];
+    
+    // Handle file upload
+    $imageFile = $request->files->get('imageFile');
+    if ($imageFile) {
+        try {
+            // Generate a unique filename
+            $newFilename = uniqid('partner-').'-'.pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME).'.'.$imageFile->guessExtension();
+            
+            // Move the file to the images directory
+            $imageFile->move(
+                $this->getParameter('images_directory'),
+                $newFilename
+            );
+            
+            // Add the image filename to the data array
+            $data['image'] = $newFilename;
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Error uploading image: ' . $e->getMessage()], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     $partner = $partnersRepository->find($data['id']);
@@ -859,9 +944,6 @@ public function updateInfo(
     }
 
     // Update fields if provided
-    if (isset($data['title'])) {
-        $partner->setTitle($data['title']);
-    }
     if (isset($data['type'])) {
         $partner->setType($data['type']);
     }
@@ -871,9 +953,21 @@ public function updateInfo(
     if (isset($data['frontPage'])) {
         $partner->setFrontPage((bool)$data['frontPage']);
     }
+    if (isset($data['image'])) {
+        // Delete old image if it exists
+        $oldImage = $partner->getImage();
+        if ($oldImage) {
+            $oldImagePath = $this->getParameter('images_directory').'/'.$oldImage;
+            if (file_exists($oldImagePath)) {
+                unlink($oldImagePath);
+            }
+        }
+        $partner->setImage($data['image']);
+    }
 
     $entityManager->flush();
 
     return new JsonResponse(['success' => true, 'message' => 'Partner updated successfully.']);
     }
+
 }
