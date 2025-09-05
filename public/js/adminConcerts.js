@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             const concertId = this.getAttribute('data-id');
+            const btn = this; // store reference to the button
             // un window de confirmation avant de supprimer
             if (window.confirm('Supprimer ce concert ?')) {
                 fetch('/deleteConcert/' + concertId, {
@@ -18,14 +19,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(response => {
                     if (response.ok) {
-                        //l'objet this est référencé par le bouton cliqué
-                        // et le concert est supprimé de la liste
-                        this.closest('li').remove();
-                    } else {
-                        //message d'erreur si la suppression échoue
-                        alert('Erreur lors de la suppression.');
-                    }
-                });
+                                alert('Concert supprimé avec succès !');
+                        btn.closest('li').remove();
+                   } else if (data.error) {
+                            alert('Erreur : ' + data.error);
+                        }
+                        else {
+                            alert('Une erreur est survenue.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Erreur lors de la suppression');
+                    });
             }
         });
     });
