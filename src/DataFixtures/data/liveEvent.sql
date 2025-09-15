@@ -296,39 +296,39 @@ FROM scene;
 
 /*Table partners */
 INSERT INTO partners
-			(title, front_page, type, link,partner_id, image)
+			(id,title, front_page, type, link,partner_id, image)
 			VALUES
-			('Affligen',true,'Restauration',
+			(1,'Affligen',true,'Restauration',
 			'https://www.affligembeer.com/fr/fr/age-gate?returnUrl=https%3A%2F%2Fwww.affligembeer.com%2Ffr%2Ffr%2Fhomepage',
 			'a1', "image-a1.png"),
-			('Breiz Cola',true,'Restauration',
+			(2,'Breiz Cola',true,'Restauration',
 			'https://www.breizhcola.bzh/',
 			'a2', "image-a2.png"),
-			('Mcdonalds',true,'Restauration',
+			(3,'Mcdonalds',true,'Restauration',
 			'https://www.mcdonalds.fr/?gclsrc=aw.ds&gad_source=1&gclid=CjwKCAiA3ZC6BhBaEiwAeqfvyrLYv4OaWzd6rcLBBhiVLHp7mlZU1gSKPIpc7y0z26IKd3a9A4PrNBoCe13QAvD_BwE&gclsrc=aw.ds',
 			'a3', "image-a3.png"),
-			('Cristaline',false,'Restauration',
+			(4,'Cristaline',false,'Restauration',
 			'https://www.moneaucristaline.fr/origine-et-sources/',
 			'a4', "image-a4.png"),
-			('Dominos',true,'Restauration',
+			(5,'Dominos',true,'Restauration',
 			'https://www.dominos.fr/?gad_source=1&gclid=CjwKCAiA3ZC6BhBaEiwAeqfvypMnQ9Po4ArPsVzXvJjlGvu2uDeljhUJVpZmbbf6xX98QfkE0Ox3HhoCmlAQAvD_BwE',
 			'a5', "image-a5.png"),
-			('Crédit Agricole',true,'Sponsor',
+			(6,'Crédit Agricole',true,'Sponsor',
 			'https://www.credit-agricole.com/',
 			'b1', "image-b1.png"),
-			('Citroen',false,'Sponsor',
+			(7,'Citroen',false,'Sponsor',
 			'https://www.citroen.fr/',
 			'b2', "image-b2.png"),
-			('Engie',true,'Sponsor',
+			(8,'Engie',true,'Sponsor',
 			'https://www.engie.com/jobs/alternance',
 			'b3', "image-b3.png"),
-			('NRJ',true,'Media',
+			(9,'NRJ',true,'Media',
 			'https://www.nrj.fr/',
 			'c1', "image-c1.png"),
-			('Deezer',true,'Media',
+			(10,'Deezer',true,'Media',
 			'https://www.deezer.com/fr/offers/premium/acq?utm_source=adwords&utm_medium=search&utm_campaign=acq_fr_sea-brd_web_search_perf_tnb-directsub_pure&utm_content=brd_premium_tnb_pure-exact&utm_term=deezer&gad_source=1&gclid=CjwKCAiA3ZC6BhBaEiwAeqfvyin6TjPo4hPeVWy_ORcm9K14Wl0pfoD_NFi0yZaGoZZ9_CmKtIS5nhoCro0QAvD_BwE',
 			'c2', "image-c2.png"),
-			('ladepeche',false,'Media',
+			(11,'ladepeche',false,'Media',
 			'https://www.ladepeche.fr/',
 			'c3', "image-c3.png");
 
@@ -337,39 +337,39 @@ FROM partners;
 
 /*table info*/
 INSERT INTO info
-			(title, type, descriptif)
+			(id,title, type, descriptif)
 			VALUES
-			('Le déroulement', 'déroulement', 
+			(1,'Le déroulement', 'déroulement', 
 			'Le festival se tientdra sur 3 jours à Domaine national de St Cloud, dans la région Parisienne'
 			),
-			('En train SNCF', 'Venir',
+			(2,'En train SNCF', 'Venir',
 			 'La SNCF a mis à disposition de bon plans pour les :\nLes moins de 26 ans\nLes tarrifs spéciaux\nPour plus d''infos, rendez vous sur le site du SNCF'
 			),
-			('En voiture','Venir', 
+			(3,'En voiture','Venir', 
 			'Vous aurez des places de parking prés du site:\nParking de l''allée du Diable - 7 mins à pieds du domaines\nParking Indigo Saint-Cloud Orléans - 12 mins à pieds du domaines\nParking Indigo Sèvres île de Monsieur - 11 mins à pieds du domaines\nVous avez la posssibilité de venir en co-voiturage aussi.'
 			),
-			('Horaires', 'surPLace',
+			(4,'Horaires', 'surPLace',
             'Le park ouvre à partir de 11h30\nLes concerts commencent à partir de 13h\nLes restaurants sont ouverts 24h/24h\n'
 			),
-			('restauration', 'surPLace',
+			(5,'restauration', 'surPLace',
 			'Au menu:\nBurgers\nPizzas\nFrites\nPaninis\nKebab\nPlat végétarien\n'
 			),
-			('La sécurité', 'surPLace',
+			(6,'La sécurité', 'surPLace',
 			'Avec ceci:\nCoca\nVin chaud'
 			),
-			('Plan', 'surPLace',
+			(7,'Plan', 'surPLace',
 			' '
 			),
-			('Objets Interdits', 'Interdits',
+			(8,'Objets Interdits', 'Interdits',
             'Engins pyrotechniques et fumigènes\nOutils de bricolage\nBoissons et récipients\nArmes de toutes catégories'
 			),
-			('Accéssibilité', 'handi',
+			(9,'Accéssibilité', 'handi',
 			'Accès à un parking et un camping réservés proches du site - Plateformes avec vue sur les scenes principales - WC et douches adaptés, bornes de recharge pour fauteuils roulants, boucles magnétiques, etc.'
 			),
-			('Revente de billets', 'revente',
+			(10,'Revente de billets', 'revente',
 			'La revente à un prix supérieur est strictement interdite et punie par la loi (jusqu''à 30 000 € d’amende en cas de récidive). Merci de votre vigilance !'
 			),
-			('Qui nous sommes', 'mainInfo',
+			(11,'Qui nous sommes', 'mainInfo',
 			'Live Event est une société présent dans l''évènementiel depuis  qulques années déjà. Nous organisons des tournées en France ainsi qu''en Europe. Nous faisons également la promotion de concerts d''artistes connus et moins connus du public. Nous avons le plaisirs de manager et produire de beaux talents'
 			);
 
