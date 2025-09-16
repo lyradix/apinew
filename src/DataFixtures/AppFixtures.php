@@ -25,6 +25,7 @@ class AppFixtures extends Fixture
         $user->setPassword(
             $this->passwordHasher->hashPassword($user, 'Password123')
         );
+        $user->setTimeStamp(new \DateTime());
         $manager->persist($user);
 
         $manager->flush();

@@ -534,6 +534,9 @@ INSERT INTO artist
 
 SELECT *
 FROM artist;
+
+SELECT *
+FROM User;
             
 
 
