@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\PoiRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
@@ -43,6 +44,9 @@ class Poi
         max: 90,
     )]
     private ?string $latitude = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $timeStamp = null;
 
     public function getId(): ?int
     {
@@ -120,6 +124,18 @@ class Poi
     public function setLatitude(?string $latitude): self
     {
         $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getTimeStamp(): ?\DateTimeInterface
+    {
+        return $this->timeStamp;
+    }
+
+    public function setTimeStamp(\DateTimeInterface $timeStamp): static
+    {
+        $this->timeStamp = $timeStamp;
+
         return $this;
     }
 }

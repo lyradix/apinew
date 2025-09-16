@@ -23,6 +23,9 @@ class Info
     #[ORM\Column(type: Types::TEXT)]
     private ?string $descriptif = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $timeStamp = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -67,6 +70,18 @@ class Info
     public function setDescriptif(string $descriptif): static
     {
         $this->descriptif = $descriptif;
+
+        return $this;
+    }
+
+    public function getTimeStamp(): ?\DateTimeInterface
+    {
+        return $this->timeStamp;
+    }
+
+    public function setTimeStamp(\DateTimeInterface $timeStamp): static
+    {
+        $this->timeStamp = $timeStamp;
 
         return $this;
     }

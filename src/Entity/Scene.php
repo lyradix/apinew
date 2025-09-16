@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SceneRepository;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,6 +31,9 @@ class Scene
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[Groups(['scene:read'])]
     private ?Poi $poiFK = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $timeStamp = null;
     
 
     public function __construct()
@@ -99,6 +103,18 @@ class Scene
     public function setPoiFK(?Poi $poiFK): static
     {
         $this->poiFK = $poiFK;
+
+        return $this;
+    }
+
+    public function getTimeStamp(): ?\DateTimeInterface
+    {
+        return $this->timeStamp;
+    }
+
+    public function setTimeStamp(\DateTimeInterface $timeStamp): static
+    {
+        $this->timeStamp = $timeStamp;
 
         return $this;
     }

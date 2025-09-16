@@ -49,6 +49,9 @@ class Partners
     )]
     private ?File $imageFile = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $timeStamp = null;
+
 
     public function getId(): ?int
     {
@@ -136,6 +139,18 @@ class Partners
     {
         $this->imageFile = $imageFile;
         
+        return $this;
+    }
+
+    public function getTimeStamp(): ?\DateTimeInterface
+    {
+        return $this->timeStamp;
+    }
+
+    public function setTimeStamp(\DateTimeInterface $timeStamp): static
+    {
+        $this->timeStamp = $timeStamp;
+
         return $this;
     }
 }
