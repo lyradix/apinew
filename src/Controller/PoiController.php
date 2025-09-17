@@ -140,7 +140,7 @@ final class PoiController extends AbstractController
             error_log('Setting geometry as GeoJSON: ' . $geoJson);
 
             // Insert a new Poi record using raw SQL
-            $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
+            $sql = 'INSERT INTO poi (type, properties, geometry, time_stamp) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry), :time_stamp)';
             $stmt = $entityManager->getConnection()->prepare($sql);
   
             // Log the SQL query and parameters
@@ -148,13 +148,15 @@ final class PoiController extends AbstractController
             error_log('SQL Parameters: ' . json_encode([
                 'type' => 'Feature',
                 'properties' => json_encode($properties),
-                'geometry' => $geoJson
+                'geometry' => $geoJson,
+                'time_stamp' => (new \DateTime())->format('Y-m-d')
             ]));
 
             $stmt->executeStatement([
                 'type' => 'Feature',
                 'properties' => json_encode($properties),
-                'geometry' => $geoJson
+                'geometry' => $geoJson,
+                'time_stamp' => (new \DateTime())->format('Y-m-d')
             ]);
             // Retrieve the last inserted ID for the Poi
 
@@ -173,6 +175,7 @@ final class PoiController extends AbstractController
             $scene->setId($lastSceneId + 1);
             $scene->setNom($data['nom']);
             $scene->setPoiFK($poi);
+            $scene->setTimeStamp(new \DateTime());
             $entityManager->persist($scene);
             $entityManager->flush();
 

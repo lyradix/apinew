@@ -22,13 +22,13 @@
 </div>
 
 <div id="addForm" class="form">
-    <form id="poiForm" action="{{ path('post_poi') }}" method="post">
-        {{ form_widget(formAddPoi) }}
-        <div class="wrapbtn">
-            <button type="submit">Envoyer</button>
-            <button class="box" type="button" onclick="window.history.back()">Retour</button>
-        </div>
-    </form>
+    {{ form_start(formAddPoi, {'attr': {'id': 'poiForm'}, 'action': path('post_poi'), 'method': 'post'}) }}
+    {{ form_widget(formAddPoi) }}
+    <div class="wrapbtn">
+        <button type="submit">Envoyer</button>
+        <button class="box" type="button" onclick="window.history.back()">Retour</button>
+    </div>
+    {{ form_end(formAddPoi) }}
 </div>
 
 <div id="modifyForm" class="form" style="display:none;">
@@ -64,6 +64,9 @@
 <div id="updateForm" class="form">
 </div>
 
+<script>
+    window.addSceneUrl = "{{ path('app_postScene') }}";
+</script>
 <script src="{{ asset('js/poi.js') }}"></script>
 <script src="{{ asset('js/radioPoi.js') }}"></script>
 {% endblock %}

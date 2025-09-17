@@ -77,7 +77,11 @@ a{
     display: flex;
     justify-content: center;
     margin-bottom: 1em;
-    
+}
+
+.active-radio {
+    display: flex !important;
+    justify-content: center !important;
 }
 .delBtn{
       margin: 1rem;;

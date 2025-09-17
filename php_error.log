@@ -328,3 +328,6 @@ Stack trace:
 [28-Aug-2025 15:40:37 UTC] PHP Fatal error:  Cannot use App\Repository\SceneRepository as SceneRepository because the name is already in use in C:\Users\daryl\apinewsymfony\src\Controller\PoiController.php on line 11
 [28-Aug-2025 15:40:42 UTC] PHP Fatal error:  Cannot use App\Repository\SceneRepository as SceneRepository because the name is already in use in C:\Users\daryl\apinewsymfony\src\Controller\PoiController.php on line 11
 [31-Aug-2025 06:45:58 UTC] PHP Fatal error:  Cannot redeclare App\Controller\BackOfficeController::deleteConcert() in C:\Users\daryl\apinewsymfony\src\Controller\BackOfficeController.php on line 594
+[17-Sep-2025 10:03:23 UTC] 2025-09-17T10:03:23+00:00 [critical] Uncaught Error: syntax error, unexpected token "public"
+[17-Sep-2025 10:03:40 UTC] 2025-09-17T10:03:40+00:00 [critical] Uncaught Error: syntax error, unexpected token "public"
+[17-Sep-2025 10:03:58 UTC] 2025-09-17T10:03:58+00:00 [critical] Uncaught Error: syntax error, unexpected token "public"

@@ -177,6 +177,9 @@ public function postPoi(
 
     $form = $this->createForm(\App\Form\AddPlaceType::class, $poi, [
         'type_choices' => $typeChoices,
+        'csrf_protection' => true, // Ensure CSRF protection is enabled
+        'csrf_field_name' => '_token', // Use a standard field name for CSRF token
+        'csrf_token_id' => 'poi_form', // A unique token ID for this form
     ]);
     $form->handleRequest($request);
 
@@ -197,36 +200,86 @@ public function postPoi(
                 'latitude' => $latitude,
             ]);
         }
+        
+        // Handle AJAX request for POI submission
+        if ($request->isXmlHttpRequest()) {
+            try {
+                // Insertion des dpropriétés par défault, n'affecte l'output en back office ou en front end
+                $presetProperties = [
+                    // les nom est dynamique 
+                    // le popup est le nom du POI
+                    'popup' => $nom,
+                    //le type est dynamique et prend la valeurdu type choisi dans le fromulaire
+                    'type' => $type,
+                    'marker-color' => '#d21e96',
+                    'marker-symbol' => 'theatre',
+                    'image' => 'random'
+                ];
 
-        // Insertion des dpropriétés par défault, n'affecte l'output en back office ou en front end
-        $presetProperties = [
-            // les nom est dynamique 
-            // le popup est le nom du POI
-            'popup' => $nom,
-            //le type est dynamique et prend la valeurdu type choisi dans le fromulaire
-            'type' => $type,
-            'marker-color' => '#d21e96',
-            'marker-symbol' => 'theatre',
-            'image' => 'random'
-        ];
+                // stockage des coordonnées dans un format GeoJSON
+                $geoJson = json_encode([
+                    'type' => 'Point',
+                    'coordinates' => [(float)$longitude, (float)$latitude]
+                ]);
 
-        // stockage des coordonnées dans un format GeoJSON
-        $geoJson = json_encode([
-            'type' => 'Point',
-            'coordinates' => [(float)$longitude, (float)$latitude]
-        ]);
+                // requuête SQL pour insérer le nouveau POI avec les propriétés par défault
+                $sql = 'INSERT INTO poi (type, properties, geometry, time_stamp) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry), :time_stamp)';
+                $stmt = $entityManager->getConnection()->prepare($sql);
+                $stmt->executeStatement([
+                    'type' => 'Feature',
+                    'properties' => json_encode($presetProperties),
+                    'geometry' => $geoJson,
+                    'time_stamp' => (new \DateTime())->format('Y-m-d')
+                ]);
 
-        // requuête SQL pour insérer le nouveau POI avec les propriétés par défault
-        $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
-        $stmt = $entityManager->getConnection()->prepare($sql);
-        $stmt->executeStatement([
-            'type' => 'Feature',
-            'properties' => json_encode($presetProperties),
-            'geometry' => $geoJson
-        ]);
+                // Return JSON response for successful AJAX request
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Lieu ajouté avec succès.'
+                ]);
+            } catch (\Exception $e) {
+                // Handle errors for AJAX requests
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => 'Erreur: ' . $e->getMessage()
+                ], 500);
+            }
+        } else {
+            // For regular (non-AJAX) form submissions
+            try {
+                // Insertion des dpropriétés par défault
+                $presetProperties = [
+                    'popup' => $nom,
+                    'type' => $type,
+                    'marker-color' => '#d21e96',
+                    'marker-symbol' => 'theatre',
+                    'image' => 'random'
+                ];
 
-        $this->addFlash('success', 'Lieu ajouté avec succès.');
-        return $this->redirectToRoute('post_poi');
+                // stockage des coordonnées dans un format GeoJSON
+                $geoJson = json_encode([
+                    'type' => 'Point',
+                    'coordinates' => [(float)$longitude, (float)$latitude]
+                ]);
+
+                // requête SQL pour insérer le nouveau POI
+                $sql = 'INSERT INTO poi (type, properties, geometry, time_stamp) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry), :time_stamp)';
+                $stmt = $entityManager->getConnection()->prepare($sql);
+                $stmt->executeStatement([
+                    'type' => 'Feature',
+                    'properties' => json_encode($presetProperties),
+                    'geometry' => $geoJson,
+                    'time_stamp' => (new \DateTime())->format('Y-m-d')
+                ]);
+                
+                $this->addFlash('success', 'Lieu ajouté avec succès.');
+                return $this->redirectToRoute('post_poi');
+            } catch (\Exception $e) {
+                // Handle errors for regular requests
+                $this->addFlash('error', 'Erreur lors de l\'ajout du lieu: ' . $e->getMessage());
+                return $this->redirectToRoute('post_poi');
+            }
+        }
     }
 
     return $this->render('poi/newPlace.html.twig', [
@@ -235,7 +288,7 @@ public function postPoi(
 }
 
     #[Route('/updateScene', name: 'app_updateScene', methods: ['PUT'])]  
-    public function putScene(HttpFoundationRequest $request,
+    public function putScene(Request $request,
     SceneRepository $sceneRepository,
     SerializerInterface $serializer,
     EntityManagerInterface $entityManager): JsonResponse
@@ -372,9 +425,50 @@ public function updateInfo(
     {
     // Handle AJAX POST (from JS)
     if ($request->isXmlHttpRequest() && $request->isMethod('POST')) {
-        $nom = $request->request->get('nom');
-        $longitude = $request->request->get('longitude');
-        $latitude = $request->request->get('latitude');
+        // Debug request parameters
+        error_log('REQUEST PARAMS: ' . json_encode($request->request->all()));
+        error_log('FILES: ' . json_encode(array_keys($request->files->all())));
+        
+        // Try different ways to access form data
+        $formData = $request->request->all();
+        error_log('Form data: ' . json_encode($formData));
+        
+        // Check for the form name prefix (Symfony forms often have prefixes)
+        foreach ($formData as $key => $value) {
+            if (is_array($value)) {
+                error_log('Found form array: ' . $key);
+                error_log('Form array contents: ' . json_encode($value));
+                
+                // If this is the Symfony form data array, extract values
+                if (isset($value['nom']) && isset($value['longitude']) && isset($value['latitude'])) {
+                    $nom = $value['nom'];
+                    $longitude = $value['longitude'];
+                    $latitude = $value['latitude'];
+                    error_log("Found values in form array: nom=$nom, longitude=$longitude, latitude=$latitude");
+                    break;
+                }
+            }
+        }
+        
+        // Fallback to direct parameter access if not found in arrays
+        $nom = $nom ?? $request->request->get('nom');
+        $longitude = $longitude ?? $request->request->get('longitude');
+        $latitude = $latitude ?? $request->request->get('latitude');
+        
+        // Try to get via add_place form prefix
+        if (!$nom || !$longitude || !$latitude) {
+            $formPrefix = $request->request->get('add_place');
+            if ($formPrefix && is_array($formPrefix)) {
+                $nom = $formPrefix['nom'] ?? null;
+                $longitude = $formPrefix['longitude'] ?? null;
+                $latitude = $formPrefix['latitude'] ?? null;
+                error_log("Found values with add_place prefix: nom=$nom, longitude=$longitude, latitude=$latitude");
+            }
+        }
+        
+        error_log("Final scene data: nom=$nom, longitude=$longitude, latitude=$latitude");
+
+        error_log("Received scene data: nom=$nom, longitude=$longitude, latitude=$latitude");
 
         if ($nom && $longitude && $latitude) {
             $presetProperties = [
@@ -391,21 +485,23 @@ public function updateInfo(
             ]);
 
             // Insert POI
-            $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
+            $sql = 'INSERT INTO poi (type, properties, geometry, time_stamp) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry), :time_stamp)';
             $stmt = $entityManager->getConnection()->prepare($sql);
             $stmt->executeStatement([
                 'type' => 'Feature',
                 'properties' => json_encode($presetProperties),
-                'geometry' => $geoJson
+                'geometry' => $geoJson,
+                'time_stamp' => (new \DateTime())->format('Y-m-d')
             ]);
             $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
 
-            // Insert Scene
-            $sqlScene = 'INSERT INTO scene (poi_FK_id, nom) VALUES (:poiId, :nom)';
+            // Insert Scene with current date for timeStamp
+            $sqlScene = 'INSERT INTO scene (poi_FK_id, nom, time_stamp) VALUES (:poiId, :nom, :time_stamp)';
             $stmtScene = $entityManager->getConnection()->prepare($sqlScene);
             $stmtScene->executeStatement([
                 'poiId' => $lastInsertedPoiId,
                 'nom' => $nom,
+                'time_stamp' => (new \DateTime())->format('Y-m-d'),
             ]);
 
             return new JsonResponse(['success' => true, 'message' => 'Scène ajoutée avec succès']);
@@ -441,21 +537,23 @@ public function updateInfo(
         ]);
 
         // 1. Insert Poi using raw SQL
-        $sql = 'INSERT INTO poi (type, properties, geometry) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry))';
+        $sql = 'INSERT INTO poi (type, properties, geometry, time_stamp) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry), :time_stamp)';
         $stmt = $entityManager->getConnection()->prepare($sql);
         $stmt->executeStatement([
             'type' => 'Feature',
             'properties' => json_encode($presetProperties),
-            'geometry' => $geoJson
+            'geometry' => $geoJson,
+            'time_stamp' => (new \DateTime())->format('Y-m-d')
         ]);
         $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
 
-        // 2. Insert Scene using raw SQL
-        $sqlScene = 'INSERT INTO scene (poi_FK_id, nom) VALUES (:poiId, :nom)';
+        // 2. Insert Scene using raw SQL with current date for timeStamp
+        $sqlScene = 'INSERT INTO scene (poi_FK_id, nom, time_stamp) VALUES (:poiId, :nom, :time_stamp)';
         $stmtScene = $entityManager->getConnection()->prepare($sqlScene);
         $stmtScene->executeStatement([
             'poiId' => $lastInsertedPoiId,
-            'nom' => $nom
+            'nom' => $nom,
+            'time_stamp' => (new \DateTime())->format('Y-m-d')
         ]);
 
         // Add success message and redirect
@@ -474,6 +572,8 @@ public function updateInfo(
     EntityManagerInterface $entityManager
     ): Response {
     $artist = new Artist();
+    // Set the timeStamp field with current date
+    $artist->setTimeStamp(new \DateTime());
     $form = $this->createForm(\App\Form\AddConcertType::class, $artist);
 
     $form->handleRequest($request);
@@ -509,6 +609,8 @@ public function updateInfo(
                 
                 // Create a new Info object
                 $info = new Info();
+                // Set timeStamp with current date
+                $info->setTimeStamp(new \DateTime());
                 
                 // Set fields from JSON data
                 if (isset($data['title'])) {
@@ -550,6 +652,8 @@ public function updateInfo(
         
         // For regular form submission
         $info = new Info();
+        // Set timeStamp with current date
+        $info->setTimeStamp(new \DateTime());
         
         // Get unique types from existing Info entities
         $types = $entityManager->createQuery('SELECT DISTINCT i.type FROM App\Entity\Info i')
@@ -734,6 +838,9 @@ public function updateInfo(
     }
     $formAddPoi = $this->createForm(\App\Form\AddPlaceType::class, $poi, [
     'type_choices' => $typeChoices,
+    'csrf_protection' => true, // Ensure CSRF protection is enabled
+    'csrf_field_name' => '_token', // Use a standard field name for CSRF token
+    'csrf_token_id' => 'poi_form', // A unique token ID for this form
     ]);
 
     // If you also need the modify form:
@@ -859,6 +966,27 @@ public function updateInfo(
 
     if ($form->isSubmitted() && $form->isValid()) {
         $type = $form->get('type')->getData();
+        
+        // Handle the uploaded file
+        $imageFile = $form->get('imageFile')->getData();
+        if ($imageFile) {
+            try {
+                // Generate a unique filename
+                $newFilename = uniqid('partner-').'-'.pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME).'.'.$imageFile->guessExtension();
+                
+                // Move the file to the images directory
+                $imageFile->move(
+                    $this->getParameter('images_directory'),
+                    $newFilename
+                );
+                
+                // Set the image filename to the partner entity
+                $partner->setImage($newFilename);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Error uploading image: ' . $e->getMessage());
+                return $this->redirectToRoute('app_add_partner');
+            }
+        }
 
         // Determine prefix based on type
         $prefix = '';
@@ -885,6 +1013,9 @@ public function updateInfo(
 
         $partnerId = $prefix . $newNum;
         $partner->setPartnerId($partnerId);
+        
+        // Set the timestamp to the current date
+        $partner->setTimeStamp(new \DateTime());
 
         $entityManager->persist($partner);
         $entityManager->flush();
@@ -964,6 +1095,9 @@ public function updateInfo(
         }
         $partner->setImage($data['image']);
     }
+    
+    // Always update the timestamp when modifying a partner
+    $partner->setTimeStamp(new \DateTime());
 
     $entityManager->flush();
 
