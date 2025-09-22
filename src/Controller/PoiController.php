@@ -9,11 +9,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use App\Repository\PoiRepository;
 use App\Repository\SceneRepository;
+use App\Form\AddPlaceType;
 
 final class PoiController extends AbstractController
 {
@@ -240,6 +241,162 @@ final class PoiController extends AbstractController
         } catch (\Exception $e) {
             return new JsonResponse([
                 'error' => 'An error occurred while deleting the POI'
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+     #[Route('/render-new-place', name: 'app_render_newPlace')]
+    public function renderNewPlace(): Response
+    {
+    return $this->render('poi/newPlace.html.twig');
+    }
+
+    #[Route('/pois', name: 'app_pois', methods: ['GET'])]
+    public function pois(EntityManagerInterface $entityManager): Response
+    {
+    // Fetch all POIs
+    $poisResult = $entityManager->getConnection()->executeQuery(
+        "SELECT id, JSON_UNQUOTE(JSON_EXTRACT(properties, '$.popup')) AS popup FROM poi WHERE JSON_VALID(properties) = 1"
+    )->fetchAllAssociative();
+
+    $pois = [];
+    foreach ($poisResult as $row) {
+        $pois[] = (object)[
+            'id' => $row['id'],
+            'properties' => (object)[
+                'popup' => $row['popup'],
+            ],
+        ];
+    }
+
+    // Add this before rendering the template
+    $poi = new Poi();
+
+    // Get unique types for the add form (reuse your logic)
+    $typeConnection = $entityManager->getConnection();
+    $sql = "SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type FROM poi WHERE JSON_EXTRACT(properties, '$.type') IS NOT NULL";
+    $result = $typeConnection->executeQuery($sql)->fetchAllAssociative();
+
+    $typeChoices = [];
+    foreach ($result as $row) {
+    if ($row['type']) {
+        $typeChoices[$row['type']] = $row['type'];
+    }
+    }
+    $formAddPoi = $this->createForm(AddPlaceType::class, $poi, [
+    'type_choices' => $typeChoices,
+    'csrf_protection' => true, // Ensure CSRF protection is enabled
+    'csrf_field_name' => '_token', // Use a standard field name for CSRF token
+    'csrf_token_id' => 'poi_form', // A unique token ID for this form
+    ]);
+
+    // If you also need the modify form:
+    $poiChoices = [];
+    foreach ($pois as $poi) {
+    $poiChoices[$poi->properties->popup] = $poi->id;
+    }
+    $formModifPoi = $this->createForm(\App\Form\ModifPlaceType::class, null, [
+    'poi_choices' => $poiChoices,
+    ]);
+
+    return $this->render('poi/poi.html.twig', [
+        'formAddPoi' => $formAddPoi->createView(),
+        'formModifPoi' => $formModifPoi->createView(),
+        'pois' => $pois, // <-- Add this line!
+    ]);
+    }
+
+    #[Route('/render-update-poi', name: 'app_render_updatePoi')]
+    public function renderUpdatePoi(EntityManagerInterface $entityManager): Response
+    {
+    // Fetch all POIs
+    $connection = $entityManager->getConnection();
+    $poisResult = $connection->executeQuery(
+        "SELECT id, JSON_UNQUOTE(JSON_EXTRACT(properties, '$.popup')) AS popup 
+            FROM poi 
+            WHERE JSON_VALID(properties) = 1"
+    )->fetchAllAssociative();
+
+    $pois = [];
+    $deleteForms = [];
+    foreach ($poisResult as $row) {
+        $pois[] = (object)[
+            'id' => $row['id'],
+            'properties' => (object)[
+                'popup' => $row['popup'],
+            ],
+        ];
+        $deleteForms[$row['id']] = $this->createForm(\App\Form\DeletePoiType::class)->createView();
+    }
+
+    return $this->render('poi/updatePoi.html.twig', [
+        'pois' => $pois,
+        'deleteForms' => $deleteForms,
+    ]);
+
+        return $this->render('poi/poi.html.twig', [
+        'formAddPoi' => $formAddPoi->createView(),
+        'formModifPoi' => $formModifPoi->createView(),
+        'pois' => $pois,
+    ]);
+    }
+    #[Route('/updatePoi', name: 'update_poi', methods: ['PUT'])]
+    public function updatePoi(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        // Validate required fields
+        if (!isset($data['id'], $data['popup'], $data['longitude'], $data['latitude'], $data['type'])) {
+            return new JsonResponse(['error' => 'Invalid data. "id", "popup", "longitude", "latitude", and "type" are required.'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        // Validate longitude and latitude
+        if ($data['longitude'] < -180 || $data['longitude'] > 180 || $data['latitude'] < -90 || $data['latitude'] > 90) {
+            return new JsonResponse(['error' => 'Invalid longitude or latitude values.'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            // Construct GeoJSON format
+            $geoJson = json_encode([
+                'type' => 'Point',
+                'coordinates' => [(float)$data['longitude'], (float)$data['latitude']]
+            ]);
+
+            // Preset properties
+            $presetProperties = [
+                'popup' => $data['popup'],
+                'type' => $data['type'],
+                'marker-color' => '#d21e96',
+                'marker-symbol' => 'camping',
+                'image' => 'tent'
+            ];
+
+            // Update the Poi record using raw SQL
+            $sql = 'UPDATE poi SET type = :type, properties = :properties, geometry = ST_GeomFromGeoJSON(:geometry) WHERE id = :id';
+            $stmt = $entityManager->getConnection()->prepare($sql);
+
+            $stmt->executeStatement([
+                'id' => $data['id'],
+                'type' => 'Feature',
+                'properties' => json_encode($presetProperties),
+                'geometry' => $geoJson
+            ]);
+
+            // Log the update
+            error_log('Updated Poi ID: ' . $data['id']);
+
+            // Return success response
+            return new JsonResponse(['message' => 'Poi updated successfully.'], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            // Log the exception details
+            error_log('Exception occurred: ' . $e->getMessage());
+            error_log('Exception trace: ' . $e->getTraceAsString());
+
+            return new JsonResponse([
+                'error' => 'An error occurred while updating the Poi.',
+                'message' => $e->getMessage()
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
