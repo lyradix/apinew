@@ -1,0 +1,370 @@
+// Initialize immediately when script loads
+initializePoiForm();
+
+function initializePoiForm() {
+    // Add defensive checks to ensure elements exist
+    if (!document.getElementById('addForm') || !document.getElementById('modifyForm')) {
+        // Elements not ready yet, try again in a moment
+        setTimeout(initializePoiForm, 50);
+        return;
+    }
+
+    const radios = document.getElementsByName('formMode');
+    const addForm = document.getElementById('addForm');
+    const modifyFormDiv = document.getElementById('modifyForm');
+    const refreshButton = document.getElementById('refreshModify');
+    let poiData = {};
+
+    // Add event listeners for radio buttons
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'add') {
+                addForm.style.display = '';
+                modifyFormDiv.style.display = 'none';
+                if (refreshButton) refreshButton.style.display = 'none';
+            } else {
+                addForm.style.display = 'none';
+                modifyFormDiv.style.display = '';
+                if (refreshButton) refreshButton.style.display = '';
+                loadPoiData(); // Load data when switching to modify
+            }
+        });
+    });
+
+    // Show correct form on page load
+    if (document.getElementById('modifyRadio') && document.getElementById('modifyRadio').checked) {
+        addForm.style.display = 'none';
+        modifyFormDiv.style.display = '';
+        if (refreshButton) refreshButton.style.display = '';
+        loadPoiData();
+    } else {
+        addForm.style.display = '';
+        modifyFormDiv.style.display = 'none';
+        if (refreshButton) refreshButton.style.display = 'none';
+    }
+    
+    // Add event listener for the refresh button
+    if (refreshButton) {
+        refreshButton.addEventListener('click', function() {
+            reloadPoiData();
+        });
+    }
+
+    // Function to load POI data for the modify form
+    function loadPoiData() {
+        fetch('/poi') 
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('poiId');
+                const typeSelect = document.getElementById('typeSelect');
+                const typesSet = new Set();
+
+                // Clear existing options
+                select.innerHTML = '<option value="">-- Choisir un lieu --</option>';
+                typeSelect.innerHTML = '<option value="">-- Choisir un type --</option>';
+
+                data.features.forEach(feature => {
+                    // Fill POI select
+                    const option = document.createElement('option');
+                    option.value = feature.id;
+                    option.textContent = feature.properties.popup || 'POI ' + feature.id;
+                    select.appendChild(option);
+
+                    // Store POI data for quick lookup
+                    poiData[feature.id] = feature;
+                    // Collect unique types
+                    if (feature.properties.type) {
+                        typesSet.add(feature.properties.type);
+                    }
+                });
+
+                // Fill type select
+                typesSet.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    typeSelect.appendChild(option);
+                });
+
+                // Add event listener for delete button
+                const deleteButton = document.querySelector('.delBtn');
+                if (deleteButton) {
+                    deleteButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const poiId = document.getElementById('poiId').value;
+                        if (!poiId) {
+                            alert('Veuillez sélectionner un lieu à supprimer');
+                            return;
+                        }
+
+                        if (confirm('Êtes-vous sûr de vouloir supprimer ce lieu ?')) {
+                            fetch('/deletepoi', {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                                body: JSON.stringify({ id: poiId })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.message) {
+                                    alert('Lieu supprimé avec succès !');
+                                    // Reload the POI data to update the list
+                                    reloadPoiData();
+                                } else if (data.error) {
+                                    alert('Erreur : ' + data.error);
+                                } else {
+                                    alert('Une erreur est survenue.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Erreur lors de la suppression');
+                            });
+                        }
+                    });
+                }
+
+                // Add event listener for POI select change
+                select.addEventListener('change', function() {
+                    const selectedId = this.value;
+                    const longitudeInput = document.querySelector('#modifForm input[placeholder^="exemple"]');
+                    const latitudeInput = document.querySelector('#modifForm input[placeholder^="48."]');
+                    
+                    if (poiData[selectedId]) {
+                        const coords = poiData[selectedId].geometry.coordinates;
+                        longitudeInput.value = coords[0];
+                        latitudeInput.value = coords[1];
+                        if (poiData[selectedId].properties.type) {
+                            document.getElementById('typeSelect').value = poiData[selectedId].properties.type;
+                        }
+                    } else {
+                        longitudeInput.value = '';
+                        latitudeInput.value = '';
+                        document.getElementById('typeSelect').value = '';
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error loading POI data:', error);
+                alert('Erreur lors du chargement des données');
+            });
+    }
+
+    // Add event listener for modify form submission
+    document.getElementById('modifForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const poiId = document.getElementById('poiId').value;
+        const longitude = document.querySelector('#modifForm input[name="longitude"]').value;
+        const latitude = document.querySelector('#modifForm input[name="latitude"]').value;
+        const type = document.getElementById('typeSelect').value;
+        const popup = poiData[poiId] && poiData[poiId].properties.popup ? poiData[poiId].properties.popup : '';
+
+        if (poiId) {
+            fetch('/updatePoi', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    id: poiId,
+                    popup: popup,
+                    longitude: parseFloat(longitude),
+                    latitude: parseFloat(latitude),
+                    type: type
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success || data.message) {
+                    alert('Lieu modifié avec succès !');
+                } else {
+                    alert('Erreur : ' + (data.error || 'Une erreur est survenue.'));
+                }
+            })
+            .catch(() => alert('Erreur lors de l\'envoi du formulaire.'));
+        }
+    });
+
+    // Add event listener for add form submission
+    document.getElementById('poiForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('POI form submission intercepted');
+        
+        const form = e.target;
+        console.log('Form action:', form.action);
+        console.log('Form method:', form.method);
+        
+        const formData = new FormData(form);
+        const typeField = form.querySelector('[name$="[type]"]');
+        const type = typeField ? typeField.value : '';
+        console.log('Selected POI type:', type);
+
+        // Log all form data for debugging
+        console.log('Form data being submitted:');
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+        
+        // Get CSRF token - look for a hidden input with token in the name
+        let csrfToken = null;
+        // Check different possible CSRF token field names
+        const possibleTokenFields = ['_token', '_csrf_token', form.id + '_token'];
+        
+        for (const tokenName of possibleTokenFields) {
+            const tokenField = form.querySelector(`input[name="${tokenName}"]`);
+            if (tokenField) {
+                csrfToken = tokenField.value;
+                console.log(`Found CSRF token with name ${tokenName}:`, csrfToken);
+                break;
+            }
+        }
+        
+        // As a fallback, try a more generic selector
+        if (!csrfToken) {
+            const tokenField = form.querySelector('input[name*="token"]');
+            if (tokenField) {
+                csrfToken = tokenField.value;
+                console.log('Found CSRF token with generic selector:', csrfToken);
+            }
+        }
+
+        // For both scene and regular POI submissions, use AJAX with proper CSRF handling
+        const isSceneSubmission = type === 'scène';
+        const url = isSceneSubmission ? '/postScene' : form.action;
+        
+        console.log(`Submitting form to ${url} for ${isSceneSubmission ? 'scene' : 'regular POI'}`);
+        
+        // Make sure we don't set Content-Type with FormData (browser will set it with boundary)
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: { 
+                'X-Requested-With': 'XMLHttpRequest'
+                // Don't set Content-Type header when using FormData - browser will set it automatically with the boundary
+            }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', 
+                Array.from(response.headers.entries())
+                    .map(header => `${header[0]}: ${header[1]}`)
+                    .join('\n')
+            );
+            console.log('Response type:', response.type);
+            
+            if (response.redirected) {
+                // If the server redirected us, follow the redirect
+                console.log('Response redirected to:', response.url);
+                window.location.href = response.url;
+                return { redirected: true };
+            }
+            
+            if (!response.ok) {
+                console.error('Response error:', response.statusText);
+                return response.text().then(text => {
+                    try {
+                        // Try to parse as JSON for structured error
+                        return JSON.parse(text);
+                    } catch (e) {
+                        // If parsing fails, it might be HTML or other content
+                        // Check if it contains CSRF token error
+                        if (text.includes('CSRF') || text.includes('csrf')) {
+                            throw new Error('Invalid CSRF token. Please refresh the page and try again.');
+                        } else {
+                            throw new Error('Server responded with status: ' + response.status);
+                        }
+                    }
+                });
+            }
+            
+            // Try to parse as JSON
+            return response.text().then(text => {
+                console.log('Response text:', text ? 
+                    (text.length > 500 ? text.substring(0, 500) + '... (truncated)' : text) 
+                    : '(empty)');
+                
+                if (!text) return { success: true };
+                
+                try {
+                    const parsedJson = JSON.parse(text);
+                    console.log('Successfully parsed response as JSON:', parsedJson);
+                    return parsedJson;
+                } catch (e) {
+                    console.log('Failed to parse as JSON, error:', e.message);
+                    // If the response is not JSON but the request was successful,
+                    // consider it a success and reload the page
+                    if (response.ok) {
+                        console.log('Response was OK but not JSON, reloading page');
+                        window.location.reload();
+                        return { success: true, reloaded: true };
+                    }
+                    throw new Error('Unexpected response format');
+                }
+            });
+        })
+        .then(data => {
+            if (data.redirected || data.reloaded) return;
+            
+            console.log('Response data:', data);
+            
+            if (data.success) {
+                alert(isSceneSubmission ? 'Scène ajoutée avec succès !' : 'Lieu ajouté avec succès !');
+                form.reset();
+                reloadPoiData();
+            } else {
+                alert('Erreur : ' + (data.message || data.error || 'Une erreur est survenue.'));
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+            alert('Erreur lors de l\'envoi du formulaire: ' + error.message || error);
+        });
+    });
+}
+
+// Function to reload POI data and reset the modify form
+function reloadPoiData() {
+    const select = document.getElementById('poiId');
+    const typeSelect = document.getElementById('typeSelect');
+    if (select) select.innerHTML = '<option value="">-- Choisir un lieu --</option>';
+    if (typeSelect) typeSelect.innerHTML = '<option value="">-- Choisir un type --</option>';
+    
+    fetch('/poi') 
+        .then(response => response.json())
+        .then(data => {
+            const typesSet = new Set();
+            if (!select) return;
+            
+            data.features.forEach(feature => {
+                const option = document.createElement('option');
+                option.value = feature.id;
+                option.textContent = feature.properties.popup || 'POI ' + feature.id;
+                select.appendChild(option);
+                
+                // Store POI data for quick lookup
+                window.poiData = window.poiData || {};
+                window.poiData[feature.id] = feature;
+                
+                // Collect unique types
+                if (feature.properties.type) {
+                    typesSet.add(feature.properties.type);
+                }
+            });
+            
+            // Fill type select
+            if (typeSelect) {
+                typesSet.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    typeSelect.appendChild(option);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error reloading POI data:', error);
+        });
+}

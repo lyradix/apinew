@@ -21,6 +21,7 @@ class LoginType extends AbstractType
                     'class' => 'form-control',
                 ],
             ])
+      
             ->add('password', PasswordType::class)
             ->add('_csrf_token', HiddenType::class, [
                 'mapped' => false,

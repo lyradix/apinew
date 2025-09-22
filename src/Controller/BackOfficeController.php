@@ -156,6 +156,20 @@ public function postPoi(
     Request $request,
     EntityManagerInterface $entityManager
 ): Response {
+    // Debug request information
+    if ($request->isMethod('POST')) {
+        error_log('=== POST request to /postPoi ===');
+        error_log('Content Type: ' . $request->headers->get('Content-Type'));
+        error_log('Is AJAX request: ' . ($request->isXmlHttpRequest() ? 'Yes' : 'No'));
+        error_log('Request parameters: ' . json_encode($request->request->all()));
+        
+        if ($request->isXmlHttpRequest()) {
+            error_log('Processing as AJAX request');
+        } else {
+            error_log('Processing as regular form submission');
+        }
+    }
+    
     $poi = new Poi();
 
     // Requête SQL pour obtenir les types uniques de POI
@@ -239,6 +253,8 @@ public function postPoi(
                 ]);
             } catch (\Exception $e) {
                 // Handle errors for AJAX requests
+                error_log('ERROR in AJAX request: ' . $e->getMessage());
+                error_log('Stack trace: ' . $e->getTraceAsString());
                 return new JsonResponse([
                     'success' => false,
                     'message' => 'Erreur: ' . $e->getMessage()
@@ -272,10 +288,17 @@ public function postPoi(
                     'time_stamp' => (new \DateTime())->format('Y-m-d')
                 ]);
                 
+                error_log('Regular form submission successful, adding flash message');
                 $this->addFlash('success', 'Lieu ajouté avec succès.');
-                return $this->redirectToRoute('post_poi');
+                
+                // Create a more explicit redirect response
+                $redirect = $this->redirectToRoute('post_poi');
+                error_log('Redirecting to ' . $redirect->getTargetUrl());
+                return $redirect;
             } catch (\Exception $e) {
                 // Handle errors for regular requests
+                error_log('ERROR in regular form submission: ' . $e->getMessage());
+                error_log('Stack trace: ' . $e->getTraceAsString());
                 $this->addFlash('error', 'Erreur lors de l\'ajout du lieu: ' . $e->getMessage());
                 return $this->redirectToRoute('post_poi');
             }
@@ -336,21 +359,26 @@ public function postPoi(
      * @param SerializerInterface $serializer The Symfony serializer.
      * @return JsonResponse|Response
      */
-    #[Route('/updateInfo', name: 'app_updateInfo', methods: ['PUT'])]
+    #[Route('/updateInfo', name: 'app_updateInfo', methods: ['PUT', 'POST'])]
 public function updateInfo(
-    int $id,
     Request $request,
     InfoRepository $infoRepository,
     EntityManagerInterface $entityManager,
     SerializerInterface $serializer
 ): JsonResponse {
-   $data = json_decode($request->getContent(), true);
+   // Handle both JSON content and form data
+   if ($request->headers->get('Content-Type') === 'application/json') {
+       $data = json_decode($request->getContent(), true);
+   } else {
+       // For form submissions
+       $data = $request->request->all();
+   }
 
     if (!isset($data['id'])) {
-        return new JsonResponse(['error' => 'Partner ID is required'], JsonResponse::HTTP_BAD_REQUEST);
+        return new JsonResponse(['error' => 'Info ID is required'], JsonResponse::HTTP_BAD_REQUEST);
     }
 
-    $partner = $partnersRepository->find($data['id']);
+    $info = $infoRepository->find($data['id']);
     if (!$info) {
         return new JsonResponse(['error' => 'Info not found'], JsonResponse::HTTP_NOT_FOUND);
     }
@@ -895,7 +923,7 @@ public function updateInfo(
     }
     #[Route('/updatePoi', name: 'update_poi', methods: ['PUT'])]
     public function updatePoi(
-        HttpFoundationRequest $request,
+        Request $request,
         EntityManagerInterface $entityManager
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);

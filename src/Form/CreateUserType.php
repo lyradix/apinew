@@ -16,12 +16,15 @@ class CreateUserType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class)
+                        //($plainPassword) must be of type string, null given, 
+            // called in C:\Users\daryl\apinewsymfony\src\Controller\RegistrationController.php on line 27
+        
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'first_options'  => ['label' => 'Password'],
-                'second_options' => ['label' => 'Confirmer mot de passe'],
-                'invalid_message' => 'Les mots de passe doivent correspondre.',
                 'mapped' => true,
+                'first_options' => ['label' => 'Mot de passe'],
+                'second_options' => ['label' => 'Répéter le mot de passe'],
+                'invalid_message' => 'The password fields must match.',
             ])
         ;
     }

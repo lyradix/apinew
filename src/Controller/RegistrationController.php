@@ -15,7 +15,10 @@ class RegistrationController extends AbstractController
 {
 
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
-    public function registerAdmin(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    public function registerAdmin(
+        Request $request, 
+        EntityManagerInterface $entityManager, 
+        UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
         $form = $this->createForm(CreateUserType::class, $user);
@@ -23,17 +26,22 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // mot de pase hashé
+            //($plainPassword) must be of type string, null given, 
+            // called in C:\Users\daryl\apinewsymfony\src\Controller\RegistrationController.php on line 27
             $user->setPassword(
-                $passwordHasher->hashPassword($user, $user->getPassword())
+                $passwordHasher->hashPassword($user, $user->getPlainPassword())
             );
          // Le role est défini comme ROLE_ADMIN par défault
             $user->setRoles(['ROLE_ADMIN']);
+            $timestamp = new \DateTime();
+            $user->setTimeStamp($timestamp);
 
             // Persist les donées
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return new Response('Admin created successfully!', Response::HTTP_CREATED);
+            $this->addFlash('success', 'Admin created successfully!');
+            return $this->redirectToRoute('app_adminConcerts');
         }
 
         return $this->render('registration/register.html.twig', [

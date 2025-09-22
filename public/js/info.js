@@ -148,7 +148,6 @@ function initializeInfoForm() {
             modifForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const formData = new FormData();
                 const id = document.getElementById('Id').value;
                 
                 if (!id) {
@@ -167,9 +166,10 @@ function initializeInfoForm() {
                 
                 // Convert formData to JSON for API
                 const jsonData = {
-                    title: document.querySelector('#modifForm input[name="title"]').value,
+                    id: id, // Include the selected info ID
+                    title: titleInput.value,
                     type: typeSelect.value,
-                    descriptif: document.querySelector('#modifForm textarea[name="descriptif"]').value
+                    descriptif: descriptifInput.value
                 };
                 
                 // Submit the form data
@@ -183,7 +183,7 @@ function initializeInfoForm() {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.id) {
+                    if (data.success) {
                         alert('Information modifiée avec succès');
                         // Refresh the Info data
                         reloadInfosData();

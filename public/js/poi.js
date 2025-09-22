@@ -68,61 +68,69 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Add event listener for POI select change
-            select.addEventListener('change', function() {
-                const selectedId = this.value;
-                const longitudeInput = document.querySelector('#modifForm input[placeholder^="exemple"]');
-                const latitudeInput = document.querySelector('#modifForm input[placeholder^="48."]');
-                if (poiData[selectedId]) {
-                    const coords = poiData[selectedId].geometry.coordinates;
-                    longitudeInput.value = coords[0];
-                    latitudeInput.value = coords[1];
-                    if (poiData[selectedId].properties.type) {
-                        document.getElementById('typeSelect').value = poiData[selectedId].properties.type;
-                    }
-                } else {
-                    longitudeInput.value = '';
-                    latitudeInput.value = '';
-                    document.getElementById('typeSelect').value = '';
+            // Initialize radios, addForm, modifyFormDiv variables
+            const radios = document.getElementsByName('formMode');
+            const addForm = document.getElementById('addForm');
+            const modifyFormDiv = document.getElementById('modifyForm');
+            
+            // Define loadModifyForm function
+            function loadModifyForm() {
+                if (addForm) addForm.style.display = 'none';
+                if (modifyFormDiv) modifyFormDiv.style.display = '';
+                reloadPoiData();
+            }
+            
+            // Add event listeners to radio buttons if they exist
+            if (radios.length > 0) {
+                radios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        if (this.value === 'add') {
+                            addForm.style.display = '';
+                            modifyFormDiv.style.display = 'none';
+                        } else {
+                            loadModifyForm();
+                        }
+                    });
+                });
+            }
+
+            // Add event listener for form submission
+            document.getElementById('modifForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const poiId = document.getElementById('poiId').value;
+                const longitude = document.querySelector('#modifForm input[name="longitude"]').value;
+                const latitude = document.querySelector('#modifForm input[name="latitude"]').value;
+                const type = document.getElementById('typeSelect').value;
+                const popup = poiData[poiId] && poiData[poiId].properties.popup ? poiData[poiId].properties.popup : '';
+
+                if (poiId) {
+                    fetch('/updatePoi', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            id: poiId,
+                            popup: popup,
+                            longitude: parseFloat(longitude),
+                            latitude: parseFloat(latitude),
+                            type: type
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success || data.message) {
+                            alert('Lieu modifié avec succès !');
+                        } else {
+                            alert('Erreur : ' + (data.error || 'Une erreur est survenue.'));
+                        }
+                    })
+                    .catch(() => alert('Erreur lors de l\'envoi du formulaire.'));
                 }
             });
         });
-
-    document.getElementById('modifForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const poiId = document.getElementById('poiId').value;
-        const longitude = document.querySelector('#modifForm input[name="longitude"]').value;
-        const latitude = document.querySelector('#modifForm input[name="latitude"]').value;
-        const type = document.getElementById('typeSelect').value;
-        const popup = poiData[poiId] && poiData[poiId].properties.popup ? poiData[poiId].properties.popup : '';
-
-        if (poiId) {
-            fetch('/updatePoi', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    id: poiId,
-                    popup: popup,
-                    longitude: parseFloat(longitude),
-                    latitude: parseFloat(latitude),
-                    type: type
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success || data.message) {
-                    alert('Lieu modifié avec succès !');
-                } else {
-                    alert('Erreur : ' + (data.error || 'Une erreur est survenue.'));
-                }
-            })
-            .catch(() => alert('Erreur lors de l\'envoi du formulaire.'));
-        }
     });
-});
 
 //radio
 
@@ -182,120 +190,23 @@ document.getElementById('poiForm').addEventListener('submit', function(e) {
     const typeField = form.querySelector('[name$="[type]"]');
     const type = typeField ? typeField.value : '';
 
-    // Log all form data for debugging
-    console.log('Form data being submitted:');
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-    }
-    
-    // Get CSRF token - look for a hidden input with token in the name
-    let csrfToken = null;
-    // Check different possible CSRF token field names
-    const possibleTokenFields = ['_token', '_csrf_token', form.id + '_token'];
-    
-    for (const tokenName of possibleTokenFields) {
-        const tokenField = form.querySelector(`input[name="${tokenName}"]`);
-        if (tokenField) {
-            csrfToken = tokenField.value;
-            console.log(`Found CSRF token with name ${tokenName}:`, csrfToken);
-            break;
-        }
-    }
-    
-    // As a fallback, try a more generic selector
-    if (!csrfToken) {
-        const tokenField = form.querySelector('input[name*="token"]');
-        if (tokenField) {
-            csrfToken = tokenField.value;
-            console.log('Found CSRF token with generic selector:', csrfToken);
-        }
-    }
-
-    // For both scene and regular POI submissions, use AJAX with proper CSRF handling
-    const isSceneSubmission = type === 'scène';
-    const url = isSceneSubmission ? '/postScene' : form.action;
-    
-    console.log(`Submitting form to ${url} for ${isSceneSubmission ? 'scene' : 'regular POI'}`);
-    
-    // Since we're now using form_start/form_end in the template,
-    // the CSRF token is automatically included in the FormData
-    
-    fetch(url, {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        
-        if (response.redirected) {
-            // If the server redirected us, follow the redirect
-            window.location.href = response.url;
-            return { redirected: true };
-        }
-        
-        if (!response.ok) {
-            console.error('Response error:', response.statusText);
-            return response.text().then(text => {
-                try {
-                    // Try to parse as JSON for structured error
-                    return JSON.parse(text);
-                } catch (e) {
-                    // If parsing fails, it might be HTML or other content
-                    // Check if it contains CSRF token error
-                    if (text.includes('CSRF') || text.includes('csrf')) {
-                        throw new Error('Invalid CSRF token. Please refresh the page and try again.');
-                    } else {
-                        throw new Error('Server responded with status: ' + response.status);
-                    }
-                }
-            });
-        }
-        
-        // Try to parse as JSON
-        return response.text().then(text => {
-            if (!text) return { success: true };
-            
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                // If the response is not JSON but the request was successful,
-                // consider it a success and reload the page
-                if (response.ok) {
-                    window.location.reload();
-                    return { success: true, reloaded: true };
-                }
-                throw new Error('Unexpected response format');
+    if (type === 'scène') {
+        fetch(window.addSceneUrl, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Scène ajoutée avec succès !');
+                form.reset();
+            } else {
+                alert('Erreur : ' + (data.error || 'Une erreur est survenue.'));
             }
-        });
-    })
-    .then(data => {
-        if (data.redirected || data.reloaded) return;
-        
-        console.log('Response data:', data);
-        
-        if (data.success) {
-            alert(isSceneSubmission ? 'Scène ajoutée avec succès !' : 'Lieu ajouté avec succès !');
-            form.reset();
-            
-            // Ensure radio button for "add" remains selected and styling is maintained
-            document.querySelector('input[name="formMode"][value="add"]').checked = true;
-            
-            // Make sure the radio container has proper styling
-            const radioContainer = document.querySelector('.radio');
-            if (radioContainer) {
-                radioContainer.style.display = 'flex';
-                radioContainer.style.justifyContent = 'center';
-                
-                // Add an active class for additional styling if needed
-                radioContainer.classList.add('active-radio');
-            }
-        } else {
-            alert('Erreur : ' + (data.message || data.error || 'Une erreur est survenue.'));
-        }
-    })
-    .catch(error => {
-        console.error('Error submitting form:', error);
-        alert('Erreur lors de l\'envoi du formulaire: ' + error.message || error);
-    });
+        })
+        .catch(() => alert('Erreur lors de l\'envoi du formulaire.'));
+    } else {
+        form.submit(); // fallback for other types
+    }
 });
