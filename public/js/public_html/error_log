@@ -1,0 +1,4 @@
+[24-Mar-2025 18:04:04 UTC] 2025-03-24T18:04:04+00:00 [critical] Uncaught Error: Class "Symfony\Bundle\DebugBundle\DebugBundle" not found
+[24-Mar-2025 18:18:17 UTC] 2025-03-24T18:18:17+00:00 [critical] Uncaught Error: Class "Symfony\Bundle\DebugBundle\DebugBundle" not found
+[25-Mar-2025 15:54:40 UTC] 2025-03-25T15:54:40+00:00 [critical] Uncaught Error: Class "Symfony\Bundle\DebugBundle\DebugBundle" not found
+[10-Jun-2025 19:20:46 UTC] 2025-06-10T19:20:46+00:00 [critical] Uncaught Error: syntax error, unexpected token "{", expecting "function" or "const"

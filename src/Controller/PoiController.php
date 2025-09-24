@@ -144,7 +144,7 @@ final class PoiController extends AbstractController
             $sql = 'INSERT INTO poi (type, properties, geometry, time_stamp) VALUES (:type, :properties, ST_GeomFromGeoJSON(:geometry), :time_stamp)';
             $stmt = $entityManager->getConnection()->prepare($sql);
   
-            // Log the SQL query and parameters
+   
             error_log('Executing SQL: ' . $sql);
             error_log('SQL Parameters: ' . json_encode([
                 'type' => 'Feature',
@@ -159,7 +159,7 @@ final class PoiController extends AbstractController
                 'geometry' => $geoJson,
                 'time_stamp' => (new \DateTime())->format('Y-m-d')
             ]);
-            // Retrieve the last inserted ID for the Poi
+     
 
 
             $lastInsertedPoiId = $entityManager->getConnection()->lastInsertId();
@@ -185,8 +185,8 @@ final class PoiController extends AbstractController
             $updateStmt = $entityManager->getConnection()->prepare($updateSql);
 
             $updateStmt->executeStatement([
-                'poiId' => $lastInsertedPoiId, // Use the ID of the newly inserted Poi
-                'sceneId' => $scene->getId()   // Use the ID of the newly created Scene
+                'poiId' => $lastInsertedPoiId, 
+                'sceneId' => $scene->getId()  
             ]);
 
             // Log the update
@@ -269,10 +269,10 @@ final class PoiController extends AbstractController
         ];
     }
 
-    // Add this before rendering the template
+
     $poi = new Poi();
 
-    // Get unique types for the add form (reuse your logic)
+    // Get unique types for the add form
     $typeConnection = $entityManager->getConnection();
     $sql = "SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(properties, '$.type')) AS type FROM poi WHERE JSON_EXTRACT(properties, '$.type') IS NOT NULL";
     $result = $typeConnection->executeQuery($sql)->fetchAllAssociative();
@@ -285,12 +285,11 @@ final class PoiController extends AbstractController
     }
     $formAddPoi = $this->createForm(AddPlaceType::class, $poi, [
     'type_choices' => $typeChoices,
-    'csrf_protection' => true, // Ensure CSRF protection is enabled
-    'csrf_field_name' => '_token', // Use a standard field name for CSRF token
-    'csrf_token_id' => 'poi_form', // A unique token ID for this form
+    'csrf_protection' => true, 
+    'csrf_field_name' => '_token',
+    'csrf_token_id' => 'poi_form', 
     ]);
 
-    // If you also need the modify form:
     $poiChoices = [];
     foreach ($pois as $poi) {
     $poiChoices[$poi->properties->popup] = $poi->id;
@@ -302,7 +301,7 @@ final class PoiController extends AbstractController
     return $this->render('poi/poi.html.twig', [
         'formAddPoi' => $formAddPoi->createView(),
         'formModifPoi' => $formModifPoi->createView(),
-        'pois' => $pois, // <-- Add this line!
+        'pois' => $pois,
     ]);
     }
 

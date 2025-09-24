@@ -335,3 +335,21 @@ Stack trace:
 [17-Sep-2025 12:31:32 UTC] 2025-09-17T12:31:32+00:00 [info] Deprecated: App\Controller\BackOfficeController::addInfo(): Implicitly marking parameter $serializer as nullable is deprecated, the explicit nullable type must be used instead
 [17-Sep-2025 12:31:32 UTC] 2025-09-17T12:31:32+00:00 [critical] Uncaught Error: syntax error, unexpected token ";", expecting "]"
 [22-Sep-2025 08:52:35 UTC] 2025-09-22T08:52:35+00:00 [critical] Uncaught Error: syntax error, unexpected token "public"
+[23-Sep-2025 08:24:39 UTC] 2025-09-23T08:24:39+00:00 [info] Deprecated: App\Controller\BackOfficeController::addInfo(): Implicitly marking parameter $serializer as nullable is deprecated, the explicit nullable type must be used instead
+[23-Sep-2025 08:24:39 UTC] 2025-09-23T08:24:39+00:00 [critical] Uncaught Error: syntax error, unexpected token "public"
+[23-Sep-2025 08:24:47 UTC] 2025-09-23T08:24:47+00:00 [info] Deprecated: App\Controller\BackOfficeController::addInfo(): Implicitly marking parameter $serializer as nullable is deprecated, the explicit nullable type must be used instead
+[23-Sep-2025 08:24:47 UTC] 2025-09-23T08:24:47+00:00 [critical] Uncaught Error: syntax error, unexpected token "public"
+[23-Sep-2025 08:25:12 UTC] 2025-09-23T08:25:12+00:00 [info] Deprecated: App\Controller\BackOfficeController::addInfo(): Implicitly marking parameter $serializer as nullable is deprecated, the explicit nullable type must be used instead
+[23-Sep-2025 08:25:12 UTC] 2025-09-23T08:25:12+00:00 [critical] Uncaught Error: Unclosed '{' on line 256 does not match ']'
+[23-Sep-2025 08:25:34 UTC] 2025-09-23T08:25:34+00:00 [info] Deprecated: App\Controller\BackOfficeController::addInfo(): Implicitly marking parameter $serializer as nullable is deprecated, the explicit nullable type must be used instead
+[23-Sep-2025 08:25:34 UTC] 2025-09-23T08:25:34+00:00 [critical] Uncaught Error: Unclosed '{' on line 256 does not match ']'
+[23-Sep-2025 08:25:54 UTC] 2025-09-23T08:25:54+00:00 [info] Deprecated: App\Controller\BackOfficeController::addInfo(): Implicitly marking parameter $serializer as nullable is deprecated, the explicit nullable type must be used instead
+[23-Sep-2025 08:25:54 UTC] 2025-09-23T08:25:54+00:00 [critical] Uncaught Error: Unclosed '{' on line 256 does not match ']'
+[23-Sep-2025 11:37:31 UTC] [Exception Listener] Exception caught: No route found for "GET http://localhost:8000/.well-known/appspecific/com.chrome.devtools.json"
+[23-Sep-2025 11:37:31 UTC] [Exception Listener] Exception class: Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+[23-Sep-2025 11:37:31 UTC] [Exception Listener] Request path: /.well-known/appspecific/com.chrome.devtools.json
+[23-Sep-2025 11:37:31 UTC] [Exception Listener] Request method: GET
+[23-Sep-2025 11:37:37 UTC] [Exception Listener] Exception caught: No route found for "GET http://localhost:8000/.well-known/appspecific/com.chrome.devtools.json"
+[23-Sep-2025 11:37:37 UTC] [Exception Listener] Exception class: Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+[23-Sep-2025 11:37:37 UTC] [Exception Listener] Request path: /.well-known/appspecific/com.chrome.devtools.json
+[23-Sep-2025 11:37:37 UTC] [Exception Listener] Request method: GET
