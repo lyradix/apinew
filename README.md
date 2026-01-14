@@ -3,14 +3,23 @@
 
 # Table of content
 -[📝Description](#description)
+
 -[🔺Pre-requirement ](#pre-requirement)
+
 -[🫗To load data in database](#to-load-data-in-database)
+
 -[🚀Launch in local](#launch-in-local)
+
 -[⚙️API ](#️api)
+
 -[⚙️Back Office ](#️back-office)
+
 -[⚙️Test](#️test)
+
 -[🗺️Spatial data for the Poi Entity](#️spatial-data-for-the-poi-entity)
+
 -[✏️Files modification](#️files-modification)
+
 -[➕Add file](#add-file) 
 
 
@@ -22,7 +31,9 @@ The back end project for the responsive website of Nation Sound. An event of 3 d
 #  🔺Pre-requirement 
 
 Install composer on https://getcomposer.org/download 
+
 install nelmio CORE bundle 
+
 install maker Bundle 
 
 
@@ -44,9 +55,13 @@ php --ini
 ## You will then be able to modify by uncommenting these lines : 
 
 extension=mysqli 
+
 extension=openssl 
+
 extension=pdo_mysql 
+
 extension=mbstring 
+
 extension=intl 
 
 It will enable mySql, the encoding of characters and so on. Make sure the dll files are present in the 📂ext folder. 
@@ -57,8 +72,11 @@ It will enable mySql, the encoding of characters and so on. Make sure the dll fi
 ## in cmd make : 
 
 php bin/console make:migration 
+
 php bin/console doctrine:migrations:migrate 
+
 php bin/console doctrine:fixtures:load
+
 yes 
 
 
@@ -210,9 +228,13 @@ apinewsymfony
 ## in cmd, write these commands : 
 
 composer require --dev symfony/test-pack
+
 composer require --dev doctrine/doctrine-fixtures-bundle
+
 php bin/console --env=test doctrine:database:create
+
 php bin/console --env=test doctrine:schema:create 
+
 php bin/console --env=test 
 
 Recommentdation: check 📂DataFixtures/AppFixtures.php 
