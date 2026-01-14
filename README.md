@@ -77,23 +77,41 @@ symfony serve --no-tls
 ### 🌴Tree structure 
 
 apinewsymfony/
+
 ├── config/
+
 │   ├── packages/
+
 │   │   ├── doctrine.yaml
+
 │   │   ├── nelmio_cors.yaml
+
 │   │   └── security.yaml
+
 │   └── services.yaml
+
 ├── src/
+
 │   ├── Controller/
+
 │   │   └── IndexController.php
+
 │   ├── DataFixtures/
+
 │   │   ├── AppFixtures.php
+
 │   │   └── data/
+
 │   │       └── liveEvent.sql
+
 │   ├── Entity/
+
 │   │   └── User, Poi, Scene, Artist, Partners, Info
+
 │   ├── Repository/
+
 │   │   └── All related repositories
+
 ├── .env
 
 
@@ -122,24 +140,43 @@ apinewsymfony/
 │   ├── assets/ 
 
 │   │   ├── css/ 
+
 │   │   │   └── app.css 
+
 │   │   └── images 
+
 │   │   └── JS 
+
 │   └── index.php 
+
 ├── src/ 
+
 │   ├── Controller/ 
+
 │   │   └── BackOfficeController.php  
+
 │   └── Security/ 
+
 │       └── LoginSuccesHandler.php 
+
 ├── templates/ 
+
 │   ├── Index/ 
-│   |   ├── adminConcerts.html.twig, addConcert.html.twig, addScene.html.twig, etc 
+
+│   |   ├── adminConcerts.html.twig, addConcert.html.twig, addScene.html.twig, etc
+
 │   ├── info 
+
 │   ├── partners 
+
 │   ├── Poi 
+
 |   |── security 
+
 |   base.html 
+
 ├── .env 
+
 ├── README.md 
 
 
@@ -150,14 +187,23 @@ apinewsymfony/
 ### 🌴Tree structure 
 
 apinewsymfony/ 
+
 │   ├── DataFixtures/ 
+
 │   │   ├── AppFixtures.php 
+
 │   │   └── data/ 
+
 │   │       └── liveEvent.sql 
+
 ├── tests/ 
+
 │   ├── Entity/ 
+
 │   │   ├── UserTest.php 
+
 │   │   ├── PoiTest.php 
+
 ├── phpunit.xml.dist 
 
 
