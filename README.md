@@ -42,7 +42,7 @@ install maker Bundle
 composer require symfony security-core 
 composer require form validator 
 
-## Now go to the 📂RegistrationController and change the redirect after resgistration from _preview_error to app_login 
+## Now go to the 📂RegistrationController and change the redirect after registration from _preview_error to app_login 
 
 📄Php.ini 
 
@@ -94,11 +94,11 @@ symfony serve --no-tls
 
 ### 🌴Tree structure 
 
-apinewsymfony/
+apinewsymfony
 
-├── config/
+├── config
 
-│   ├── packages/
+│   ├── packages
 
 │   │   ├── doctrine.yaml
 
@@ -110,23 +110,23 @@ apinewsymfony/
 
 ├── src/
 
-│   ├── Controller/
+│   ├── Controller
 
 │   │   └── IndexController.php
 
-│   ├── DataFixtures/
+│   ├── DataFixtures
 
 │   │   ├── AppFixtures.php
 
-│   │   └── data/
+│   │   └── data
 
 │   │       └── liveEvent.sql
 
-│   ├── Entity/
+│   ├── Entity
 
 │   │   └── User, Poi, Scene, Artist, Partners, Info
 
-│   ├── Repository/
+│   ├── Repository
 
 │   │   └── All related repositories
 
