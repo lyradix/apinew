@@ -121,11 +121,11 @@ apinewsymfony/
 
 ### 🌴Tree structure 
 
-apinewsymfony/ 
+apinewsymfony
 
-├── config/ 
+├── config
 
-│   ├── packages/ 
+│   ├── packages
 
 │   │   ├── doctrine.yaml 
 
@@ -135,11 +135,11 @@ apinewsymfony/
 
 │   └── services.yaml 
 
-├── public/ 
+├── public
 
-│   ├── assets/ 
+│   ├── assets
 
-│   │   ├── css/ 
+│   │   ├── css
 
 │   │   │   └── app.css 
 
@@ -149,19 +149,19 @@ apinewsymfony/
 
 │   └── index.php 
 
-├── src/ 
+├── src
 
-│   ├── Controller/ 
+│   ├── Controller
 
 │   │   └── BackOfficeController.php  
 
-│   └── Security/ 
+│   └── Security
 
 │       └── LoginSuccesHandler.php 
 
-├── templates/ 
+├── templates
 
-│   ├── Index/ 
+│   ├── Index
 
 │   |   ├── adminConcerts.html.twig, addConcert.html.twig, addScene.html.twig, etc
 
@@ -186,19 +186,19 @@ apinewsymfony/
 
 ### 🌴Tree structure 
 
-apinewsymfony/ 
+apinewsymfony
 
-│   ├── DataFixtures/ 
+│   ├── DataFixtures
 
 │   │   ├── AppFixtures.php 
 
-│   │   └── data/ 
+│   │   └── data
 
 │   │       └── liveEvent.sql 
 
 ├── tests/ 
 
-│   ├── Entity/ 
+│   ├── Entity
 
 │   │   ├── UserTest.php 
 
