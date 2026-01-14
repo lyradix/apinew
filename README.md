@@ -103,7 +103,44 @@ apinewsymfony/
 
 ### 🌴Tree structure 
 
-apinewsymfony/ ├── config/ │ ├── packages/ │ │ ├── doctrine.yaml │ │ ├── nelmio_cors.yaml │ │ └── security.yaml │ └── services.yaml ├── public/ │ ├── assets/ │ │ ├── css/ │ │ │ └── app.css │ │ ├── images/ │ │ └── JS/ │ └── index.php ├── src/ │ ├── Controller/ │ │ └── BackOfficeController.php │ └── Security/ │ └── LoginSuccesHandler.php ├── templates/ │ ├── Index/ │ │ ├── adminConcerts.html.twig │ │ ├── addConcert.html.twig │ │ ├── addScene.html.twig │ │ └── etc... │ ├── info/ │ ├── partners/ │ ├── Poi/ │ └── security/ │ └── base.html ├── .env └── README.md
+apinewsymfony/ 
+
+├── config/ 
+
+│   ├── packages/ 
+
+│   │   ├── doctrine.yaml 
+
+│   │   ├── nelmio_cors.yaml 
+
+│   │   └── security.yaml 
+
+│   └── services.yaml 
+
+├── public/ 
+
+│   ├── assets/ 
+
+│   │   ├── css/ 
+│   │   │   └── app.css 
+│   │   └── images 
+│   │   └── JS 
+│   └── index.php 
+├── src/ 
+│   ├── Controller/ 
+│   │   └── BackOfficeController.php  
+│   └── Security/ 
+│       └── LoginSuccesHandler.php 
+├── templates/ 
+│   ├── Index/ 
+│   |   ├── adminConcerts.html.twig, addConcert.html.twig, addScene.html.twig, etc 
+│   ├── info 
+│   ├── partners 
+│   ├── Poi 
+|   |── security 
+|   base.html 
+├── .env 
+├── README.md 
 
 
 # ⚙️Test 
@@ -112,7 +149,17 @@ apinewsymfony/ ├── config/ │ ├── packages/ │ │ ├── doctr
 
 ### 🌴Tree structure 
 
-apinewsymfony/ ├── DataFixtures/ │ ├── AppFixtures.php │ └── data/ │ └── liveEvent.sql ├── tests/ │ ├── Entity/ │ │ ├── UserTest.php │ │ └── PoiTest.php └── phpunit.xml.dist
+apinewsymfony/ 
+│   ├── DataFixtures/ 
+│   │   ├── AppFixtures.php 
+│   │   └── data/ 
+│   │       └── liveEvent.sql 
+├── tests/ 
+│   ├── Entity/ 
+│   │   ├── UserTest.php 
+│   │   ├── PoiTest.php 
+├── phpunit.xml.dist 
+
 
 ## in cmd, write these commands : 
 
